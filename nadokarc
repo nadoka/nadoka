@@ -103,7 +103,7 @@ System_log  = '${setting_name}-system.log'
 
 Channel_info = {
   # nadoka talk
-  '#Nadoka' => {
+  '#nadoka' => {
     # timing
     #  :startup / when nadoka start up <= default
     #  :login   / when user login

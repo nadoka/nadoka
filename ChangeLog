@@ -1,3 +1,10 @@
+2004-07-10(Sat) 21:22:18 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : ignore NOTICE messages when logged in
+
+	* plugins/backlogbot.rb : ignore non channel messages
+
+
 2004-07-10(Sat) 17:33:10 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_version.rb : check trunk

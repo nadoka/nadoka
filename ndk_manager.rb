@@ -144,13 +144,16 @@ module Nadoka
       
       # wait welcome message
       while q = recv_from_server
-        if q.command == '001'
+        case q.command
+        when '001'
           break
-        elsif q.command == '433'
+        when '433'
           # Nickname is already in use.
           nick = @state.nick_succ(q.params[1])
           @state.nick = nick
           send_to_server Cmd.nick(nick)
+        when 'NOTICE'
+          # igonore
         else
           msg = "Server login fail!(#{q})"
           @logger.slog msg

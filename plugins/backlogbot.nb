@@ -87,6 +87,8 @@ class BackLogBot < Nadoka::NDK_Bot
   end
   
   def push ch, msg
+    return unless /\A\&\#\+\!/ =~ ch
+    
     unless store = @store_pool[ch]
       store = @store_pool[ch] = @store_klass.new(@limit)
     end
