@@ -6,12 +6,12 @@
 # the same terms of the Ruby's lisence.
 #
 # 
-# $Id: ndk_version.rb,v 1.3 2004/05/01 05:40:16 ko1 Exp $
+# $Id$
 # Create : K.S. 04/04/27 16:35:40
 #
 
 module Nadoka
-  NDK_Version  = '0.5.3-devel'
+  NDK_Version  = '0.5.4-devel'
   NDK_Created  = Time.now
 
   def self.version
