@@ -1,0 +1,41 @@
+=begin
+
+This plugin is test version.
+
+=end
+
+require 'uri'
+require 'kconv'
+
+class DictBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @available_channel = @bot_config[:ch] || /.*/
+    
+  end
+  
+  
+  def on_privmsg prefix, ch, msg
+    if @available_channel === ch
+      if /dic(.)>\s*(.+)\s*/ =~ msg
+        res = yahoo_dict $1, $2.toeuc
+        send_notice(ch, res)
+      end
+    end
+  end
+
+
+  YAHOO_DICT_TYPE ={
+    't' => 1,
+    'j' => 0,
+  }
+  def yahoo_dict type, word
+    if type = YAHOO_DICT_TYPE[type]
+      word = URI.encode(word)
+      "dict bot> http://dic.yahoo.co.jp/bin/dsearch?p=#{word}&stype=0&dtype=#{type}"
+    else
+      "dict bot> unknown type: #{type}"
+    end
+  end
+end
+
+

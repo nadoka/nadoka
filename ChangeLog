@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2004-12-20(Mon) 19:53:18 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/dict_bot.nb, plugins/pastebot.nb, plugins/weatherbot.nb
+	added (test version)
+
+
 2004-12-03(Fri) 14:45:19 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_state.rb : fix again (patched by U.Nakamura)
