@@ -1,3 +1,7 @@
+2004-07-04(Sun) 16:15:24 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/googlebot.nb : fix character code bugs
+
 
 2004-07-03(Sat) 03:25:24 +0900  Koichi Sasada  <ko1@atdot.net>
 
