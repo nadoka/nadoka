@@ -7,7 +7,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: ndk_config.rb,v 1.40 2004/05/01 04:55:49 ko1 Exp $
+# $Id$
 # Create : K.S. 04/04/17 16:50:33
 #
 #
@@ -18,7 +18,6 @@
 
 require 'uri'
 require 'socket'
-require 'drb/acl'
 require 'ndk_logger'
 
 module Nadoka
@@ -189,6 +188,8 @@ module Nadoka
 
       # acl setting
       if @config[:client_server_acl] && !@config[:acl_object]
+        require 'drb/acl'
+        
         acl = @config[:client_server_acl].strip.split(/\s+/)
         @config[:acl_object] = ACL.new(acl)
         logger.slog "ACL: #{acl.join(' ')}"

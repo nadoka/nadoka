@@ -103,13 +103,23 @@ module Nadoka
     end
     
     def server_main_proc
-      # login
+      ## login
+
+      # send passwd
       if @server_passwd
         send_to_server Cmd.pass(@server_passwd)
       end
-      send_to_server Cmd.nick(@config.nick)
-      @state.nick = @config.nick
-      
+
+      # send nick
+      if @config.away_nick
+        @state.original_nick = @config.nick
+        @state.nick = @config.away_nick
+      else
+        @state.nick = @config.nick
+      end
+      send_to_server Cmd.nick(@state.nick)
+
+      # send user info
       send_to_server Cmd.user(@config.user,
                               @config.hostname, @config.servername,
                               @config.realname)
@@ -120,8 +130,13 @@ module Nadoka
           break
         elsif q.command == '433'
           # Nickname is already in use.
-          nick = @state.nick_succ
+          nick = @state.nick_succ(q.params[0])
+          @state.nick = nick
           send_to_server Cmd.nick(nick)
+        else
+          msg = "Server login fail!(#{q})"
+          @config.slog msg
+          raise msg
         end
       end
       
@@ -140,10 +155,10 @@ module Nadoka
 
       @connected = true
 
+      ##
       if @clients.size == 0
         enter_away
       end
-      
       
       # loop
       while q = recv_from_server
@@ -168,13 +183,23 @@ module Nadoka
           @state.on_topic(nick_of(q), q.params[0], q.params[1])
         when 'MODE'
           @state.on_mode(nick_of(q), q.params[0], q.params[1..-1])
-        when '353'
-          @state.on_353(q.params[2], q.params[3])
-        when '332'
-          @state.on_332(q.params[1], q.params[2])
-        else
           
+        when '353' # RPL_NAMREPLY
+          @state.on_353(q.params[2], q.params[3])
+        when '332' # RPL_TOPIC
+          @state.on_332(q.params[1], q.params[2])
+          
+        when '433', '436', '437'
+          # ERR_NICKNAMEINUSE, ERR_NICKCOLLISION, ERR_UNAVAILRESOURCE
+          # change try nick
+          nick = @state.nick_succ(q.params[1])
+          send_to_server Cmd.nick(nick)
+          @logger.slog("Retry nick setting: #{nick}")
+          
+        else
         end
+
+        
         send_to_clients q
         send_to_bot q
         @logger.logging q
@@ -185,17 +210,21 @@ module Nadoka
       return if @exitting
       
       send_to_server Cmd.away(@config.away_message) if @config.away_message
-      
+
+      # change nick
       if @state.nick != @config.away_nick && @config.away_nick
         @state.original_nick = @state.nick
         send_to_server Cmd.nick(@config.away_nick)
       end
 
+      # part channel
       @config.login_channels.each{|ch|
-        if @config.channel_info[ch] && @config.channel_info[ch][:part_message]
-          send_to_server Cmd.part(ch, @config.channel_info[ch][:part_message])
-        else
-          send_to_server Cmd.part(ch)
+        if @config.channel_info[ch]
+          if @config.channel_info[ch][:part_message]
+            send_to_server Cmd.part(ch, @config.channel_info[ch][:part_message])
+          else
+            send_to_server Cmd.part(ch)
+          end
         end
       }
     end
@@ -204,7 +233,7 @@ module Nadoka
       return if @exitting
 
       send_to_server Cmd.away()
-      
+
       if @config.away_nick && @state.original_nick
         send_to_server Cmd.nick(@state.original_nick)
         @state.original_nick = nil

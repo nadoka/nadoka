@@ -6,7 +6,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: ndk_state.rb,v 1.10 2004/05/01 05:40:16 ko1 Exp $
+# $Id$
 # Create : K.S. 04/04/20 10:42:27
 #
 
@@ -117,6 +117,8 @@ module Nadoka
       
       @current_nick     = nil
       @original_nick    = nil
+      @try_nick         = nil
+      
       @current_channels = {}
       @backlog = []
     end
@@ -127,20 +129,24 @@ module Nadoka
     attr_writer :logger, :config
     
     def nick=(n)
-      @current_nick=n
+      @try_nick     = nil
+      @current_nick = n
     end
     
     def nick
-      @original_nick || @current_nick
+      @current_nick
     end
 
-    def nick_succ
-      if /^(.+)(\d)$/ =~ @current_nick
-        @current_nick = $1 + ($2.to_i + 1).to_s
+    def nick_succ fail_nick
+      if @try_nick
+        if @try_nick.length == fail_nick
+          @try_nick.succ!
+        else
+          @try_nick = fail_nick[0..-2] + '0'
+        end
       else
-        @current_nick += '0'
+        @try_nick = fail_nick + '0'
       end
-      @current_nick
     end
     
     def channels
@@ -206,6 +212,7 @@ module Nadoka
       msg = "#{user} -> #{newnick}"
       if user == nick
         @current_nick = newnick
+        @try_nick     = nil
       end
       @current_channels.each{|ch, chs|
         if chs.on_nick user, newnick

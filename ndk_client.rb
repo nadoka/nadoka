@@ -6,7 +6,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: ndk_client.rb,v 1.22 2004/05/01 04:55:49 ko1 Exp $
+# $Id$
 # Create : K.S. 04/04/17 16:50:10
 #
 
@@ -127,7 +127,7 @@ module Nadoka
 
       send_motd
       
-      send_command Cmd.nick(@manager.state.nick), nick
+      send_command Cmd.nick(@state.nick), nick
       nick = @manager.state.nick
 
       @manager.state.current_channels.each{|ch, chs|

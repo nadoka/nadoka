@@ -168,7 +168,7 @@ module Nadoka
 
     
 =end
-
+    
     def self.inherited subklass
       BotClass << subklass
     end

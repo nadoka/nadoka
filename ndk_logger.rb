@@ -5,7 +5,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: ndk_logger.rb,v 1.1 2004/04/30 21:40:54 ko1 Exp $
+# $Id$
 # Create : K.S. 04/05/01 02:04:18
 
 module Nadoka
@@ -26,9 +26,11 @@ module Nadoka
 
     # system message
     def slog msg
+      str = "[NDK] #{msg}"
       if @config.loglevel >= 2
-        write_log(make_logfilename(@config.system_log), "[NDK] #{msg}")
+        write_log(make_logfilename(@config.system_log), str)
       end
+      @manager.send_to_clients Cmd.notice(@manager.state.nick, str) if @manager.state
     end
 
     # channel message
