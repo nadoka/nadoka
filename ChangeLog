@@ -1,3 +1,8 @@
+Sat, 01 May 2004 19:11:29 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* change source management system to Subversion
+ 
+
 Sat, 01 May 2004 14:38:04 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : fix bootstrap process
@@ -292,5 +297,5 @@ Tue, 20 Apr 2004 13:33:19 +0900  Koichi Sasada  <ko1@atdot.net>
 
 
 # ChangeLog of Nadoka
-# $Id: ChangeLog,v 1.48 2004/05/01 05:40:16 ko1 Exp $ 
+# $Id$ 
 #
