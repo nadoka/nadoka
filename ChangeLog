@@ -2,6 +2,13 @@
 # $Id$ 
 #
 
+2004-12-03(Fri) 13:59:48 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_state.rb : fix bug about mode change by server
+
+	* plugins/modemanager.rb : fix bug to detect mode
+
+
 2004-11-24(Wed) 13:20:17 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/autodump.nb : fix bug	(apply patch from shugo)
