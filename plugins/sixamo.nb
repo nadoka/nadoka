@@ -21,7 +21,7 @@
 # }
 #
 #
-# $Id: sixamo.nb,v 1.7 2004/04/30 21:36:25 ko1 Exp $
+# $Id$
 #
 
 require 'sixamo'

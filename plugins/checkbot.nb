@@ -6,7 +6,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: checkbot.nb  $
+# $Id$
 
 class CheckBot < Nadoka::NDK_Bot
   def bot_initialize

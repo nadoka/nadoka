@@ -6,7 +6,7 @@
 # the same terms of the Ruby's lisence.
 #
 # 
-# $Id: rss_check.rb,v 1.6 2004/04/30 21:36:25 ko1 Exp $
+# $Id$
 # Create : K.S. Sat, 24 Apr 2004 12:10:31 +0900
 #
 

@@ -9,7 +9,7 @@
 #
 # ruby evaluator on IRC
 #
-# $Id: evalbot.nb,v 1.2 2004/04/29 23:49:47 ko1 Exp $
+# $Id$
 #
 require 'timeout'
 class EvalBot < Nadoka::NDK_Bot

@@ -7,7 +7,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: cron.nb,v 1.2 2004/04/22 17:47:29 ko1 Exp $
+# $Id$
 #
 
 class CronBot < Nadoka::NDK_Bot

@@ -9,7 +9,7 @@
 #
 # shell command bot
 #
-# $Id: shellbot.nb,v 1.2 2004/04/27 17:44:31 ko1 Exp $
+# $Id$
 #
 
 require 'timeout'
