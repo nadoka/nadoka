@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-28(Wed) 05:07:00 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/google.nb : support gooo*gle
+
+
 2004-07-27(Tue) 11:16:05 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/ndk_client.rb : fix typo

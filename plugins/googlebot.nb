@@ -77,33 +77,30 @@ class GoogleBot < Nadoka::NDK_Bot
   def dispatch_command msg
     begin
       case msg
-      when /^google>\s*(.+)/, /^guguru>\s*(.+)/
-        "google bot: #{search($1)}"
-      when /^google:(.*)>\s*(.+)/, /^guguru:(.*)>\s*(.+)/
-        "google bot: #{search($2, $1)}"
-      when /^googlec>\s*(.+)/
-        "google bot: #{googlec($1)}"
-      when /^googlec:(.*)>\s*(.+)/
-        "google bot: #{googlec($2, $1)}"
+      when /^goo(o*)gle(:.*)?>\s*(.+)/, /^gu(u*)guru(:.+)?>\s*(.+)/
+        "goo#{$1}gle bot#{$2}: #{search($1.length, $2, $3)}"
+        
+      when /^googlec(:.*)?>\s*(.+)/
+        "googlec bot#{$2}: #{googlec($1, $2)}"
       end
     rescue Exception => e
       "google bot: #{e.class}(#{e.message})"
     end
   end
   
-  def search word, lang=@search_default_lang
+  def search cnt, lang, word
     lang = lang_check(lang)
     word = search_char_code(word)
     
     result = @google.doGoogleSearch(
-      @google_key, word, 0, 1, false, "", false, lang, 'utf-8', 'utf-8' )
+      @google_key, word, cnt, 1, false, "", false, lang, 'utf-8', 'utf-8' )
 
     count = result.estimatedTotalResultsCount
     if count > 0
       count = count.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')
       url   =  title = ''
     
-      result.resultElements.each{|e|
+      result.resultElements.each_with_index{|e, i|
         url   = e.URL
         title = show_char_code_and_erace_tag(e.title)
       }
@@ -114,7 +111,7 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
-  def googlec word, lang=@count_default_lang
+  def googlec lang, word
     lang = lang_check(lang)
     words = Shellwords.shellwords(word)
     return 'too many options' if words.size > @googlec_maxwords
@@ -141,10 +138,15 @@ class GoogleBot < Nadoka::NDK_Bot
   end
 
   def lang_check lang
-    if lang.empty? || /^lang_/ =~ lang
-      lang
+    if !lang
+      @search_default_lang
     else
-      'lang_' + lang
+      lang = lang[1..-1]
+      if lang.empty? || /^lang_/ =~ lang
+        lang
+      else
+        'lang_' + lang
+      end
     end
   end
   
