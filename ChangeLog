@@ -1,3 +1,8 @@
+Sat, 01 May 2004 23:04:40 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix typo
+
+
 Sat, 01 May 2004 19:11:29 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* change source management system to Subversion

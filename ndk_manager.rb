@@ -6,7 +6,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: ndk_manager.rb,v 1.38 2004/05/01 05:40:16 ko1 Exp $
+# $Id$
 # Create : K.S. 04/04/17 17:00:44
 #
 
@@ -71,7 +71,7 @@ module Nadoka
           send_to_clients Cmd.notice(@state.nick,
             "Connection closed by server. Trying to reconnect")
             
-          sleep @config.recconect_delay
+          sleep @config.reconnect_delay
           retry
         rescue Exception => e
           ndk_error e
