@@ -18,7 +18,7 @@ class EvalBot < Nadoka::NDK_Bot
   def on_client_privmsg client, ch, message
     if ch == EvalNick
       ans = eval_message(message)
-      msg = Cmd.privmsg(@state.nick, 'ans: ' + ans)
+      msg = Nadoka::Cmd.privmsg(@state.nick, 'ans: ' + ans)
       client.send_to_client client.add_prefix(msg, EvalNick)
       raise ::Nadoka::NDK_BotSendCancel
     end
@@ -26,7 +26,7 @@ class EvalBot < Nadoka::NDK_Bot
 
   def on_nadoka_command client, command, *params
     if command == 'eval'
-      msg = Cmd.privmsg(@state.nick, 'Hello, this is ruby evaluator')
+      msg = Nadoka::Cmd.privmsg(@state.nick, 'Hello, this is ruby evaluator')
       client.send_to_client client.add_prefix(msg, EvalNick)
       raise ::Nadoka::NDK_BotSendCancel
     end

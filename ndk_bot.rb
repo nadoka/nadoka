@@ -26,7 +26,6 @@ module Nadoka
       
       bot_initialize
     end
-    attr_accessor :raw_prefix
 
     # To initialize bot insntace, please overide this.
     def bot_initialize
@@ -103,7 +102,7 @@ module Nadoka
       
     end
     
-    def on_quit prefix, ch
+    def on_quit prefix, msg=''
       
     end
     
@@ -117,9 +116,6 @@ module Nadoka
     - prefix.nick
     - prefix.user
     - prefix.host
-
-    @raw_prefix is obsolete
-    
 
     # This method will be called when recieved every message
     def on_every_message prefix, command, *args
@@ -158,14 +154,12 @@ module Nadoka
     def on_sigusr[12] # no arguments
       # do something
     end
-
     
     You can access your current state on IRC server via @state.
     - @state.nick         # your current nick
     - @state.channels     # channels which you are join        ['ch1', 'ch2', ...]
     - @state.channel_users(ch) # channel users ['user1', ...]
-    - @state.current_channels[ch].mode(nick) # nick's mode in ch
-
+    - @state.channel_user_mode(ch, nick)
     
 =end
     

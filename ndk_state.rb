@@ -165,7 +165,14 @@ module Nadoka
         []
       end
     end
-
+    
+    def channel_member_mode ch, user
+      ch = canonical_channel_name(ch)
+      if cahnnels.include?[ch] && channel_member(ch).include?(user)
+        @current_channels[ch].mode(user)
+      end
+    end
+    
     def canonical_channel_name ch
       @config.canonical_channel_name ch
     end
