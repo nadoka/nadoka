@@ -59,7 +59,7 @@ Servers = [
   { :host => 'irc.media.kyoto-u.ac.jp',
     :port => (6660 .. 6669),
   },
-  { :host => 'irc.nara.wide.ac.jp',
+  { :host => 'irc.nara.wide.ad.jp',
     :port => (6660 .. 6669),
   },
   { :host => 'irc.huie.hokudai.ac.jp',

@@ -42,7 +42,6 @@ module Nadoka
           end
         rescue Exception => e
           @manager.ndk_error e
-          raise
         end
       }
       begin

@@ -1,3 +1,16 @@
+2004-07-06(Tue) 22:38:58 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_client.rb : fix exception bug
+
+	* ndk_manager.rb, ndk_config.rb : fix reload process
+
+	* nadokarc : fix typo
+
+	* plugins/weba.nb : fix some bugs, support writing
+
+	* tagparts.rb : added(required by weba)
+
+
 2004-07-05(Mon) 15:40:09 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_config.rb : change default Channel_Info,

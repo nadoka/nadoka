@@ -136,8 +136,6 @@ module Nadoka
     end
     
     def load_config(rcfile)
-      remove_previous_setting
-      
       load(rcfile) if rcfile
       
       @config = {}
@@ -230,7 +228,6 @@ module Nadoka
           make_bot_instance bk, nil
         end
       }.flatten
-      
     end
     
     def canonical_channel_name ch

@@ -7,7 +7,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id:$
+# $Id$
 #
 
 =begin
@@ -19,34 +19,91 @@ WebA: Web Accessor
 =end
 
 require 'webrick'
+require 'tagparts'
 
 class WebA < Nadoka::NDK_Bot
   class WebAlet < WEBrick::HTTPServlet::AbstractServlet
     def do_GET req, res
-      res.body = @options[0].htmlpage
+      begin
+        res.body = @options[0].htmlpage(req.query).to_s
+        res['content-type'] = 'text/html; charset=euc_jp'
+      rescue WebARedirect => e
+        res.set_redirect(WEBrick::HTTPStatus::Found, "#{req.path}?ch=#{URI.encode(e.ch)}")
+        res.body = 'moved'
+      end
     end
   end
 
-  def htmlpage
-    <<-__EOS
-    <html>
-    <head><title> WebA: IRC Web Accessor </title></head>
-    <body>
-    <p>
-    <ol>
-    #{message_list}
-    </ol>
-    </p>
-    </body></html>
-    __EOS
+  class WebARedirect < Exception
+    attr_reader :ch
+    def initialize ch
+      @ch = ch
+    end
+  end
+  
+  include HTMLParts
+  def htmlpage query
+    ch = query['ch']
+    ch = ch && !ch.empty? && @state.channels.include?(ch) && ch
+    
+    ttl = ch ? (ch = ch.tojis; " : #{ch}") : ''
+    
+    if ch && msg = query['message']
+      msg = msg.tojis + '(from WebA)'
+      send_privmsg(ch, msg)
+      push_message({:ch => ch, :nick => @state.nick, :msg => msg, :time => Time.now})
+      raise WebARedirect.new(ch)
+    end
+    
+    _html(
+      _head(_title("WebA: IRC Web Accessor#{ttl}")),
+      _body(
+        select_ch(ch),
+        view_ch(ch)
+      ))
   end
 
-  def message_list
-    @messages.map{|m|
-      "<li>#{m[:time]} #{m[:ch]} - #{m[:nick]}: #{m[:msg]}</li>"
-    }.reverse.join("\n")
+  def select_ch ch
+    _form(
+      {:method => 'get', :action => '#'},
+      _select(
+        {:name => 'ch'},
+        ch && _option({:value => ch}, ch),
+        @state.channels.map{|e|
+          if e != ch
+            _option({:value => e}, e)
+          end
+        }),
+      _input({:type => 'submit', :name => 'submit', :value => 'ch'})
+    )
   end
 
+  def view_ch ch
+    return unless ch
+    msgs = @messages.find_all{|e|
+      e[:ch] == ch
+    }
+    _div(
+      _h2("channel #{ch}"),
+      _form({:method => 'get', :action => '#'},
+        "message: ",
+        _input({:type => 'text', :name => 'message'}),
+        _input({:type => 'submit', :name => 'say', :value => 'say'}),
+        _input({:type => 'hidden', :name => 'ch', :value => ch})
+      ),
+      _div(
+        msgs.map{|m|
+          _p("#{m[:time].strftime('%H:%M')} - #{m[:nick]}: #{m[:msg]}")
+        }.reverse
+      )
+      #, _p(_ul(
+      #  @messages.map{|m|
+      #    _li("#{m[:time].strftime('%H:%M')} - #{m[:nick]}: #{m[:msg]}")
+      #  }
+      #))
+    )
+  end
+  
   def push_message msg
     @messages << msg
     if @messages.size > @max_store
@@ -55,9 +112,9 @@ class WebA < Nadoka::NDK_Bot
   end
   
   def bot_initialize
-    @max_store = @bot_config[:max_store] || 100
+    @max_store = @bot_config[:max_store] || 1000
     @server = WEBrick::HTTPServer.new({
-      :Port => @bot_config[:port] || 12123,
+      :Port => @bot_config[:port] || 12345,
     })
     @server.mount("/weba", WebAlet, self)
     @server_thread = Thread.new{
@@ -71,11 +128,15 @@ class WebA < Nadoka::NDK_Bot
   end
 
   def bot_destruct
+    
+    @logger.dlog('hoge')
     @server_thread.kill
     @server.shutdown
+    sleep 1
   end
   
   def on_privmsg prefix, ch, msg
+    ch = @config.canonical_channel_name(ch)
     push_message({:ch => ch, :nick => prefix.nick, :msg => msg, :time => Time.now})
   
   end

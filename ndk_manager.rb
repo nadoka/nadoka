@@ -60,6 +60,7 @@ module Nadoka
     end
     
     def reload_config
+      @config.remove_previous_setting if defined?(@config)
       @config = NDK_Config.new(self, @rc)
     end
 
