@@ -1,3 +1,8 @@
+2004-07-05(Mon) 08:02:43 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : auto detect filename encoding(carelessly)
+
+
 2004-07-05(Mon) 07:28:17 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc, ndk_config.rb : add 'Mode' option and

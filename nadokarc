@@ -101,7 +101,15 @@ Quit_Message = 'bye! / quit nadoka'
 #
 Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
 System_log  = '${setting_name}-system.log'
-FilenameEncoding = nil # or 'sjis' or 'euc'
+
+# 'euc' or 'sjis'
+FilenameEncoding =
+when RUBY_PLATFORM
+case /mswin/, /cygwin/, /mingw/
+  'sjis'
+case /linux/,
+  'euc'
+end
 
 Channel_info = {
   # nadoka talk
