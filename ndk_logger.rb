@@ -9,6 +9,7 @@
 # Create : K.S. 04/05/01 02:04:18
 
 require 'thread'
+require 'kconv'
 
 module Nadoka
   
@@ -59,7 +60,7 @@ module Nadoka
     # logging
     def logging msg
       user = @manager.nick_of(msg)
-      ch   = msg.params[0]
+      ch   = @config.canonical_channel_name msg.params[0]
       case msg.command
       when 'PRIVMSG'
         str = "<#{ch}:#{user}> #{msg.params[1]}"
@@ -108,13 +109,22 @@ module Nadoka
       '!' => 'Ce-',
     }
     def make_logfilename(tmpl, ch='')
+
+      case (@config.filenameencoding || '')[0]
+      when ?e
+        ch = ch.toeuc
+      when ?s
+        ch = ch.tosjis
+      end
+      
       ch  = ch.sub(/^[\&\#\+\!]|/){|c|
         RName[c]
       }
-      ch  = URI.encode(ch)
+      ch  = URI.encode(ch) unless @config.filenameencoding
       ch  = ch.gsub(/\*|\:/, '_')
       ch  = ch.gsub(/\//, 'I')
       str = Time.now.strftime(tmpl)
+      
       str.gsub!(/\$\{setting_name\}/, @config.setting_name)
       str.gsub!(/\$\{channel_name\}/, ch)
       str

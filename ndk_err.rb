@@ -6,7 +6,7 @@
 # the same terms of the Ruby's lisence.
 #
 # 
-# $Id: ndk_err.rb,v 1.9 2004/04/28 02:27:22 ko1 Exp $
+# $Id$
 # Create : K.S. 04/04/20 23:57:17
 #
 
@@ -28,6 +28,9 @@ module Nadoka
   end
 
   class NDK_RestartProgram < NDK_Error
+  end
+
+  class NDK_ReconnectToServer < NDK_Error
   end
   
 

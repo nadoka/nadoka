@@ -18,6 +18,8 @@
 
 require 'uri'
 require 'socket'
+require 'kconv'
+
 require 'ndk_logger'
 
 module Nadoka
@@ -36,24 +38,23 @@ module Nadoka
     ACL_Object = nil
     
     # 
-    Server_list = [{
-      :host => '127.0.0.1',
-      :port => 6667,
-      :pass => nil
-    }]
+    Server_list = [
+    # { :host => '127.0.0.1', :port => 6667, :pass => nil }
+    ]
     Servers = []
 
-    Reconnect_delay    = 120
+    Reconnect_delay    = 30
     
     Default_channels   = []
     Login_channels     = []
 
     #
     User       = ENV['USER'] || ENV['USERNAME'] || 'nadokatest'
-    Nick       = 'test_bot'
+    Nick       = 'ndkusr'
     Hostname   = Socket.gethostname
     Servername = '*'
-    Realname   = 'test bot on nadoka'
+    Realname   = 'nadoka user'
+    Mode       = nil
     
     Away_Message = 'away'
     Away_Nick    = nil
@@ -67,7 +68,8 @@ module Nadoka
     Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
     System_log  = '${setting_name}-system_log'
     Debug_log   = $stdout
-
+    FilenameEncoding = 'euc'
+    
     Backlog_lines = 20
     Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
     
@@ -175,7 +177,7 @@ module Nadoka
         lchs = []
         cchs = {}
         chs.each{|ch, setting|
-          ch = canonical_channel_name(ch)
+          ch = identical_channel_name(ch)
           
           if setting[:timing] == :startup
             dchs << ch
@@ -232,7 +234,16 @@ module Nadoka
     end
     
     def canonical_channel_name ch
-      ch.downcase
+      ch = ch.sub(/^\!.{5}/, '!')
+      identical_channel_name ch
+    end
+
+    def identical_channel_name ch
+      # use 4 gsub() because of the compatibility of RFC2813(3.2)
+      ch.toeuc.downcase.gsub( "[", "{" ).
+                        gsub( "]", "}" ).
+                        gsub( "\\", "|" ).
+                        gsub( "~", "^" ).tojis
     end
     
     def make_bot_instance bk, cfg

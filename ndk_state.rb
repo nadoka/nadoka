@@ -23,7 +23,7 @@ module Nadoka
       end
 
       attr_accessor :topic
-      attr_reader   :member
+      attr_reader   :member, :name
 
       # get members nick array
       def members
@@ -50,6 +50,10 @@ module Nadoka
       
       def state
         '='
+      end
+
+      def clear_members
+        @member = {}
       end
       
       #####################################
@@ -163,8 +167,13 @@ module Nadoka
     end
 
     def canonical_channel_name ch
-      ch = ch.sub(/^\!.{5}/, '!')
-      ch.downcase
+      @config.canonical_channel_name ch
+    end
+
+    def clear_channels_member
+      @current_channels.each{|ch, cs|
+        cs.clear_members
+      }
     end
     
     #
@@ -293,7 +302,16 @@ module Nadoka
           end
           chs.on_join $2, mode
         }
+
+        # change initial mode
+        if @config.channel_info[ch] &&
+           (im = @config.channel_info[ch][:initial_mode]) &&
+           chs.members.size == 1
+          @manager.send_to_server Cmd.mode(ch, im)
+        end
       end
+
+      
     end
     
   end

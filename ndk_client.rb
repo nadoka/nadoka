@@ -74,15 +74,27 @@ module Nadoka
     end
     
     def recv_from_client
-      begin
-        str = @sock.gets
-        if str
-          @logger.dlog "[C>] #{str}"
-          ::RICE::Message::parse str
+      while true
+        begin
+          str = @sock.gets
+          if str
+            msg = ::RICE::Message::parse str
+            
+            case msg.command
+            when 'PING'
+              send_msg Cmd.pong(msg.params[0]), false
+            when 'PONG'
+              # ignore
+            else
+              @logger.dlog "[C>] #{str}"
+              return msg
+            end
+          end
+        rescue ::RICE::UnknownCommand, ::RICE::InvalidMessage
+          # @manager.ndk_error $!
+          @logger.slog "Invalid Message: #{str}"
+          retry
         end
-      rescue ::RICE::UnknownCommand, ::RICE::InvalidMessage
-        @manager.ndk_error $!
-        retry
       end
     end
     
@@ -131,14 +143,14 @@ module Nadoka
       nick = @manager.state.nick
 
       @manager.state.current_channels.each{|ch, chs|
-        send_command Cmd.join(ch)
+        send_command Cmd.join(chs.name)
         if chs.topic
-          send_reply Rpl.rpl_topic(@state.nick, ch, chs.topic)
+          send_reply Rpl.rpl_topic(@state.nick, chs.name, chs.topic)
         else
-          send_reply Rpl.rpl_notopic(@state.nick, ch, "No topic is set.")
+          send_reply Rpl.rpl_notopic(@state.nick, chs.name, "No topic is set.")
         end
-        send_reply Rpl.rpl_namreply(  @state.nick, chs.state, ch, chs.names.join(' '))
-        send_reply Rpl.rpl_endofnames(@state.nick, ch, "End of NAMES list.")
+        send_reply Rpl.rpl_namreply(  @state.nick, chs.state, chs.name, chs.names.join(' '))
+        send_reply Rpl.rpl_endofnames(@state.nick, chs.name, "End of NAMES list.")
       }
 
       send_backlog
@@ -175,8 +187,8 @@ module Nadoka
       send_msg msg
     end
 
-    def send_msg msg
-      @logger.dlog "[C<] #{msg}"
+    def send_msg msg, logging=true
+      @logger.dlog "[C<] #{msg}" if logging
       unless @sock.closed?
         @sock.write msg.to_s
       end
@@ -241,6 +253,8 @@ module Nadoka
         self << Cmd.notice(@state.nick, 'nadoka will be restart. see you later.')
       when 'RELOAD'
         @manager.invoke_event :reload_config, self
+      when 'RECONNECT'
+        @manager.invoke_event :reconnect_to_server, self
       when 'HELP'
         self << Cmd.notice(@state.nick, 'available: QUIT, RESTART, RELOAD, HELP')
         if args[1]

@@ -22,6 +22,8 @@ module Nadoka
   Rpl = ::RICE::Reply
   
   class NDK_Manager
+    TimerIntervalSec = 30
+    
     def initialize rc
       @rc = rc
       @clients= []
@@ -40,6 +42,8 @@ module Nadoka
       
       @connected = false
       @exitting  = false
+
+      @pong_recieved = true
 
       set_signal_trap
     end
@@ -64,24 +68,38 @@ module Nadoka
         begin
           @server = make_server()
           @logger.slog "Server connection to #{@server.server}:#{@server.port}"
-          
+
+          @pong_recieved = true
           @server.start(1){|sv|
             sv << Cmd.quit(@config.quit_message) if @config.quit_message
           }
+          
         rescue RICE::Connection::Closed, SystemCallError
+          part_from_all_channels
           @logger.slog "Connection closed by server. Trying to reconnect"
-          send_to_clients Cmd.notice(@state.nick,
-            "Connection closed by server. Trying to reconnect")
-            
+          
           sleep @config.reconnect_delay
           retry
+          
+        rescue NDK_ReconnectToServer
+          part_from_all_channels
+          begin
+            @server.close if @server
+          rescue RICE::Connection::Closed
+          end
+          
+          @logger.slog "Reconnect request(no server response, or client request)"
+          
+          sleep @config.reconnect_delay
+          retry
+          
         rescue Exception => e
           ndk_error e
           @clients_thread.kill if @clients_thread && @clients_thread.alive?
         end
       }
     end
-
+    
     def make_server
       host, port, @server_passwd = next_server_info
       server = ::RICE::Connection.new(host, port)
@@ -111,7 +129,7 @@ module Nadoka
       end
 
       # send nick
-      if @config.away_nick
+      if @config.away_nick && client_count == 0
         @state.original_nick = @config.nick
         @state.nick = @config.away_nick
       else
@@ -140,16 +158,22 @@ module Nadoka
         end
       end
       
+      # change user mode
+      if @config.mode
+        send_to_server Cmd.mode(@state.nick, @config.mode)
+      end
+      
+      
       # join to default channels
       if @state.current_channels.size > 0
-        # recconect situation
+        # if reconnect
         @state.current_channels.keys.each{|ch|
-          send_to_server Cmd.join(ch)
+          join_to_channel ch
         }
       else
         # default join process
         @config.default_channels.each{|ch|
-          send_to_server Cmd.join(ch)
+          join_to_channel ch
         }
       end
 
@@ -197,6 +221,7 @@ module Nadoka
           @logger.slog("Retry nick setting: #{nick}")
           
         else
+          # 
         end
 
         
@@ -206,6 +231,14 @@ module Nadoka
       end
     end
 
+    def join_to_channel ch
+      if @config.channel_info[ch] && @config.channel_info[ch][:key]
+        send_to_server Cmd.join(ch, @config.channel_info[ch][:key])
+      else
+        send_to_server Cmd.join(ch)
+      end
+    end
+    
     def enter_away
       return if @exitting
       
@@ -289,7 +322,27 @@ module Nadoka
     def start
       start_server_thread
       start_clients_thread
+      timer_thread = Thread.new{
+        begin
+          while true
+            sleep TimerIntervalSec
+            send_to_bot :timer, Time.now
 
+            if @connected
+              unless @pong_recieved
+                invoke_event :reconnect_to_server
+              end
+            
+              @pong_recieved = false
+              @server << Cmd.ping(@server.server)
+            end
+          end
+          
+        rescue Exception => e
+          ndk_error e
+        end
+      }
+      
       begin
         @server_thread.join
       rescue Interrupt
@@ -297,6 +350,7 @@ module Nadoka
       ensure
         @server_thread.kill  if @server_thread  && @server_thread.alive?
         @clients_thread.kill if @clients_thread && @clients_thread.alive?
+        timer_thread.kill if timer_thread && timer_thread.alive?
         
         @server.close if @server
       end
@@ -309,24 +363,19 @@ module Nadoka
     
     def recv_from_server
       while q = @rq.pop
-        # Timer event?
-        t = Time.now
-        if (t.to_i - @prev_timer.to_i) > 60
-          @prev_timer = t
-          send_to_bot :timer, t
-        end
-
+        
+        # Event
         if q.kind_of? Array
           exec_event q
           next
         end
         
-        ##
+        # Server -> Nadoka message
         case q.command
         when 'PING'
           @server << Cmd.pong(q.params[0])
         when 'PONG'
-          # ignore
+          @pong_recieved = true
         when 'NOTICE'
           @logger.dlog "[<S] #{q}"
           if msg = filter_message(@config.notice_filter, q)
@@ -410,6 +459,10 @@ module Nadoka
       when :restart_program
         @exitting = true
         Thread.main.raise NDK_RestartProgram
+
+      when :reconnect_to_server
+        @connected = false
+        @server_thread.raise NDK_ReconnectToServer
         
       when :invoke_bot
         # q[1], q[2] are message and argument
@@ -457,6 +510,17 @@ module Nadoka
       else
         false
       end
+    end
+
+    def part_from_all_channels
+      @state.current_channels.each{|ch, cs|
+        cs.members.each{|m|
+          cmd = Cmd.part(ch)
+          cmd.prefix = m
+          send_to_clients cmd
+        }
+      }
+      @state.clear_channels_member
     end
     
     # server -> clients

@@ -1,3 +1,25 @@
+2004-07-05(Mon) 07:28:17 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc, ndk_config.rb : add 'Mode' option and
+	  Channel_Info[:initial_mode] option
+
+	* nadokarc, ndk_config.rb : add 'FilenameEncoding' option
+
+	* ndk_logger.rb, ndk_config.rb : support japanese character
+	encoding channel name
+
+	* ndk_config.rb : fix canonical_channel_name and add
+	identical_channel_name
+
+	* ndk_manager.rb : support "/nadoka reconnect" command
+
+	* ndk_manager.rb : ping to server and check this response,
+	due to check connection
+
+	* ndk_manager.rb, ndk_state.rb : fix behavior when server
+	connection is closed
+
+
 2004-07-04(Sun) 17:50:06 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_logger.rb : synchronize file output

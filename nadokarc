@@ -80,6 +80,7 @@ User     = ENV['USER'] || ENV['USERNAME'] || 'nadokatest'
 Nick     = ENV['USER'] || ENV['USERNAME'] || 'ndk_nick'
 Hostname = Socket.gethostname
 Realname = 'test bot on nadoka'
+Mode     = nil
 
 Away_Message = 'away'
 
@@ -100,10 +101,11 @@ Quit_Message = 'bye! / quit nadoka'
 #
 Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
 System_log  = '${setting_name}-system.log'
+FilenameEncoding = nil # or 'sjis' or 'euc'
 
 Channel_info = {
   # nadoka talk
-  '#nadoka' => {
+  '#Nadoka' => {
     # timing
     #  :startup / when nadoka start up
     #  :login   / when user login
@@ -111,6 +113,7 @@ Channel_info = {
     :timing  => :startup,
     :log     => '${setting_name}-nadoka-chan-%y%m%d.log',
     # :part_message => "bye bye"
+    # :initial_mode => "+s"
   },
 
   # nadoka bot channel
