@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-08-20(Fri) 18:48:36 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/googlebot.nb : fix googlec prompt
+
+
 2004-08-19(Thu) 01:17:13 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : add '#nadoka' channel setting
