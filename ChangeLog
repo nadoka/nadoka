@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2004-07-20(Tue) 02:18:01 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/sixamo.nb : down talk rate and memorize his
+	talk
+
+
 2004-07-20(Tue) 02:00:45 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_logger.rb : synchronize IO object output

@@ -30,8 +30,9 @@ class SixamoBot < Nadoka::NDK_Bot
   def bot_initialize
     @sixamo_dir = @bot_config[:dir] || '~/sixamo'
     @sixamo_ch  = @bot_config[:ch]  || '#nadoka'
-    @sixamo_tm  = @bot_config[:tm]  || 5
+    @sixamo_tm  = @bot_config[:tm]  || 10
     @sixamo_id  = @bot_config[:id]  || /(sixamo)|(ししゃも)/
+    @sixamo_rt  = @bot_config[:rt]  || 5
     @prev = Time.now
     make_sixamo
   end
@@ -48,13 +49,15 @@ class SixamoBot < Nadoka::NDK_Bot
       @sixamo.memorize msg
 
       unless @sixamo_id === msg
-        return if Kernel.rand(2) == 1
+        return if Kernel.rand(@sixamo_rt) == 1
         return if Time.now - @prev < @sixamo_tm
       end
       @prev = Time.now
 
-      talk = Kconv.tojis(@sixamo.talk(msg))
-      send_notice ch, 'sixamo: ' + talk
+      talk = @sixamo.talk(msg)
+      @sixamo.memorize talk
+      
+      send_notice ch, 'sixamo: ' + talk.tojis
     rescue
       make_sixamo
     end
