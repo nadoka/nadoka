@@ -1,0 +1,63 @@
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id: checkbot.nb  $
+
+class CheckBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @ch = @bot_config[:ch] || '#nadoka'
+    @tm = @bot_config[:tm] || 30 # min
+    @prevtm = Time.now
+
+    # override me
+    @botheader = 'checkbot'
+  end
+
+  def on_timer tm
+    if time? && need_check?
+      check
+    end
+  end
+
+  def time?
+    tm = Time.now
+    if tm.to_i - @tm * 60 > @prevtm.to_i
+      @prevtm = tm
+      true
+    else
+      false
+    end
+  end
+
+  ##############################
+  # use this
+  
+  def check_notice text
+    if @ch.respond_to? :each
+      @ch.each{|ch|
+        send_notice(ch, "#{@botheader}: #{text}")
+        sleep 5 # Flood Protection
+      }
+    else
+      send_notice(@ch, "#{@botheader}: #{text}")
+      sleep 5 # Flood Protection
+    end
+  end
+  
+  ############################
+  # override me
+  
+  def need_check?
+    true
+  end
+  
+  def check
+    # some work
+  end
+end
+

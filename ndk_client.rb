@@ -123,7 +123,7 @@ module Nadoka
         'Welcome to the Internet Relay Network'+"#{nick}! #{@username}@#{@remote_host}")
       send_reply Rpl.rpl_yourhost(nick, "Your host is nadoka, running version #{NDK_Version}")
       send_reply Rpl.rpl_created( nick, 'This server was created ' + NDK_Created.to_s)
-      send_reply Rpl.rpl_myinfo(  nick, "nadoka", "#{NDK_Version}", "aoOirw", "abeiIklmnoOpqrstv")
+      send_reply Rpl.rpl_myinfo(  nick, "nadoka #{NDK_Version} aoOirw abeiIklmnoOpqrstv")
 
       send_motd(nick)
       

@@ -70,7 +70,8 @@ class RSS_CheckBot < Nadoka::NDK_Bot
         items.each{|e|
           if e[:ccode] == 'UTF-8'
             begin
-              title = @ic.iconv(e[:title]).tojis
+              title = e[:title].gsub(/\357\275\236/u, "\343\200\234")
+              title = @ic.iconv(title).tojis
             rescue Exception
               # maybe, char code translation error
               next
@@ -81,11 +82,11 @@ class RSS_CheckBot < Nadoka::NDK_Bot
 
           if @ch.respond_to? :each
             @ch.each{|ch|
-              send_notice(ch, "rss bot: #{title} < #{e[:about]} >")
+              send_notice(ch, "rss bot: #{title} - #{e[:about]}")
               sleep 5 # Flood Protection
             }
           else
-            send_notice(@ch, "rss bot: #{title} < #{e[:about]} >")
+            send_notice(@ch, "rss bot: #{title} - #{e[:about]}")
             sleep 5 # Flood Protection
           end
         }
