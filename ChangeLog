@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2004-07-19(Mon) 20:59:11 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/mailcheck.nb : updated from
+	http://cvs.sourceforge.jp/cgi-bin/viewcvs.cgi/ruexli/nadoka-plugins/
+
+
 2004-07-19(Mon) 19:50:40 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* rice/irc.rb : support long nick
