@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-12-20(Mon) 20:04:53 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/weatherbot.nb : strip region name
+
+
 2004-12-20(Mon) 19:53:18 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/dict_bot.nb, plugins/pastebot.nb, plugins/weatherbot.nb

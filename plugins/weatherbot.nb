@@ -155,8 +155,9 @@ class WeatherBot < Nadoka::NDK_Bot
 
   def on_privmsg prefix, ch, msg
     if @available_channel === ch
-      if /\A(tenki|weather)>\s*(.+)\s*/ =~ msg
-        res = "#{$1} (#{$2}): #{get_forecast($2)}"
+      if /\A(tenki|weather)>(.+)/ =~ msg
+        region = $2.strip
+        res = "#{$1} (#{region}): #{get_forecast(region)}"
         send_notice(ch, res)
       end
     end
