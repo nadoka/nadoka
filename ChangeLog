@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-20(Tue) 02:23:35 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/sixamo.nb : fix talk ratio algorithm
+
+
 2004-07-20(Tue) 02:18:01 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/sixamo.nb : down talk rate and memorize his
