@@ -2,6 +2,15 @@
 # $Id$ 
 #
 
+2004-08-02(Mon) 07:51:51 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_client.rb : fix pong message field
+
+	* ndk_state.rb : fix on_quit process
+
+	* plugins/modemanager.nb : don't set mode if already set
+
+
 2004-07-28(Wed) 05:07:00 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/google.nb : support gooo*gle

@@ -81,7 +81,7 @@ module Nadoka
             
             case msg.command
             when 'PING'
-              send_msg Cmd.pong(msg.params[0]), false
+              send_msg Cmd.pong(*msg.params[0]), false
             when 'PONG'
               # ignore
             else
