@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-27(Tue) 11:16:05 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/ndk_client.rb : fix typo
+
+
 2004-07-26(Mon) 02:13:58 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/backlogbot.nb : fixed a bug
