@@ -1,3 +1,11 @@
+2004-07-09(Fri) 03:52:01 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/drbot.nb, plugins/drbcl.rb : added
+
+	* plugins/mailcheck.nb, plugins/message.nb :added
+	(contributed from Kazuhiro NISHIYAMA)
+
+
 2004-07-09(Fri) 01:39:01 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_client.rb(client_notice) : added

@@ -1,0 +1,154 @@
+# -*-ruby-*-
+#
+# Copyright (C) 2004 Kazuhiro NISHIYAMA
+#     All rights reserved.
+#     This is free software with ABSOLUTELY NO WARRANTY.
+#
+# You can redistribute it and/or modify it under the terms of
+# the Ruby's licence.
+#
+#
+# Example:
+#  BotConfig = {
+#    :MailCheckBot => [
+#      {
+#        :Maildir => "~/Maildir/.ml.debian-security-announce",
+#        :template => "biff(DSA): %{subject}s",
+#        :channels => %w[#nadoka],
+#      },
+#      {
+#        :mh_dir => [
+#          "~/Mail/ml/nadoka",
+#          "~/Mail/ml/yarv-dev",
+#        ],
+#        :channels => %w[#nadoka #nadoka_check],
+#        :template => "biff(%{x-ml-name}s): %{subject}s - http://www.atdot.net/mla/%{x-ml-name}s/%{x-mail-count}d",
+#      },
+#    ],
+#  }
+#
+
+require 'nkf'
+
+class MailCheckBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @on_timer = nil
+    p [:MailCheckBot, :bot_initialize] if $DEBUG
+    @check_dirs = {}
+    @bot_config.freeze
+    dir_info_template = Hash.new
+    dir_info_template[:channels] = @bot_config[:channels].collect do |ch|
+      NKF.nkf("-j -m0", ch).freeze
+    end.freeze
+    dir_info_template[:template] = @bot_config[:template].freeze
+    dir_info_template.freeze
+    if @bot_config.key?(:Maildir)
+      @bot_config[:Maildir].each do |dir|
+        full_path = File.expand_path(dir).freeze
+        dir_info = dir_info_template.dup
+        dir_info[:glob_pattern] = File.expand_path("cur/*,", dir).freeze
+        dir_info[:entries_dir] = File.expand_path("new", dir).freeze
+        @check_dirs[dir] = dir_info
+      end
+    elsif @bot_config.key?(:mh_dir)
+      @bot_config[:mh_dir].each do |dir|
+        full_path = File.expand_path(dir).freeze
+        dir_info = dir_info_template.dup
+        dir_info[:entries_dir] = full_path
+        @check_dirs[dir] = dir_info
+      end
+    else
+      raise ":Maildir or :mh_dir not found in #{@bot_config.inspect}"
+    end
+    @check_dirs.each do |dirname, dir_info|
+      unless dir_info.key?(:template)
+        $stderr.puts ":template not found in #{dir_info.inspect}" if $DEBUG
+        dir_info[:template] = "biff: %{subject}s".freeze
+      end
+      dir_info[:entries] = entries(dir_info)
+      p [:MailCheckBot, :bot_initialize, :entries, dirname, dir_info[:entries]] if $DEBUG
+      dir_info[:biffed] = Hash.new
+    end
+  end
+
+  def entries(dir_info)
+    ary = []
+    if dir_info.key?(:glob_pattern)
+      ary.concat(Dir.glob(dir_info[:glob_pattern]))
+    end
+    if dir_info.key?(:entries_dir)
+      ary.concat(Dir.entries(dir_info[:entries_dir]))
+    end
+    ary.freeze
+  end
+
+  def on_timer t
+    p [:MailCheckBot, :on_timer, t] if $DEBUG
+    if @on_timer
+      $stderr.puts "MailCheckBot#on_timer duplicated" if $DEBUG
+      return
+    end
+    @on_timer = true
+    @check_dirs.each do |dirname, dir_info|
+      new_entries = entries(dir_info)
+      old_entries = dir_info[:entries]
+      dir_info[:entries] = new_entries
+      base_dir = dir_info[:entries_dir]
+      p [:MailCheckBot, :on_timer, :new_entries, base_dir, new_entries] if $DEBUG
+      (new_entries - old_entries).each do |basename|
+        begin
+          fields = Hash.new("".freeze)
+          header_lines = ""
+          message_id = nil
+          File.open(File.expand_path(basename, base_dir)) do |f|
+            f.each do |line|
+              case line
+              when /^\s*$/
+                break
+              when /^message-id:\s*/i
+                message_id = $'
+                break if dir_info[:biffed].key?(message_id)
+              end
+              header_lines.concat(line)
+            end
+          end
+          break if dir_info[:biffed].key?(message_id)
+          header_lines.split(/^(?!\s)/).each do |line|
+            line = NKF.nkf("-e", line)
+            line.gsub!(/\s+/, ' ')
+            key, value = line.split(/:/, 2)
+            key.downcase!
+            value = value.to_s
+            value.strip!
+            # 複数あった場合は後の方が優先
+            fields[key.freeze] = value.freeze
+          end
+          p [:MailCheckBot, :on_timer, :fields] if $DEBUG
+          msg = dir_info[:template].dup
+          msg.gsub!(/%\{([a-z0-9_\-]+)\}([sd])/i) do
+            field_name, field_type  = $1, $2
+            field_name.downcase!
+            case field_type
+            when 's'
+              fields[field_name]
+            when 'd'
+              fields[field_name].to_i.to_s
+            else
+              "(field type bug: `#{field_type}')"
+            end
+          end
+          msg = NKF.nkf("-j", msg).freeze
+          dir_info[:channels].each do |ch|
+            send_notice(ch, msg)
+          end
+          dir_info[:biffed][message_id] = true
+        rescue
+          # race conditionによるエラーは無視
+        end
+      end
+      dir_info[:biffed].clear if not(old_entries.empty?) and new_entries.empty?
+    end
+  ensure
+    @on_timer = false
+  end
+end

@@ -1,0 +1,95 @@
+# -*-ruby-*-
+#
+# Copyright (C) 2004 Kazuhiro NISHIYAMA
+#     All rights reserved.
+#     This is free software with ABSOLUTELY NO WARRANTY.
+#
+# You can redistribute it and/or modify it under the terms of
+# the Ruby's licence.
+#
+#
+# Example:
+#  BotConfig = {
+#    :MessageBot => {
+#      :message_file => 'message.yaml',
+#      :root_key => Setting_name,
+#      :channels => %w[#nadoka #Ruby:*.jp],
+#    },
+#  }
+#
+
+require 'nkf'
+require 'time'
+require 'yaml/store'
+
+class MessageBot < Nadoka::NDK_Bot
+  
+  def bot_initialize
+    @store = YAML::Store.new(@bot_config[:message_file])
+    @root_key = @bot_config[:root_key]
+    @channels = @bot_config[:channels].collect{|ch| ch.downcase }
+    load_message
+  end
+
+  def load_message
+    @store.transaction do |db|
+      if db.root?(@root_key)
+        h = db[@root_key]
+        @list = h['list'] || Hash.new
+        @message = h['message'] || Hash.new
+      else
+        @list = Hash.new
+        @message = Hash.new
+      end
+    end
+  end
+
+  def save_message
+    @store.transaction do |db|
+      db[@root_key] = {
+        'list' => @list,
+        'message' => @message,
+      }
+    end
+  end
+
+  def on_privmsg prefix, ch, msg
+    user = prefix.nick
+    c = NKF.nkf('-e', ch.to_s).downcase
+    return unless @channels.include?(c)
+    u = user.downcase
+    now = Time.now
+    key = "#{c} #{u}"
+    message_id = "<#{now.strftime('%Y%m%d%H%M%S')}.#{now.usec}.#{u}@#{c}>"
+    if @list.key?(key)
+      message_id_list = @list[key]
+      message_id_list.each do |message_id|
+        h = @message[message_id]
+        next if h.key?('delivered')
+        message = "#{h['from']}さんから#{h['to']}さんへ伝言「#{h['body']}」"
+        send_notice(ch, NKF.nkf('-Ej -m0', message))
+        @message[message_id]['delivered'] = now
+      end
+      @list.delete(key)
+      save_message
+    end
+    if /^伝言 (\S+) (.+)$/e =~ NKF.nkf('-e -m0', msg.to_s)
+      to_nick, body = $1, $2
+      @message[message_id] = {
+        'from' => user,
+        'to' => to_nick,
+        'date' => now,
+        'channel' => ch,
+        'body' => body,
+      }
+      key = "#{c} #{to_nick.downcase}"
+      @list[key] ||= []
+      @list[key].push(message_id)
+      save_message
+      send_notice(ch, NKF.nkf('-Ej -m0', "#{$1}さんへの伝言を承りました > #{u}さん"))
+    end
+  end
+  
+end
+
+

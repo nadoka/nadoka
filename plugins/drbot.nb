@@ -1,0 +1,74 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id$
+#
+
+=begin
+
+== Abstract
+
+An example using DRb. You can access to nadoka via DRb protocl.
+See sample drbcl.rb
+
+== Configuration
+
+BotConfig = {
+  :DRbot => {
+    :port => 12345       # (default: 12346)
+    :host => 'localhost' # (default: '')
+  }
+}
+
+=end
+
+
+require 'drb/drb'
+require 'observer'
+
+class DRbot < Nadoka::NDK_Bot
+  class Dispatcher
+    include Observable
+
+    def initialize bot
+      @bot = bot
+    end
+    
+    def kick_to_client prefix, command, args
+      changed
+      notify_observers(prefix, command, args)
+    end
+
+    def kick_from_client *args
+      @bot.kick_from_client args
+    end
+  end
+  
+  def bot_initialize
+    @port = @bot_config[:port] || 12346
+    @host = @bot_config[:host] || ''
+    @invoker   = Dispatcher.new(self)
+    @uri       = "druby://#{@host}:#{@port}"
+    @drbserver = DRb.start_service(@uri, @invoker)
+  end
+  
+  def bot_destruct
+    @drbserver.stop_service
+  end
+  
+  def on_every_message prefix, command, *args
+    @invoker.kick_to_client prefix, command, args
+  end
+
+  def kick_from_client *args
+    
+  end
+  
+end
+
