@@ -2,6 +2,13 @@
 # $Id$ 
 #
 
+2004-07-20(Tue) 11:33:46 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* 0.6.2 release
+
+	* ndk_version.rb : 0.6.3
+
+
 2004-07-20(Tue) 04:06:17 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_client.rb : use NdkCommandDescription to list
