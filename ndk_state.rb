@@ -72,7 +72,13 @@ module Nadoka
           @member.delete nick
         end
       end
-
+      
+      def on_kick nick
+        if @member.has_key? nick
+          @member.delete nick
+        end
+      end
+      
       MODE_WITH_NICK_ARG = 'ov'
       MODE_WITH_ARGS     = 'klbeI'
       MODE_WITHOUT_ARGS  = 'aimnqpsrt'
@@ -184,13 +190,13 @@ module Nadoka
     end
     
     #
-    def on_join user, ch
-      ch = canonical_channel_name(ch)
+    def on_join user, rch
+      ch = canonical_channel_name(rch)
       
       msg = "+ #{user} to #{ch}"
       if user == nick
         @logger.clog ch, msg
-        chs = @current_channels[ch] = ChannelState.new(ch)
+        chs = @current_channels[ch] = ChannelState.new(rch)
       else
         if @current_channels.has_key? ch
           @logger.clog ch, msg
@@ -200,8 +206,8 @@ module Nadoka
       @logger.log msg
     end
     
-    def on_part user, ch
-      ch = canonical_channel_name(ch)
+    def on_part user, rch
+      ch = canonical_channel_name(rch)
 
       msg = "- #{user} from #{ch}"
       if user == nick
@@ -222,6 +228,7 @@ module Nadoka
         @current_nick = newnick
         @try_nick     = nil
       end
+      # logging
       @current_channels.each{|ch, chs|
         if chs.on_nick user, newnick
           @logger.clog ch, msg
@@ -234,6 +241,7 @@ module Nadoka
       if user == nick
         @current_channels = {} # clear
       else
+        # logging
         @current_channels.each{|ch, chs|
           if chs.on_part(user)
             @manager.invoke_event :invoke_bot, :quit_from_channel, ch, user, qmsg
@@ -244,16 +252,29 @@ module Nadoka
       @logger.log "- #{user}(#{qmsg})"
     end
     
-    def on_mode user, ch, args
-      ch = canonical_channel_name(ch)
+    def on_mode user, rch, args
+      ch = canonical_channel_name(rch)
+      @logger.log "* #{user} changed mode(#{args.join(', ')}) at #{ch}"
 
       if @current_channels.has_key? ch
+        @logger.clog ch, "* #{user} changed mode(#{args.join(', ')})"
         @current_channels[ch].on_mode user, args
       end
     end
 
-    def on_topic user, ch, topic
-      ch = canonical_channel_name(ch)
+    def on_kick user, rch
+      ch = canonical_channel_name(rch)
+
+      if @current_channels.has_key? ch
+        @current_channels[ch].on_kick user
+        @current_channels.delete ch
+        @logger.clog ch, "- #{user}(kicked)"
+      end
+      @logger.log "- #{user}(kicked) from #{ch}"
+    end
+
+    def on_topic user, rch, topic
+      ch = canonical_channel_name(rch)
 
       if @current_channels.has_key? ch
         @logger.clog ch, "<#{ch}:#{user} TOPIC> #{topic}"
@@ -262,8 +283,8 @@ module Nadoka
       @logger.log "<#{ch} TOPIC> #{topic}"
     end
     
-    def on_332 ch, topic
-      ch = canonical_channel_name(ch)
+    def on_332 rch, topic
+      ch = canonical_channel_name(rch)
 
       if @current_channels.has_key? ch
         @current_channels[ch].topic = topic
@@ -275,8 +296,8 @@ module Nadoka
     # RPL_NAMREPLY
     # ex) :lalune 353 test_ndk = #nadoka :test_ndk ko1_nmdk
     # 
-    def on_353 ch, users
-      ch = canonical_channel_name(ch)
+    def on_353 rch, users
+      ch = canonical_channel_name(rch)
 
       if @current_channels.has_key? ch
         chs = @current_channels[ch]
@@ -297,11 +318,21 @@ module Nadoka
         if @config.channel_info[ch] &&
            (im = @config.channel_info[ch][:initial_mode]) &&
            chs.members.size == 1
-          @manager.send_to_server Cmd.mode(ch, im)
+          @manager.send_to_server Cmd.mode(rch, im)
         end
       end
+    end
 
-      
+    def safe_channel? ch
+      ch[0] == ?!
+    end
+    
+    # ERR_NOSUCHCHANNEL
+    # ex) :NadokaProgram 403 simm !hoge :No such channel
+    def on_403 ch
+      if safe_channel?(ch) && ch[1] != ?!
+        @manager.join_to_channel( "!" + ch)
+      end
     end
     
   end

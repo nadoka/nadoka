@@ -2,6 +2,20 @@
 # $Id$ 
 #
 
+2004-07-24(Sat) 07:30:10 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix server login process(reconnect
+	if server replies error)
+
+	* ndk_manager.rb, ndk_state.rb : support 'KICK' state
+
+	* ndk_manager.rb, ndk_staet.rb : support safe channel
+
+	* plugins/backlogbot.nb : fix around safe channel bugs
+
+	* plugins/googlebot.nb(googlec) : fix charcode problem
+
+
 2004-07-21(Wed) 19:17:13 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_bot.rb(canonical_channel_name) : added

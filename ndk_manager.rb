@@ -158,6 +158,9 @@ module Nadoka
           send_to_server Cmd.nick(nick)
         when 'NOTICE'
           # igonore
+        when 'ERROR'
+          msg = "Server login fail!(#{q})"
+          @server_thread.raise NDK_ReconnectToServer
         else
           msg = "Server login fail!(#{q})"
           @logger.slog msg
@@ -174,7 +177,7 @@ module Nadoka
       # join to default channels
       if @state.current_channels.size > 0
         # if reconnect
-        @state.current_channels.keys.each{|ch|
+        @state.current_channels.each{|ch, chs|
           join_to_channel ch
         }
       else
@@ -214,11 +217,16 @@ module Nadoka
           @state.on_topic(nick_of(q), q.params[0], q.params[1])
         when 'MODE'
           @state.on_mode(nick_of(q), q.params[0], q.params[1..-1])
+        when 'KICK'
+          @state.on_kick(nick_of(q), q.params[0])
           
         when '353' # RPL_NAMREPLY
           @state.on_353(q.params[2], q.params[3])
         when '332' # RPL_TOPIC
           @state.on_332(q.params[1], q.params[2])
+          
+        when '403' # ERR_NOSUCHCHANNEL
+          @state.on_403(q.params[1])
           
         when '433', '436', '437'
           # ERR_NICKNAMEINUSE, ERR_NICKCOLLISION, ERR_UNAVAILRESOURCE

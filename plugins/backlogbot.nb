@@ -113,15 +113,14 @@ class BackLogBot < Nadoka::NDK_Bot
   def channel_message? ch
     /\A[\&\#\+\!]/ =~ ch
   end
-  
-  def push ch, nick, msg
-    ch = @config.canonical_channel_name(ch)
 
-    unless channel_message?(ch)
+  def push rch, nick, msg
+    ch = ccn(rch)
+    if !channel_message?(ch)
       nick = "#{nick} => #{ch}"
       ch   = nil
     end
-
+    
     ch = nil unless @sepr
     
     unless store = @store_pool[ch]
@@ -141,8 +140,17 @@ class BackLogBot < Nadoka::NDK_Bot
       store.each{|ch, nick, msg, time|
         sch = @state.current_channels[ch] ? ch : @state.nick
         
-        cmd = Cmd.notice(sch, "#{@prefix}(#{time.strftime(@tmfmt)}) #{nick}: #{msg}")
-        client.add_prefix(cmd, @talker ? nick : @sender) if ch
+        if ch
+          if chs = @state.current_channels[ch]
+            cmd = Cmd.notice(chs.name, "#{@prefix}(#{time.strftime(@tmfmt)}) #{nick}: #{msg}")
+            client.add_prefix(cmd, @talker ? nick : @sender)
+          else
+            cmd = Cmd.notice(sch, "#{@prefix}(#{time.strftime(@tmfmt)}) #{ch} - #{nick}: #{msg}")
+          end
+        else
+          cmd = Cmd.notice(chs.name, "#{@prefix}(#{time.strftime(@tmfmt)}) #{nick}: #{msg}")
+        end
+        
         client.send_msg cmd
       }
       store.clear if @clear
