@@ -92,9 +92,7 @@ module Nadoka
             break
           end
         rescue ::RICE::UnknownCommand, ::RICE::InvalidMessage
-          # @manager.ndk_error $!
           @logger.slog "Invalid Message: #{str}"
-          retry
         end
       end
     end

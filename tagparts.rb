@@ -13,32 +13,39 @@
 require 'cgi'
 module TagParts
   class TagItem
-    def initialize tag, body
-      @tag  = tag.to_s.downcase
+    include Enumerable
+    def initialize tag, body, ignore_empty = false
+      @tag  = tag.to_s
       @attr = {}
       @body = []
+      @ignore_empty = ignore_empty
       body.each{|e|
         add! e
       }
     end
-
+    attr_reader :body, :tag, :attr
+    
     def make_attr_str
       @attr.map{|k,v|
-        " #{CGI.escapeHTML(k.to_s).downcase}='#{CGI.escapeHTML(v)}'"
+        " #{CGI.escapeHTML(k.to_s)}='#{CGI.escapeHTML(v)}'"
       }.join
     end
-    
-    def to_s
-      body = @body.flatten.map{|e|
-        if e.kind_of? String
-          CGI.escapeHTML(e.to_s)
-        else
-          e.to_s
-        end
-      }
-      "<#{@tag}#{make_attr_str}\n>#{body}</#{@tag}>\n"
-    end
 
+    def to_s
+      if @body.size > 0 || @ignore_empty
+        body = @body.flatten.map{|e|
+          if e.kind_of? String
+            CGI.escapeHTML(e.to_s)
+          else
+            e.to_s
+          end
+        }
+        "<#{@tag}#{make_attr_str}\n>#{body}</#{@tag}>\n"
+      else
+        "<#{@tag}#{make_attr_str} /\n>"
+      end
+    end
+    
     def inspect
       "<TagItem: <#{@tag}#{make_attr_str}>>"
     end
@@ -60,7 +67,7 @@ module TagParts
     end
 
     def each
-      @body.each{|e|
+      @body.flatten.each{|e|
         yield e
       }
     end
@@ -74,7 +81,7 @@ module TagParts
         end
       }
     end
-
+    
     def each_node
       yield(self)
       @body.each{|e|
@@ -88,17 +95,53 @@ module TagParts
     
     alias << add!
   end
+  
+  def ignore_empty_tag?
+    false
+  end
 
+  # do nothing. please override
+  def tag_encoding str
+    str
+  end
+  
+  def tree2string tag
+    tag_encoding(tree2string_(tag))
+  end
+  
+  def tree2string_ tag
+    bs = tag.map{|body|
+      if body.kind_of? TagItem
+        tree2string_(body)
+      else
+        CGI.escapeHTML(body.to_s)
+      end
+    }
+    tagname = tag.tag
+    attr    = tag.make_attr_str
+    if bs.size > 0 || ignore_empty_tag?
+      "<#{tagname}#{attr}\n>#{bs}</#{tagname}>\n"
+    else
+      "<#{tagname}#{attr}\n/>"
+    end
+  end
+  
   @@method_prefix = '_'
 
-  def self.newtag sym, klass = TagParts
+  def self.newtag sym, ignore_empty, klass = TagParts
     klass.module_eval <<-EOS
     def #{@@method_prefix}#{sym}(*args)
-      TagItem.new(:#{sym}, args)
+      TagItem.new(:#{sym}, args, #{ignore_empty})
     end
     EOS
   end
 
+  TagParts.module_eval <<-EOS
+    def #{@@method_prefix}(tag, *args)
+      TagItem.new(tag, args, false)
+    end
+  EOS
+  
   def method_missing m, *args
     if make_unknown_tag? && (/^#{@@method_prefix}(.+)/ =~ m.to_s)
       TagItem.new($1, args)
@@ -120,6 +163,11 @@ module HTMLParts
     false
   end
 
+  def ignore_empty_tag?
+    true
+  end
+
+  
   # copy from cgi.rb
   PARTS_1 = %w{
     TT I B BIG SMALL EM STRONG DFN CODE SAMP KBD
@@ -136,18 +184,24 @@ module HTMLParts
   }
   (PARTS_1 + PARTS_2 + PARTS_3).each{|e|
     elem = e.downcase
-    TagParts.newtag elem
+    TagParts.newtag elem, true
   }
 end
 
-
 __END__
+
 include HTMLParts
-puts _html(
+tags = _html(
   _head(
     _title('hogehoge')),
     _body(
+      _br(),
       _h1('huga-'),
       _p('hogehoge', _a('hogehoge', 'href' => 'dokka'), 'huga'),
       _p('hogehoge', 'huga', ['ho-', 'hu'])
-    )).to_s
+    ))
+
+puts tags.to_s
+puts tree2string(tags)
+p( tags.to_s == tree2string(tags) )
+

@@ -1,3 +1,8 @@
+2004-07-08(Thu) 08:31:33 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* tagparts.rb : add tree2string
+
+
 2004-07-07(Wed) 17:53:27 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_client.rb : fix socket bugs
