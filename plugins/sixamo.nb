@@ -32,7 +32,7 @@ class SixamoBot < Nadoka::NDK_Bot
     @sixamo_ch  = @bot_config[:ch]  || '#nadoka'
     @sixamo_tm  = @bot_config[:tm]  || 10
     @sixamo_id  = @bot_config[:id]  || /(sixamo)|(ししゃも)/
-    @sixamo_rt  = @bot_config[:rt]  || 5
+    @sixamo_rt  = @bot_config[:rt]  || [10, 5, 4, 4, 3, 2]
     @prev = Time.now
     make_sixamo
   end
@@ -49,8 +49,16 @@ class SixamoBot < Nadoka::NDK_Bot
       @sixamo.memorize msg
 
       unless @sixamo_id === msg
-        return if Kernel.rand(@sixamo_rt) != 1
-        return if Time.now - @prev < @sixamo_tm
+        rnd = case Time.now - @orev
+        when  0..10; @sixamo_rt[0]
+        when 10..20; @sixamo_rt[1]
+        when 20..30; @sixamo_rt[2]
+        when 30..60; @sixamo_rt[3]
+        when 60..120;@sixamo_rt[4]
+        else       ; @sixamo_rt[5]
+        end
+        
+        return if Kernel.rand(rnd) != 1
       end
       @prev = Time.now
 
