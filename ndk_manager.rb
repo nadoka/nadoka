@@ -297,6 +297,8 @@ module Nadoka
                 else
                   @logger.slog "ACL denied: #{cc.peeraddr.join(' ')}"
                 end
+              rescue Exception => e
+                ndk_error e
               ensure
                 @clients.delete client
                 invoke_event :enter_away, client_count
@@ -304,8 +306,8 @@ module Nadoka
               end
             }
           end
-        rescue
-          ndk_error $!
+        rescue Exception => e
+          ndk_error e
         ensure
           @clients.each{|cl|
             cl.kill

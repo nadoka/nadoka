@@ -1,3 +1,8 @@
+2004-07-05(Mon) 13:13:26 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : add execption hook(client thread)
+
+
 2004-07-05(Mon) 09:43:12 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : fix bug
