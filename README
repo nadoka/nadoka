@@ -1,7 +1,9 @@
 #######################################################
 # Nadoka: IRC Client server program.
 #
-# Written by K.Sasada
+# Written by SASADA Koichi <ko1 at atdot.net>
+#
+#
 # $Id$
 #
 
@@ -17,9 +19,11 @@ You can do with this software:
 
 * more about
 
-See Web page:
-http://www.namikilab.tuat.ac.jp/~sasada/prog/nadoka.html
+See Web page: http://www.atdot.net/nadoka/
 
 
-Thank you.
+
+Thank you,
+--
+SASADA Koichi
 
