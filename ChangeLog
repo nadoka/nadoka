@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-08-05(Thu) 08:25:48 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_state.rb : fix some bugs
+
+
 2004-08-02(Mon) 07:51:51 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_client.rb : fix pong message field
