@@ -12,7 +12,7 @@ Original Credit:
 == Modified
 
   Modified by K.Sasada.
-  $Id: irc.rb,v 1.9 2004/05/01 05:40:16 ko1 Exp $
+  $Id$
   
 =end
 
@@ -354,7 +354,7 @@ module RICE
       SERVERNAME = HOSTNAME
 
       # nickname   =  ( letter / special ) *8( letter / digit / special / "-" )
-      NICKNAME = "[#{LETTER}#{SPECIAL}][-#{LETTER}#{DIGIT}#{SPECIAL}]{0,8}"
+      NICKNAME = "[#{LETTER}#{SPECIAL}][\-#{LETTER}#{DIGIT}#{SPECIAL}]{0,8}"
 
       # user       =  1*( %x01-09 / %x0B-0C / %x0E-1F / %x21-3F / %x41-FF )
       #                 ; any octet except NUL, CR, LF, " " and "@"
@@ -388,7 +388,7 @@ module RICE
       #            =/ 14( SPACE middle ) [ SPACE [ ":" ] trailing ]
       MIDDLE = "[#{NOSPCRLFCL}][:#{NOSPCRLFCL}]*"
       TRAILING = "[: #{NOSPCRLFCL}]*"
-      PARAMS = "(?:((?: +#{MIDDLE}){0,14})(?: +:(#{TRAILING}))?|((?: +#{MIDDLE}){14})(?::?)?(#{TRAILING}))"
+      PARAMS = "(?:((?: +#{MIDDLE}){0,14})(?: +:(#{TRAILING}))?|((?: +#{MIDDLE}){14}):?(#{TRAILING}))"
 
       # crlf       =  %x0D %x0A   ; "carriage return" "linefeed"
       # message    =  [ ":" prefix SPACE ] command [ params ] crlf

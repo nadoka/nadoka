@@ -1,3 +1,15 @@
+2004-05-09(Sun) 16:46:30 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* rice/irc.rb : fix some regexp bugs
+
+	* ndk_client.rb(send_motd) : use client original nick
+
+	* ndk_client.rb ; check io is still open
+
+	* plugins/rss_check.nb : change string compare operator
+	from '=~' to '=='
+
+
 2004-05-09(Sun) 03:33:29 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb, ndk_state.rb(nick_succ) :

@@ -7,7 +7,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: rss_check.nb,v 1.11 2004/04/30 21:36:25 ko1 Exp $
+# $Id$
 #
 
 =begin
@@ -68,7 +68,7 @@ class RSS_CheckBot < Nadoka::NDK_Bot
     Thread.new{
       begin
         items.each{|e|
-          if e[:ccode] =~ 'UTF-8'
+          if e[:ccode] == 'UTF-8'
             begin
               title = @ic.iconv(e[:title]).tojis
             rescue Exception

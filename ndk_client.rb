@@ -125,7 +125,7 @@ module Nadoka
       send_reply Rpl.rpl_created( nick, 'This server was created ' + NDK_Created.to_s)
       send_reply Rpl.rpl_myinfo(  nick, "nadoka", "#{NDK_Version}", "aoOirw", "abeiIklmnoOpqrstv")
 
-      send_motd
+      send_motd(nick)
       
       send_command Cmd.nick(@state.nick), nick
       nick = @manager.state.nick
@@ -147,11 +147,11 @@ module Nadoka
       true
     end
     
-    def send_motd
-      send_reply Rpl.rpl_motdstart(@state.nick, "- Nadoka Message of the Day - ")
-      send_reply Rpl.rpl_motd(@state.nick, "- Enjoy IRC chat with Nadoka chan!")
-      send_reply Rpl.rpl_motd(@state.nick, "- ")
-      send_reply Rpl.rpl_endofmotd(@state.nick, "End of MOTD command.")
+    def send_motd nick
+      send_reply Rpl.rpl_motdstart(nick, "- Nadoka Message of the Day - ")
+      send_reply Rpl.rpl_motd(nick, "- Enjoy IRC chat with Nadoka chan!")
+      send_reply Rpl.rpl_motd(nick, "- ")
+      send_reply Rpl.rpl_endofmotd(nick, "End of MOTD command.")
     end
 
     def send_backlog
@@ -177,7 +177,9 @@ module Nadoka
 
     def send_msg msg
       @logger.dlog "[C<] #{msg}"
-      @sock.puts msg.to_s
+      unless @sock.closed?
+        @sock.puts msg.to_s
+      end
     end
     
     def send_to_client msg
