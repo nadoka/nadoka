@@ -110,7 +110,7 @@ class BackLogBot < Nadoka::NDK_Bot
           cmd = Cmd.notice(ch, "Backlog(#{time.strftime('%H:%M')}) #{msg}")
           client.add_prefix(cmd, nick)
         else
-          cmd = Cmd.notice(ch, "Backlog(#{time.strftime('%H:%M')}) #{nick}#{msg}")
+          cmd = Cmd.notice(ch, "Backlog(#{time.strftime('%H:%M')}) #{nick}: #{msg}")
           client.add_prefix(cmd, 'backlogbot')
         end
         client.send_msg cmd
