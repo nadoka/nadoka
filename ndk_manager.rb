@@ -218,10 +218,8 @@ module Nadoka
       end
 
       # part channel
-      chs = @state.current_channels.keys
       @config.login_channels.each{|ch|
-        ch = ch.downcase
-        if @config.channel_info[ch] && chs.find{|c| c == ch}
+        if @config.channel_info[ch] && @state.channels.include?(ch)
           if @config.channel_info[ch][:part_message]
             send_to_server Cmd.part(ch, @config.channel_info[ch][:part_message])
           else
