@@ -21,7 +21,7 @@ module Nadoka
   Rpl = ::RICE::Reply
 
   class NDK_Manager
-    TimerIntervalSec = 30
+    TimerIntervalSec = 60
     
     def initialize rc
       @rc = rc

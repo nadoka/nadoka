@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+
+2004-07-19(Mon) 21:52:27 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : TimerIntervalSec to 60
+
+
 2004-07-19(Mon) 21:40:17 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : fix time thread timing
