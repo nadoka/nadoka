@@ -60,15 +60,22 @@ module Nadoka
     # logging
     def logging msg
       user = @manager.nick_of(msg)
-      ch   = @config.canonical_channel_name msg.params[0]
+      ch_ = ch = @config.canonical_channel_name(msg.params[0])
+      
+      unless /\A[\&\#\+\!]/ =~ ch
+        if ch == @config.canonical_channel_name(@manager.state.nick)
+          ch_ = @config.canonical_channel_name(user)
+        end
+      end
+      
       case msg.command
       when 'PRIVMSG'
         str = "<#{ch}:#{user}> #{msg.params[1]}"
-        clog ch, str
+        clog ch_, str
         
       when 'NOTICE'
         str = "{#{ch}:#{user}} #{msg.params[1]}"
-        clog ch, str
+        clog ch_, str
         
       when 'JOIN', 'PART', 'NICK', 'QUIT'
         # ignore
@@ -129,7 +136,7 @@ module Nadoka
       ch  = ch.gsub(/\*|\:/, '_')
       ch  = ch.gsub(/\//, 'I')
       str = Time.now.strftime(tmpl)
-      
+
       str.gsub!(/\$\{setting_name\}/, @config.setting_name)
       str.gsub!(/\$\{channel_name\}/, ch)
       str

@@ -179,11 +179,9 @@ FilenameEncoding =
 case RUBY_PLATFORM
 when /mswin/, /cygwin/, /mingw/
   'sjis'
-when /linux/,
+when /linux/
   'euc'
 end
-
-
 
 end
 

@@ -1,3 +1,10 @@
+2004-07-10(Sat) 22:48:35 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : fix filenameencoding bugs
+
+	* ndk_logger.rb : fix user to user message's logname
+
+
 2004-07-10(Sat) 21:22:18 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : ignore NOTICE messages when logged in
