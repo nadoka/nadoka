@@ -29,21 +29,21 @@ module Nadoka
     end
 
     # system message
-    def slog msg
+    def slog msg, nostamp = false
       str = "[NDK] #{msg}"
       if @config.loglevel >= 2
-        write_log(make_logfilename(@config.system_log), str)
+        write_log(make_logfilename(@config.system_log), str, nostamp)
       end
       @manager.send_to_clients Cmd.notice(@manager.state.nick, str) if @manager.state
       dlog msg
     end
 
     # channel message
-    def clog ch, msg
+    def clog ch, msg, nostamp = false
       logfile = (@config.channel_info[ch] && @config.channel_info[ch][:log]) ||
                  @config.default_log
       logfile = make_logfilename(logfile, ch)
-      write_log(logfile, msg)
+      write_log(logfile, msg, nostamp)
     end
 
     # other irc log message
@@ -90,8 +90,8 @@ module Nadoka
 
     ###
 
-    def write_log(io, msg)
-      msg = "#{Time.now.strftime(@config.log_timeformat)} #{msg}"
+    def write_log io, msg, nostamp = false
+      msg = "#{Time.now.strftime(@config.log_timeformat)} #{msg}" unless nostamp
 
       begin
         if io.respond_to? :puts

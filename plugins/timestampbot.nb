@@ -1,0 +1,62 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id:$
+#
+
+=begin
+
+== Abstract
+
+Add time stamp to each log.
+
+
+== Configuration
+
+  BotConfig = {
+    :TimeStampBot => {
+      :interval    => 60 * 60,             # stamp interval time(sec)
+                                           # default: 60 * 60 (1 hour)
+      :stampformat => '%y/%m/%d-%H:%M:%S', # stamp format
+      # default: '== %y/%m/%d-%H:%M:%S =========================================='
+    },
+  }
+
+=end
+
+class TimeStampBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @interval    = @bot_config[:interval] || 60 * 60 # default: 1 hour
+    @stampformat = @bot_config[:stampformat] ||
+    '== %y/%m/%d-%H:%M:%S =========================================='
+    @nexttime    = nexttime
+  end
+
+  def nexttime
+    t = (Time.now.to_i + @interval)
+    Time.at(t - (t % @interval))
+  end
+  
+  def on_timer tm
+    if tm > @nexttime
+      stamp_log
+      @nexttime = nexttime
+    end
+  end
+  
+  def stamp_log
+    msg = @nexttime.strftime(@stampformat)
+    @state.channels.each{|ch|
+      @logger.clog(ch, msg, true)
+    }
+    @logger.slog(msg, true)
+  end
+end
+
+

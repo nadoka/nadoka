@@ -2,6 +2,17 @@
 # $Id$ 
 #
 
+2004-07-19(Mon) 19:50:40 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* rice/irc.rb : support long nick
+
+	* ndk_manager.rb : fix time event invoke timing
+
+	* ndk_logger.rb(slog, clog, write_log) : add nostamp option
+
+	* plugins/timestampbot.nb
+
+
 
 2004-07-17(Sat) 00:06:54 +0900  Koichi Sasada  <ko1@atdot.net>
 

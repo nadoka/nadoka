@@ -332,7 +332,7 @@ module Nadoka
       timer_thread = Thread.new{
         begin
           while true
-            sleep TimerIntervalSec
+            sleep(Time.now.to_i % TimerIntervalSec)
             send_to_bot :timer, Time.now
 
             if @connected

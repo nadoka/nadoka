@@ -354,7 +354,7 @@ module RICE
       SERVERNAME = HOSTNAME
 
       # nickname   =  ( letter / special ) *8( letter / digit / special / "-" )
-      NICKNAME = "[#{LETTER}#{SPECIAL}][\-#{LETTER}#{DIGIT}#{SPECIAL}]{0,8}"
+      NICKNAME = "[#{LETTER}#{SPECIAL}][\-#{LETTER}#{DIGIT}#{SPECIAL}]*"
 
       # user       =  1*( %x01-09 / %x0B-0C / %x0E-1F / %x21-3F / %x41-FF )
       #                 ; any octet except NUL, CR, LF, " " and "@"
