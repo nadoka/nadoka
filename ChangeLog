@@ -2,6 +2,10 @@
 # $Id$ 
 #
 
+2004-08-19(Thu) 01:12:03 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/autoaway.nb : fix bug(add condition at on_timer)
+
 
 2004-08-16(Mon) 13:07:15 +0900  Koichi Sasada  <ko1@atdot.net>
 

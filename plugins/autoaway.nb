@@ -50,7 +50,7 @@ class AutoAwayBot < Nadoka::NDK_Bot
   end
 
   def on_timer time
-    if @threshold > 0 && Time.now - @lastseen > @threshold 
+    if @threshold > 0 && Time.now - @lastseen > @threshold && !@in_away
       @manager.send_to_server Nadoka::Cmd.away(@message)
     end
   end
