@@ -24,12 +24,19 @@ module TagParts
 
     def make_attr_str
       @attr.map{|k,v|
-        " #{k.to_s.downcase}='#{v}'"
+        " #{CGI.escapeHTML(k.to_s).downcase}='#{CGI.escapeHTML(v)}'"
       }.join
     end
     
     def to_s
-      "<#{@tag}#{make_attr_str}\n>#{@body.map{|e| e.to_s}}</#{@tag}>\n"
+      body = @body.flatten.map{|e|
+        if e.kind_of? String
+          CGI.escapeHTML(e.to_s)
+        else
+          e.to_s
+        end
+      }
+      "<#{@tag}#{make_attr_str}\n>#{body}</#{@tag}>\n"
     end
 
     def inspect
@@ -39,8 +46,6 @@ module TagParts
     def add!(elem)
       if elem.kind_of? Hash
         @attr.update elem
-      elsif elem.kind_of? String
-        @body << CGI.escapeHTML(elem)
       else
         @body << elem
       end
