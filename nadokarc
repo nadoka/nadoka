@@ -93,7 +93,7 @@ Quit_Message = 'bye! / quit nadoka'
 ###############################################
 # channel info
 
-# log filename foramt
+# log filename format
 #  ${setting_name} : Setting name
 #  ${channel_name} : Channel name
 #  %? : Time#strftime format(see ruby reference)

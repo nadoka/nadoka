@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2005-01-20(Thu) 23:15:33 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : fix typo
+
+
 2004-12-20(Mon) 20:15:03 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/weatherbot.nb : change unkown region error message
