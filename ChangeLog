@@ -1,6 +1,16 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 #
+
+2004-07-20(Tue) 00:37:02 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : add @pong_fail_count and MAX_PONG_FAIL
+	to check server response
+
+	* ndk_client.rb : fix usage 100% problem(remove Thread.pass
+	and ignore message when server connection is closed)
+
+
 2004-07-19(Mon) 22:10:05 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* 0.6.1 releaseds

@@ -22,6 +22,7 @@ module Nadoka
 
   class NDK_Manager
     TimerIntervalSec = 60
+    MAX_PONG_FAIL    = 5
     
     def initialize rc
       @rc = rc
@@ -42,7 +43,8 @@ module Nadoka
       @connected = false
       @exitting  = false
 
-      @pong_recieved = true
+      @pong_recieved   = true
+      @pong_fail_count = 0
 
       set_signal_trap
     end
@@ -331,21 +333,33 @@ module Nadoka
       start_clients_thread
       timer_thread = Thread.new{
         begin
-          sleep TimerIntervalSec
-          @pong_recieved = true
-          
+          @pong_recieved   = true
+          @pong_fail_count = 0
           while true
             sleep(Time.now.to_i % TimerIntervalSec)
             send_to_bot :timer, Time.now
 
             if @connected
-              unless @pong_recieved
-                invoke_event :reconnect_to_server
+              if @pong_recieved
+                @pong_fail_count = 0
+              else
+                # fail
+                @pong_fail_count += 1
+                @logger.dlog "PONG MISS: #{@pong_fail_count}"
+                
+                if @pong_fail_count > MAX_PONG_FAIL
+                  @pong_fail_count = 0
+                  invoke_event :reconnect_to_server
+                end
               end
-            
+              
               @pong_recieved = false
               @server << Cmd.ping(@server.server)
+            else
+              @pong_recieved   = true
+              @pong_fail_count = 0
             end
+            
           end
           
         rescue Exception => e

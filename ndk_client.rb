@@ -210,7 +210,8 @@ module Nadoka
     # client -> server handling
     def send_from_client msg, from
       until @manager.connected
-        Thread.pass
+        # ignore
+        return
       end
       
       case msg.command
