@@ -85,8 +85,8 @@ module Nadoka
       
       def on_mode nick, args
         if @member.has_key? nick ||
-          /\A#{::RICE::Message::PATTERN::SERVERNAME}\z/on =~ nick
-
+          /\A:#{::RICE::Message::PATTERN::SERVERNAME}\z/on =~ nick
+          
           while mode = args.shift
             modes = mode.split(//)
             flag  = modes.shift

@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2005-03-04(Fri) 13:23:37 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_state.rb : fix server message pattern
+
+
 2005-01-20(Thu) 23:15:33 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : fix typo
