@@ -30,6 +30,8 @@ BotConfig = {
                         #
                         # if 'method' is :by_size, limit means
                         # how many messages to store
+    :clear  => true     # (default: false) clear messages after output
+    :talker => :pseudoowner # (default: nil)
   }
 }
 
@@ -83,6 +85,9 @@ class BackLogBot < Nadoka::NDK_Bot
       @limit = @bot_config[:limit] || (60 * 60 * 24)
       @store_klass = LimitedObjectStoreByTime
     end
+    @talker = @bot_config[:talker] || nil
+    @clear  = @bot_config[:clear]  || false
+    
     @store_pool = {}
   end
   
@@ -101,10 +106,16 @@ class BackLogBot < Nadoka::NDK_Bot
     @store_pool.each{|ch, store|
       store.each{|time, m|
         nick, msg = m
-        cmd = Cmd.notice(ch, "TAIL(#{time.strftime('%H:%M')}) #{msg}")
-        client.add_prefix(cmd, nick)
+        if @talker
+          cmd = Cmd.notice(ch, "Backlog(#{time.strftime('%H:%M')}) #{msg}")
+          client.add_prefix(cmd, nick)
+        else
+          cmd = Cmd.notice(ch, "Backlog(#{time.strftime('%H:%M')}) #{nick}#{msg}")
+          client.add_prefix(cmd, 'backlogbot')
+        end
         client.send_msg cmd
       }
+      store.clear if @clear
     }
   end
   
@@ -129,9 +140,14 @@ class BackLogBot < Nadoka::NDK_Bot
     push ch, [nil, "- #{prefix.nick}(#{msg})"]
   end
 
+  def on_topic prefix, ch, topic
+    push ch, [nil, "<TOPIC:#{prefix.nick}> - #{topic}"]
+  end
+
   def on_quit_from_channel ch, nick, msg = ''
     push ch, [nil, "- #{nick}(#{msg})"]
   end
+
   
 end
 

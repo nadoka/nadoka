@@ -1,3 +1,8 @@
+2004-07-11(Sun) 11:37:14 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/backlogbot.nb : fix schemes
+
+
 2004-07-10(Sat) 22:48:35 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : fix filenameencoding bugs
