@@ -102,6 +102,7 @@ Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
 System_log  = '${setting_name}-system.log'
 
 Channel_info = {
+  # nadoka talk
   '#nadoka' => {
     # timing
     #  :startup / when nadoka start up
@@ -111,6 +112,12 @@ Channel_info = {
     :log     => '${setting_name}-nadoka-chan-%y%m%d.log',
     # :part_message => "bye bye"
   },
+
+  # nadoka bot channel
+  '#nadoka_check' => {
+    :timing => :startup,
+    :log => '${setting_name}-nadoka-check-%y%m.log',
+  }
 }
 
 Backlog_Lines = 20

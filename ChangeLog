@@ -1,3 +1,11 @@
+
+2004-07-03(Sat) 03:25:24 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/googlebot.nb : added
+
+	* nadokarc : add default join channel '#nadoka_check'
+
+
 2004-06-01(Tue) 16:51:29 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/checkbot.nb : added(incomplete)

@@ -606,7 +606,7 @@ module Nadoka
       $stderr.puts err
       $stderr.puts err.backtrace.join("\n")
       @logger.slog err
-      @logger.slog err.backtrace.join(' ')
+      @logger.slog err.backtrace.join('//')
     end
     
   end
