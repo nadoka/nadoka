@@ -194,6 +194,12 @@ module Nadoka
       cmd.prefix = prefix
       cmd
     end
+    
+    def add_prefix2 cmd, nick
+      cmd.prefix = "#{nick}!#{@username}@#{@remote_host}"
+      cmd
+    end
+    
 
     ::RICE::Command.regist_command('NADOKA')
     

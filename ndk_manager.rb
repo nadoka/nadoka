@@ -443,15 +443,43 @@ module Nadoka
       } if list.any?{|e| e == 'USR2' }
     end
     
+    def about_me? msg
+      if msg.prefix =~ /^#{@state.nick}!/
+        true
+      else
+        false
+      end
+    end
+
+    def own_nick_change? msg
+      if msg.command == 'NICK' && msg.params[0] == @state.nick
+        nick_of(msg)
+      else
+        false
+      end
+    end
+    
     # server -> clients
     def send_to_clients msg
       if msg.command == 'PRIVMSG' && !(msg = filter_message(@config.privmsg_filter_light, msg))
         return
       end
-      
-      @clients.each{|cl|
-        cl << msg
-      }
+
+      if(old_nick = own_nick_change?(msg))
+        @clients.each{|cl|
+          cl.add_prefix2(msg, old_nick)
+          cl << msg
+        }
+      elsif about_me? msg
+        @clients.each{|cl|
+          cl.add_prefix(msg)
+          cl << msg
+        }
+      else
+        @clients.each{|cl|
+          cl << msg
+        }
+      end
     end
 
     # clientA -> other clients
