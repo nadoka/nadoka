@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 #
+2004-07-19(Mon) 22:10:05 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* 0.6.1 releaseds
+
+	* ndk_version.rb : 0.6.2
 
 
 2004-07-19(Mon) 21:52:27 +0900  Koichi Sasada  <ko1@atdot.net>
