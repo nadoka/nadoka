@@ -87,7 +87,7 @@ module Nadoka
           
           begin
             @server.close if @server
-          rescue RICE::Connection::Closed
+          rescue RICE::Connection::Closed, SystemCallError
           end
           
           @logger.slog "Reconnect request(no server response, or client request)"

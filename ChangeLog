@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-14(Wed) 04:27:53 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix exception handling
+
+
 2004-07-14(Wed) 04:03:27 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_config.rb : add DefaultBotFiles
