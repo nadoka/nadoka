@@ -95,7 +95,9 @@ module Nadoka
 
       begin
         if io.respond_to? :puts
-          io.puts msg
+          @lock.synchronize{
+            io.puts msg
+          }
         else
           bdir = File.expand_path(@config.log_dir)
           

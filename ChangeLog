@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-20(Tue) 02:00:45 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_logger.rb : synchronize IO object output
+
+
 2004-07-20(Tue) 01:48:45 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : fix invoke time event timing
