@@ -62,8 +62,7 @@ module Nadoka
     Quit_Message = 'bye'
     
     #
-    Channel_info = {},
-      
+    Channel_info = {}
     # log
     Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
     System_log  = '${setting_name}-system_log'
@@ -176,10 +175,11 @@ module Nadoka
         dchs = []
         lchs = []
         cchs = {}
+        
         chs.each{|ch, setting|
           ch = identical_channel_name(ch)
           
-          if setting[:timing] == :startup
+          if !setting[:timing] || setting[:timing] == :startup
             dchs << ch
           elsif setting[:timing] == :login
             lchs << ch

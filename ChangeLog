@@ -1,3 +1,13 @@
+2004-07-05(Mon) 15:40:09 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_config.rb : change default Channel_Info,
+	:timing as :startup
+
+	* ndk_manager.rb : fix nick change bugs
+
+	* plugins/weba.nb : added(test version)
+
+
 2004-07-05(Mon) 13:13:26 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : add execption hook(client thread)

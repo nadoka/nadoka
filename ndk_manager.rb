@@ -148,12 +148,12 @@ module Nadoka
           break
         elsif q.command == '433'
           # Nickname is already in use.
-          nick = @state.nick_succ(q.params[0])
+          nick = @state.nick_succ(q.params[1])
           @state.nick = nick
           send_to_server Cmd.nick(nick)
         else
           msg = "Server login fail!(#{q})"
-          @config.slog msg
+          @logger.slog msg
           raise msg
         end
       end
@@ -499,7 +499,8 @@ module Nadoka
     end
     
     def about_me? msg
-      if msg.prefix =~ /^#{@state.nick}!/
+      qnick = Regexp.quote(@state.nick)
+      if msg.prefix =~ /^#{qnick}!/
         true
       else
         false

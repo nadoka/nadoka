@@ -30,7 +30,6 @@ Client_server_host = nil # You can specify binding host(interface)
 Client_server_pass = 'NadokaPassWord'
 Client_server_acl  = nil
 
-#
 # ACL(Access Control List) example:
 # Client_server_acl = %q{  # ACL must be string
 #   deny all
@@ -42,7 +41,6 @@ Client_server_acl  = nil
 #
 # ACL_Object = ::ACL.new(...)
 #
-
 
 
 ###############################################
@@ -73,6 +71,7 @@ Servers = [
   #   :port => 6667
   # }
 ]
+
 
 ###############################################
 # userinfo
@@ -106,7 +105,7 @@ Channel_info = {
   # nadoka talk
   '#Nadoka' => {
     # timing
-    #  :startup / when nadoka start up
+    #  :startup / when nadoka start up <= default
     #  :login   / when user login
     #  otherwise nadoka won't login automatically
     :timing  => :startup,
@@ -119,11 +118,12 @@ Channel_info = {
   '#nadoka_check' => {
     :timing => :startup,
     :log => '${setting_name}-nadoka-check-%y%m.log',
-  }
+  },
 }
 
 Backlog_Lines = 20
 Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
+
 
 ###############################################
 # Directory
@@ -174,7 +174,7 @@ BotConfig = {
 Privmsg_Filter = nil
 Notice_Filter  = nil
 
-# 'euc' or 'sjis'
+# 'euc' or 'sjis' or 'jis'
 FilenameEncoding =
 case RUBY_PLATFORM
 when /mswin/, /cygwin/, /mingw/
@@ -182,6 +182,7 @@ when /mswin/, /cygwin/, /mingw/
 when /linux/,
   'euc'
 end
+
 
 
 end

@@ -1,0 +1,85 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id:$
+#
+
+=begin
+
+WebA: Web Accessor
+  http interface for irc
+
+
+=end
+
+require 'webrick'
+
+class WebA < Nadoka::NDK_Bot
+  class WebAlet < WEBrick::HTTPServlet::AbstractServlet
+    def do_GET req, res
+      res.body = @options[0].htmlpage
+    end
+  end
+
+  def htmlpage
+    <<-__EOS
+    <html>
+    <head><title> WebA: IRC Web Accessor </title></head>
+    <body>
+    <p>
+    <ol>
+    #{message_list}
+    </ol>
+    </p>
+    </body></html>
+    __EOS
+  end
+
+  def message_list
+    @messages.map{|m|
+      "<li>#{m[:time]} #{m[:ch]} - #{m[:nick]}: #{m[:msg]}</li>"
+    }.reverse.join("\n")
+  end
+
+  def push_message msg
+    @messages << msg
+    if @messages.size > @max_store
+      @messages = @messages[(@messages.size - @max_store) .. -1]
+    end
+  end
+  
+  def bot_initialize
+    @max_store = @bot_config[:max_store] || 100
+    @server = WEBrick::HTTPServer.new({
+      :Port => @bot_config[:port] || 12123,
+    })
+    @server.mount("/weba", WebAlet, self)
+    @server_thread = Thread.new{
+      begin
+        @server.start
+      rescue Exception => e
+        @manager.ndk_error e
+      end
+    }
+    @messages  = []
+  end
+
+  def bot_destruct
+    @server_thread.kill
+    @server.shutdown
+  end
+  
+  def on_privmsg prefix, ch, msg
+    push_message({:ch => ch, :nick => prefix.nick, :msg => msg, :time => Time.now})
+  
+  end
+end
+
+
+

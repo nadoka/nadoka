@@ -7,7 +7,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: samplebot.nb 2 2004-05-01 09:57:28Z ko1 $
+# $Id:$
 #
 
 =begin
