@@ -178,7 +178,7 @@ module Nadoka
     def send_msg msg
       @logger.dlog "[C<] #{msg}"
       unless @sock.closed?
-        @sock.puts msg.to_s
+        @sock.write msg.to_s
       end
     end
     

@@ -237,7 +237,7 @@ module Nadoka
       if @config.away_nick && @state.original_nick
         send_to_server Cmd.nick(@state.original_nick)
         @state.original_nick = nil
-        sleep 1 # wait for server response
+        sleep 2 # wait for server response
       end
 
       @config.login_channels.each{|ch|
