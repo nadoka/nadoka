@@ -2,6 +2,16 @@
 # $Id$ 
 #
 
+2004-07-26(Mon) 02:13:58 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/backlogbot.nb : fixed a bug
+
+	* plugins/modemanager.nb : applied unak's patch
+	(support delaied distribution, and so on)
+
+	* ndk_client.rb : fix exception handling
+
+
 2004-07-24(Sat) 21:26:30 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/modemanager.nb : added

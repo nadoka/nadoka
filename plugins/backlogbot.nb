@@ -148,7 +148,7 @@ class BackLogBot < Nadoka::NDK_Bot
             cmd = Cmd.notice(sch, "#{@prefix}(#{time.strftime(@tmfmt)}) #{ch} - #{nick}: #{msg}")
           end
         else
-          cmd = Cmd.notice(chs.name, "#{@prefix}(#{time.strftime(@tmfmt)}) #{nick}: #{msg}")
+          cmd = Cmd.notice(@state.nick, "#{@prefix}(#{time.strftime(@tmfmt)}) #{nick}: #{msg}")
         end
         
         client.send_msg cmd
