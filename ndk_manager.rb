@@ -669,6 +669,18 @@ module Nadoka
       true
     end
 
+    def ndk_status
+      [ '== Nadoka Running Status ==',
+        '- nadoka version: ' + Nadoka.version,
+        '- connecting to ' + "#{@server.server}:#{@server.port}",
+        '- clients status:',
+          @clients.map{|e| '-- ' + e.state},
+        '- Bots status:',
+          @config.bots.map{|bot| '-- ' + bot.bot_state},
+        '== End of Status =='
+      ].flatten
+    end
+    
     def ndk_error err
       $stderr.puts err
       $stderr.puts err.backtrace.join("\n")

@@ -44,6 +44,11 @@ class RSS_CheckBot < Nadoka::NDK_Bot
     @prevtm= Time.now
   end
 
+  def bot_state
+    nt = Time.at(@prevtm.to_i + @tm * 60)
+    "<#{self.class}: next check at #{nt.asctime}>" 
+  end
+  
   def __on_privmsg prefix, ch, msg
     if /^rss> status/ =~ msg && ch == @ch && prefix.nick == @state.nick
       #

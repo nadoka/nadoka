@@ -1,3 +1,13 @@
+2004-07-09(Fri) 01:39:01 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_client.rb(client_notice) : added
+
+	* ndk_manager.rb, ndk_client.rb : support '/nadoka status' command
+	and add NDK_Manager#ndk_state, NDK_Bot#bot_state, NDK_Client#state
+
+	* plugins/rss_check.nb(bot_state) : added
+
+
 2004-07-08(Thu) 08:31:33 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* tagparts.rb : add tree2string

@@ -240,24 +240,42 @@ module Nadoka
         @manager.send_to_server msg
       end
     end
+
+    def client_notice msg
+      self << Cmd.notice(@state.nick, msg)
+    end
+
+    def state
+      "client from #{@remote_host}(#{@username}, #{@hostname}, #{@servername}, #{@realname})"
+    end
     
+    NdkCommandDescription = {
+      #
+      'QUIT'    => 'quite nadoka program',
+      'RESTART' => 'restart nadoka program(not relaod *.rb programs)',
+      'RELOAD'  => 'reload configurations and bot programs(*.nb)',
+      'RECONNECT' => 'reconnect next server',
+      'STATUS'  => 'show nadoka running status',
+    }
     def nadoka_client_command cmd, args
       cmd ||= ''
       case cmd.upcase
       when 'QUIT'
         @manager.invoke_event :quit_program
-        self << Cmd.notice(@state.nick, 'nadoka will be quit. bye!')
+        client_notice 'nadoka will be quit. bye!'
       when 'RESTART'
         @manager.invoke_event :restart_program, self
-        self << Cmd.notice(@state.nick, 'nadoka will be restart. see you later.')
+        client_notice 'nadoka will be restart. see you later.'
       when 'RELOAD'
         @manager.invoke_event :reload_config, self
       when 'RECONNECT'
         @manager.invoke_event :reconnect_to_server, self
+      when 'STATUS'
+        @manager.ndk_status.each{|msg| client_notice msg}
       when 'HELP'
         self << Cmd.notice(@state.nick, 'available: QUIT, RESTART, RELOAD, HELP')
         if args[1]
-          self << Cmd.notice(@state.nick, "#{args[1]}: ")
+          self << Cmd.notice(@state.nick, "#{args[1]}: #{NdkCommandDescription[args[1].upcase]}")
         end
       else
         if @manager.send_to_bot :nadoka_command, self, cmd, *args

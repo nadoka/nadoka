@@ -38,6 +38,16 @@ module Nadoka
       # do something
     end
 
+    # override me
+    def bot_state
+      info = "#<#{self.class}: #{@bot_config.inspect}>"
+      if info.length > 100
+        info[0..100] + '...'
+      else
+        info
+      end
+    end
+
     # To access bot confiuration, please use this.
     #
     # in configuration file, 
