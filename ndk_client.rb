@@ -73,7 +73,7 @@ module Nadoka
     end
     
     def recv_from_client
-      while true
+      until @sock.closed?
         begin
           str = @sock.gets
           if str
