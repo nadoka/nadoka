@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+
+2004-08-16(Mon) 13:07:15 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_state.rb, ndk_manager.rb : fix kick bug([nadoka:271])
+
+
 2004-08-14(Sat) 21:24:28 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/modemanager.nb : fix mode check routine(match -> include?)

@@ -218,7 +218,7 @@ module Nadoka
         when 'MODE'
           @state.on_mode(nick_of(q), q.params[0], q.params[1..-1])
         when 'KICK'
-          @state.on_kick(nick_of(q), q.params[0])
+          @state.on_kick(nick_of(q), q.params[0], q.params[1], q.params[2])
           
         when '353' # RPL_NAMREPLY
           @state.on_353(q.params[2], q.params[3])

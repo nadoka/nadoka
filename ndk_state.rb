@@ -262,15 +262,21 @@ module Nadoka
       end
     end
 
-    def on_kick user, rch
+    def on_kick kicker, rch, user, comment
       ch = canonical_channel_name(rch)
+      msg = "- #{user} kicked by #{kicker} (#{comment}) from #{ch}"
 
-      if @current_channels.has_key? ch
-        @current_channels[ch].on_kick user
+      if user == nick
+        @logger.clog ch, msg
         @current_channels.delete ch
-        @logger.clog ch, "- #{user}(kicked)"
+      else
+        if @current_channels.has_key? ch
+          @logger.clog ch, msg
+          @current_channels[ch].on_kick user
+        end
       end
-      @logger.log "- #{user}(kicked) from #{ch}"
+      
+      @logger.log msg
     end
 
     def on_topic user, rch, topic
