@@ -10,48 +10,141 @@
 # $Id: samplebot.nb 2 2004-05-01 09:57:28Z ko1 $
 #
 
+=begin
+
+usage with irc client:
+
+  google> keyword
+    -> search keyword by google with default search langage
+
+  google:[lang]> keyword
+    -> search keyword by google with [lang] langage
+
+  googlec> k1 k2 k3 k4 k5(max 5 words)
+    -> search and show each hit count
+   
+  googlec> k1 k2 k3 k4 k5(max 5 words)
+    -> search and show each hit count with default count language
+
+  googlec:[lang]> k1 k2 k3 k4 k5(max 5 words)
+    -> search and show each hit count with [lang] langage
+
+
+
+bot option:
+
+BotConfig = {
+  :GoogleBot => {
+    :ch => /.*/,                     # available channel
+    
+    :key     => 'xxxx',              # 
+    :keypath => '/x/y/z/google_key', # specify one
+                                     # or put google key file on ~/.google_key
+    :search_default_lang => 'lang_ja',
+    :count_default_lang  => '',
+  }
+}
+
+=end
+
+
 require 'soap/wsdlDriver'
 require 'iconv'
 require 'kconv'
+require 'shellwords'
+require 'cgi'
 
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize
     @available_channel = @bot_config[:ch] || /.*/
     @key    = google_key
-    @google = SOAP::WSDLDriverFactory.new(GOOGLE_WSDL).createDriver
-    @ic     = Iconv.open("EUC-JP", "UTF-8")
+    @search_default_lang = @bot_config[:search_default_lang] || 'lang_ja'
+    @count_default_lang  = @bot_config[:count_default_lang]  || ''
+    
+    google_wsdl = 'http://api.google.com/GoogleSearch.wsdl'
+    @google = SOAP::WSDLDriverFactory.new(google_wsdl).createDriver
+    @ic_u8_to_euc = Iconv.open("EUC-JP", "UTF-8")
+    @ic_euc_to_u8 = Iconv.open("UTF-8", "EUC-JP")
   end
   
-  # Yes person
   def on_privmsg prefix, ch, msg
-    if @available_channel === ch && /^google>\s*(.+)/
-      send_notice(ch, "google bot: #{search($1)}")
+    if @available_channel === ch
+      case msg
+      when /^google>\s*(.+)/, /^guguru>\s*(.+)/
+        send_notice(ch, "google bot: #{search($1)}")
+      when /^google:(.*)>\s*(.+)/
+        send_notice(ch, "google bot: #{search($2, $1)}")
+      when /^googlec>\s*(.+)/
+        send_notice(ch, "google bot: #{googlec($1)}")
+      when /^googlec:(.*)>\s*(.+)/
+        send_notice(ch, "google bot: #{googlec($2, $1)}")
+      end
     end
   end
 
-  def search word
-    result = google.doGoogleSearch( @key, word, 0, 1, false, "", false, "", 'utf-8', 'utf-8' )
-    url   = ''
-    title = ''
-    count = estimatedTotalResultsCount
-    result.resultElements{|e|
+  def search word, lang=@search_default_lang
+    lang = lang_check(lang)
+    word = jistou8(word)
+    result = @google.doGoogleSearch(
+      @key, word, 0, 1, false, "", false, lang, 'utf-8', 'utf-8' )
+      
+    count = result.estimatedTotalResultsCount.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')
+    url   =  title = ''
+    result.resultElements.each{|e|
       url   = e.URL
       title = u8tojis(e.title)
     }
-    "#{title} - #{url}(and #{count} hits)"
+    
+    "#{erace_tag(title)} - #{url} (and #{count} hits)"
   end
 
+  def googlec word, lang=@count_default_lang
+    lang = lang_check(lang)
+    words = Shellwords.shellwords(word)
+    return 'too many options' if words.size > 5
+
+    words.map{|w|
+      result = @google.doGoogleSearch(
+        @key, "'#{w}'", 0, 1, false, "", false, lang, 'utf-8', 'utf-8')
+      "#{w}(#{result.estimatedTotalResultsCount.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')})"
+    }.join(', ')
+  end
+  
   def google_key
     @bot_config[:key] ||
     if @bot_config[:key_path]
       File.open(@bot_config[:key_path]).read.chomp
     else
-      File.open(File.expand_path("~/google_key").read.chomp
+      File.open(File.expand_path("~/.google_key")).read.chomp
     end
   end
   
-  def u8tojis(str)
-    @ic.iconv(str).tojis
+  def erace_tag str
+    CGI.unescapeHTML(str.gsub(/\<.+?\>/, ''))
+  end
+
+  def lang_check lang
+    if lang.empty? || /^lang_/ =~ lang
+      lang
+    else
+      'lang_' + lang
+    end
+  end
+  
+  def u8tojis str
+    begin
+      @ic_u8_to_euc.iconv(str).tojis
+    rescue => e
+      "(char code problem)"
+    end
+  end
+  
+  def jistou8 str
+    begin
+      @ic_euc_to_u8.iconv(str.toeuc)
+    rescue => e
+      "(char code problem)"
+    end
   end
 end
 
