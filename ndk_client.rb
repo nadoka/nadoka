@@ -33,7 +33,6 @@ module Nadoka
     end
     
     def start
-      @send_thread_alive = true
       send_thread = Thread.new{
         begin
           while q = @queue.pop
@@ -43,8 +42,6 @@ module Nadoka
           end
         rescue Exception => e
           @manager.ndk_error e
-        ensure
-          @send_thread_alive = false
         end
       }
       begin
@@ -76,7 +73,7 @@ module Nadoka
     end
     
     def recv_from_client
-      while @send_thread_alive && !@sock.closed?
+      while !@sock.closed?
         begin
           str = @sock.gets
           if str
@@ -91,6 +88,8 @@ module Nadoka
               @logger.dlog "[C>] #{str}"
               return msg
             end
+          else
+            break
           end
         rescue ::RICE::UnknownCommand, ::RICE::InvalidMessage
           # @manager.ndk_error $!
