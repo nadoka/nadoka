@@ -1,6 +1,6 @@
 ## -*-ruby-*-
 ## Nadoka Sample resource file
-## $Id: nadokarc,v 1.24 2004/05/01 05:05:06 ko1 Exp $
+## $Id$
 #
 # Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
 #
@@ -105,7 +105,8 @@ Channel_info = {
   '#nadoka' => {
     # timing
     #  :startup / when nadoka start up
-    #  :login   / when user login(default)
+    #  :login   / when user login
+    #  otherwise nadoka won't login automatically
     :timing  => :startup,
     :log     => '${setting_name}-nadoka-chan-%y%m%d.log',
     # :part_message => "bye bye"

@@ -176,7 +176,7 @@ module Nadoka
         chs.each{|ch, setting|
           if setting[:timing] == :startup
             dchs << ch
-          else
+          elsif setting[:timing] == :login
             lchs << ch
           end
           cchs[ch.downcase] = setting

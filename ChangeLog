@@ -5,6 +5,9 @@
 
 	* ndk_manager.rb : refactoring around nick and away nick
 
+	* ndk_config.rb : change login timing action default
+	to do nothing
+
 
 2004-05-05(Wed) 17:19:14 +0900  Koichi Sasada  <ko1@atdot.net>
 
