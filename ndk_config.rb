@@ -43,7 +43,7 @@ module Nadoka
     ]
     Servers = []
 
-    Reconnect_delay    = 30
+    Reconnect_delay    = 150
     
     Default_channels   = []
     Login_channels     = []

@@ -26,9 +26,9 @@ class WebA < Nadoka::NDK_Bot
     def do_GET req, res
       begin
         res.body = @options[0].htmlpage(req.query).to_s
-        res['content-type'] = 'text/html; charset=euc_jp'
+        res['content-type'] = 'text/html; charset=Shift_JIS'
       rescue WebARedirect => e
-        res.set_redirect(WEBrick::HTTPStatus::Found, "#{req.path}?ch=#{URI.encode(e.ch)}")
+        res.set_redirect(WEBrick::HTTPStatus::Found, "#{req.path}?ch=#{URI.encode(e.ch.tosjis)}")
         res.body = 'moved'
       end
     end
@@ -43,69 +43,75 @@ class WebA < Nadoka::NDK_Bot
   
   include HTMLParts
   def htmlpage query
-    ch = query['ch']
-    ch = ch && !ch.empty? && @state.channels.include?(ch) && ch
+    ch = (query['ch'] || '').tojis
+    ch = !ch.empty? && (@state.channels.include?(ch) || ch == 'all') && ch
     
-    ttl = ch ? (ch = ch.tojis; " : #{ch}") : ''
+    ttl = ch ? " - #{ch.tosjis}" : ''
     
-    if ch && msg = query['message']
-      msg = msg.tojis + '(from WebA)'
+    if ch && (msg = query['message']) && !msg.empty?
+      msg = msg.tojis + ' (from WebA)'
       send_privmsg(ch, msg)
-      push_message({:ch => ch, :nick => @state.nick, :msg => msg, :time => Time.now})
+      push_message(ch, @state.nick, msg, :privmsg)
       raise WebARedirect.new(ch)
     end
     
     _html(
       _head(_title("WebA: IRC Web Accessor#{ttl}")),
       _body(
-        select_ch(ch),
-        view_ch(ch)
+        _h1("WebA#{ttl}"),
+        _p(
+          _a({:href => '?ch='+URI.encode((ch || '').tosjis)}, 'reload'),
+          _a({:href => './weba'}, 'top')
+        ),
+        view_ch(ch),
+        select_ch(ch)
       ))
   end
 
   def select_ch ch
-    _form(
-      {:method => 'get', :action => '#'},
-      _select(
-        {:name => 'ch'},
-        ch && _option({:value => ch}, ch),
-        @state.channels.map{|e|
-          if e != ch
-            _option({:value => e}, e)
-          end
-        }),
-      _input({:type => 'submit', :name => 'submit', :value => 'ch'})
+    _p({:class => 'channel-list'},
+      (@state.channels.sort + ['all']).map{|e|
+        e = e.tosjis
+        [_a({:href => '?ch='+ URI.encode(e)}, e), ' ']
+      }
     )
   end
 
   def view_ch ch
     return unless ch
-    msgs = @messages.find_all{|e|
-      e[:ch] == ch
-    }
-    _div(
-      _h2("channel #{ch}"),
-      _form({:method => 'get', :action => '#'},
-        "message: ",
-        _input({:type => 'text', :name => 'message'}),
-        _input({:type => 'submit', :name => 'say', :value => 'say'}),
-        _input({:type => 'hidden', :name => 'ch', :value => ch})
-      ),
-      _div(
+    chs = ch.tosjis
+    msgs = (ch == 'all') ? @messages : @messages.find_all{|e| e[:ch] == chs}
+    
+    _div({:class => 'sayframe'},
+      if(ch != 'all')
+        _form({:method => 'get', :action => './weba'},
+          "message: ",
+          _input({:type => 'text',   :name => 'message'}),
+          _input({:type => 'submit', :name => 'say', :value => 'say'}),
+          _input({:type => 'hidden', :name => 'ch', :value => ch})
+        )
+      end,
+      _h2("channel #{ch.tosjis}"),
+      _div({:class => 'messages'},
         msgs.map{|m|
-          _p("#{m[:time].strftime('%H:%M')} - #{m[:nick]}: #{m[:msg]}")
+          if ch == 'all'
+            chn = _a({:href => '?ch=' + URI.encode(m[:ch])}, m[:ch])
+          else
+            chn = ''
+          end
+          
+          nick = (m[:type] == :privmsg) ? m[:nick] : "(#{m[:nick]})"
+          _div({:class=>'msg'},
+               "#{m[:time].strftime('%H:%M')} ", chn, "- #{nick}: #{m[:msg]}")
         }.reverse
       )
-      #, _p(_ul(
-      #  @messages.map{|m|
-      #    _li("#{m[:time].strftime('%H:%M')} - #{m[:nick]}: #{m[:msg]}")
-      #  }
-      #))
     )
   end
   
-  def push_message msg
-    @messages << msg
+  def push_message ch, nick, msg, type
+    @messages << {:ch => ch.tosjis, :nick => nick, :msg => msg.tosjis,
+                  :type => type, :time => Time.now}
+    
     if @messages.size > @max_store
       @messages = @messages[(@messages.size - @max_store) .. -1]
     end
@@ -128,8 +134,6 @@ class WebA < Nadoka::NDK_Bot
   end
 
   def bot_destruct
-    
-    @logger.dlog('hoge')
     @server_thread.kill
     @server.shutdown
     sleep 1
@@ -137,9 +141,14 @@ class WebA < Nadoka::NDK_Bot
   
   def on_privmsg prefix, ch, msg
     ch = @config.canonical_channel_name(ch)
-    push_message({:ch => ch, :nick => prefix.nick, :msg => msg, :time => Time.now})
-  
+    push_message(ch, prefix.nick, msg, :privmsg)
   end
+
+  def on_notice prefix, ch, msg
+    ch = @config.canonical_channel_name(ch)
+    push_message(ch, prefix.nick, msg, :notice)
+  end
+  
 end
 
 

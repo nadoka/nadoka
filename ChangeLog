@@ -1,3 +1,8 @@
+2004-07-07(Wed) 10:18:51 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/weba.nb : fix some issues
+
+
 2004-07-06(Tue) 22:38:58 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_client.rb : fix exception bug
