@@ -2,6 +2,13 @@
 # $Id$ 
 #
 
+2005-03-04(Fri) 16:28:18 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* 0.6.4 released
+
+	* ndk_version.rb : 0.6.5
+
+
 2005-03-04(Fri) 13:23:37 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_state.rb : fix server message pattern
