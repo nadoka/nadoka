@@ -1,3 +1,8 @@
+2004-07-09(Fri) 07:45:29 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/drbot.nb : rename method name kick_* -> send/recv...
+
+
 2004-07-09(Fri) 03:52:01 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/drbot.nb, plugins/drbcl.rb : added

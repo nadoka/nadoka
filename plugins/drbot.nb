@@ -40,14 +40,30 @@ class DRbot < Nadoka::NDK_Bot
       @bot = bot
     end
     
-    def kick_to_client prefix, command, args
+    def send_to_client prefix, command, args
       changed
       notify_observers(prefix, command, args)
     end
 
-    def kick_from_client *args
+    def recv_from_client *args
       @bot.kick_from_client args
     end
+
+    def notify_observers(*arg)
+      if defined? @observer_state and @observer_state
+        if defined? @observer_peers
+          @observer_peers.dup.each{|e|
+            begin
+              e.update(*arg)
+            rescue Exception
+              @observer_peers.delete e
+            end
+          }
+        end
+        @observer_state = false
+      end
+    end
+    
   end
   
   def bot_initialize
@@ -63,10 +79,10 @@ class DRbot < Nadoka::NDK_Bot
   end
   
   def on_every_message prefix, command, *args
-    @invoker.kick_to_client prefix, command, args
+    @invoker.send_to_client prefix, command, args
   end
 
-  def kick_from_client *args
+  def recv_from_client *args
     
   end
   
