@@ -1,11 +1,10 @@
 * ToDo of Nadoka
 
-$Id: ToDo,v 1.5 2004/04/22 03:36:58 ko1 Exp $
+$Id$
 
 ** Special Command
 
 - /nadoka help [command]
-- /nadoka restart
 
 ** Logging
 
@@ -27,5 +26,10 @@ $Id: ToDo,v 1.5 2004/04/22 03:36:58 ko1 Exp $
 ** Login
 
 - certification with password
+
+
+** Special Command
+
+- /nadoka restart
 
 
