@@ -1,3 +1,8 @@
+2004-07-05(Mon) 09:43:12 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : fix bug
+
+
 2004-07-05(Mon) 08:31:35 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_logger.rb : ignore IOError when logging

@@ -176,10 +176,10 @@ Notice_Filter  = nil
 
 # 'euc' or 'sjis'
 FilenameEncoding =
-when RUBY_PLATFORM
-case /mswin/, /cygwin/, /mingw/
+case RUBY_PLATFORM
+when /mswin/, /cygwin/, /mingw/
   'sjis'
-case /linux/,
+when /linux/,
   'euc'
 end
 

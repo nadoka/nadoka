@@ -61,7 +61,7 @@ class GoogleBot < Nadoka::NDK_Bot
     @available_channel   = @bot_config[:ch] || /.*/
     @google_key          = google_key
     @search_default_lang = @bot_config[:search_default_lang] || 'lang_ja'
-    @googlec_maxwords    = @bot_config[:googlec_maxwords] || 5
+    @googlec_maxwords    = @bot_config[:googlec_maxwords]    || 5
     @count_default_lang  = @bot_config[:count_default_lang]  || ''
     google_wsdl = 'http://api.google.com/GoogleSearch.wsdl'
     @google = SOAP::WSDLDriverFactory.new(google_wsdl).create_driver
