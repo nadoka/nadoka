@@ -11,7 +11,7 @@
 #
 
 module Nadoka
-  NDK_Version  = '0.6.0'
+  NDK_Version  = '0.6.1'
   NDK_Created  = Time.now
 
   if /trunk/ =~ '$HeadURL$'

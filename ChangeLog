@@ -2,6 +2,13 @@
 # $Id$ 
 #
 
+2004-07-19(Mon) 21:00:21 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* 0.6.0 released
+
+	* ndk_version.rb : 0.6.1
+
+
 2004-07-19(Mon) 20:59:11 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/mailcheck.nb : updated from
