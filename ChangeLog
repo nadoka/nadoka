@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2005-03-15(Tue) 17:30:25 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_state.rb : re-fix state management
+
+
 2005-03-04(Fri) 16:28:18 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* 0.6.4 released

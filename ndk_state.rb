@@ -84,9 +84,7 @@ module Nadoka
       MODE_WITHOUT_ARGS  = 'aimnqpsrt'
       
       def on_mode nick, args
-        if @member.has_key? nick ||
-          /\A:#{::RICE::Message::PATTERN::SERVERNAME}\z/on =~ nick
-          
+        if @member.has_key? nick || nick == @current_nick
           while mode = args.shift
             modes = mode.split(//)
             flag  = modes.shift
