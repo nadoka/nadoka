@@ -56,46 +56,61 @@ require 'cgi'
 
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize
-    @available_channel = @bot_config[:ch] || /.*/
-    @key    = google_key
+    @available_channel   = @bot_config[:ch] || /.*/
+    @google_key          = google_key
     @search_default_lang = @bot_config[:search_default_lang] || 'lang_ja'
     @count_default_lang  = @bot_config[:count_default_lang]  || ''
     
     google_wsdl = 'http://api.google.com/GoogleSearch.wsdl'
-    @google = SOAP::WSDLDriverFactory.new(google_wsdl).createDriver
-    @ic_u8_to_euc = Iconv.open("EUC-JP", "UTF-8")
-    @ic_euc_to_u8 = Iconv.open("UTF-8", "EUC-JP")
+    @google = SOAP::WSDLDriverFactory.new(google_wsdl).create_driver
   end
   
   def on_privmsg prefix, ch, msg
     if @available_channel === ch
-      case msg
-      when /^google>\s*(.+)/, /^guguru>\s*(.+)/
-        send_notice(ch, "google bot: #{search($1)}")
-      when /^google:(.*)>\s*(.+)/
-        send_notice(ch, "google bot: #{search($2, $1)}")
-      when /^googlec>\s*(.+)/
-        send_notice(ch, "google bot: #{googlec($1)}")
-      when /^googlec:(.*)>\s*(.+)/
-        send_notice(ch, "google bot: #{googlec($2, $1)}")
+      if respons = dispatch_command(msg)
+        send_notice(ch, respons)
       end
     end
   end
 
+  def dispatch_command msg
+    begin
+      case msg
+      when /^google>\s*(.+)/, /^guguru>\s*(.+)/
+        "google bot: #{search($1)}"
+      when /^google:(.*)>\s*(.+)/, /^guguru:(.*)>\s*(.+)/
+        "google bot: #{search($2, $1)}"
+      when /^googlec>\s*(.+)/
+        "google bot: #{googlec($1)}"
+      when /^googlec:(.*)>\s*(.+)/
+        "google bot: #{googlec($2, $1)}"
+      end
+    rescue Exception => e
+      "google bot: #{e.class}(#{e.message})"
+    end
+  end
+  
   def search word, lang=@search_default_lang
     lang = lang_check(lang)
-    word = jistou8(word)
-    result = @google.doGoogleSearch(
-      @key, word, 0, 1, false, "", false, lang, 'utf-8', 'utf-8' )
-      
-    count = result.estimatedTotalResultsCount.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')
-    url   =  title = ''
-    result.resultElements.each{|e|
-      url   = e.URL
-      title = u8tojis(e.title)
-    }
+    word = search_char_code(word)
     
-    "#{erace_tag(title)} - #{url} (and #{count} hits)"
+    result = @google.doGoogleSearch(
+      @google_key, word, 0, 1, false, "", false, lang, 'utf-8', 'utf-8' )
+
+    count = result.estimatedTotalResultsCount
+    if count > 0
+      count = count.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')
+      url   =  title = ''
+    
+      result.resultElements.each{|e|
+        url   = e.URL
+        title = show_char_code(e.title)
+      }
+      
+      "#{erace_tag(title)} - #{url} (and #{count} hits)"
+    else
+      "no match"
+    end
   end
 
   def googlec word, lang=@count_default_lang
@@ -104,8 +119,9 @@ class GoogleBot < Nadoka::NDK_Bot
     return 'too many options' if words.size > 5
 
     words.map{|w|
+      w = search_char_code(w)
       result = @google.doGoogleSearch(
-        @key, "'#{w}'", 0, 1, false, "", false, lang, 'utf-8', 'utf-8')
+        @google_key, "'#{w}'", 0, 1, false, "", false, lang, 'utf-8', 'utf-8')
       "#{w}(#{result.estimatedTotalResultsCount.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')})"
     }.join(', ')
   end
@@ -131,19 +147,35 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
   
-  def u8tojis str
-    begin
-      @ic_u8_to_euc.iconv(str).tojis
-    rescue => e
-      "(char code problem)"
+  def show_char_code str
+    case $KCODE
+    when 'EUC', 'SJIS'
+      str.tojis
+    when 'NONE', 'UTF-8'
+      begin
+        Iconv.conv("EUC-JP", "UTF-8", str).tojis
+      rescue => e
+        "(char code problem: #{e.class}[#{e.message.dump}])"
+      end
+    else
+      str
     end
   end
   
-  def jistou8 str
-    begin
-      @ic_euc_to_u8.iconv(str.toeuc)
-    rescue => e
-      "(char code problem)"
+  def search_char_code str
+    case $KCODE
+    when 'EUC', 'SJIS'
+      str.toeuc
+    when 'NONE'
+      begin
+        Iconv.conv("UTF-8", "EUC-JP", str.toeuc)
+      rescue => e
+        "(char code problem: #{e.class})"
+      end
+    when 'UTF-8'
+      str
+    else
+      raise
     end
   end
 end
