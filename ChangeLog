@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-12-03(Fri) 14:45:19 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_state.rb : fix again (patched by U.Nakamura)
+
+
 2004-12-03(Fri) 13:59:48 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_state.rb : fix bug about mode change by server
