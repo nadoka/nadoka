@@ -35,5 +35,3 @@ module Nadoka
   end
 end
 
-p Nadoka.version
-

@@ -2,6 +2,15 @@
 # $Id$ 
 #
 
+2004-07-19(Mon) 21:40:17 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix time thread timing
+
+	* ndk_manager.rb : fix SIGINT hook
+
+	* ndk_version.rb : remove debug code
+
+
 2004-07-19(Mon) 21:00:21 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* 0.6.0 released
@@ -24,7 +33,6 @@
 	* ndk_logger.rb(slog, clog, write_log) : add nostamp option
 
 	* plugins/timestampbot.nb
-
 
 
 2004-07-17(Sat) 00:06:54 +0900  Koichi Sasada  <ko1@atdot.net>

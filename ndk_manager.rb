@@ -331,6 +331,9 @@ module Nadoka
       start_clients_thread
       timer_thread = Thread.new{
         begin
+          sleep TimerIntervalSec
+          @pong_recieved = true
+          
           while true
             sleep(Time.now.to_i % TimerIntervalSec)
             send_to_bot :timer, Time.now
@@ -490,7 +493,8 @@ module Nadoka
     def set_signal_trap
       list = Signal.list.keys
       Signal.trap(:INT){
-        invoke_event :quit_program
+        # invoke_event :quit_program
+        Thread.main.raise NDK_QuitProgram
       } if list.any?{|e| e == 'INT'}
       Signal.trap(:HUP){
         # reload config
