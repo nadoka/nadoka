@@ -1,0 +1,100 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id: rss_check.nb,v 1.11 2004/04/30 21:36:25 ko1 Exp $
+#
+
+=begin
+configuration like follows:
+
+  BotConfig = {
+    :RSS_CheckBot => {
+      :rss_paths => [
+      'http://www.ruby-lang.org/ja/index.rdf',
+      'http://slashdot.jp/slashdotjp.rss',
+      'http://www3.asahi.com/rss/index.rdf',
+      'LIRS:http://rrr.jin.gr.jp/~znz/samidare/sites.lirs.gz',
+      ],
+      :cache     => "./rss-cache",
+      :ch        => '#nadoka',
+      :tm        => 30 # check interval time(minute)
+    }
+  }
+  
+=end
+
+require 'rss_check'
+require 'iconv'
+require 'kconv'
+
+class RSS_CheckBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @cache = File.expand_path(@bot_config[:cache] || '~/.rss_check')
+    @paths = @bot_config[:rss_paths] || ['http://www.ruby-lang.org/ja/index.rdf']
+    @ch    = @bot_config[:ch] || '#nadoka'
+    @tm    = @bot_config[:tm] || 30 # min
+    @rssc  = RSS_Check.new(@paths, @cache, true)
+    @ic    = Iconv.open("EUC-JP", "UTF-8")
+    @prevtm= Time.now
+  end
+
+  def __on_privmsg prefix, ch, msg
+    if /^rss> status/ =~ msg && ch == @ch && prefix.nick == @state.nick
+      #
+    end
+  end
+  
+  def on_timer tm
+    check
+  end
+
+  def check
+    tm = Time.now
+    if tm.to_i - @tm * 60 > @prevtm.to_i
+      @prevtm = tm
+      items = @rssc.check
+      @rssc.dump
+      make_notice_thread items
+    end
+  end
+
+  def make_notice_thread items
+    Thread.new{
+      begin
+        items.each{|e|
+          if e[:ccode] =~ 'UTF-8'
+            begin
+              title = @ic.iconv(e[:title]).tojis
+            rescue Exception
+              # maybe, char code translation error
+              next
+            end
+          else
+            title = e[:title].tojis
+          end
+
+          if @ch.respond_to? :each
+            @ch.each{|ch|
+              send_notice(ch, "rss bot: #{title} < #{e[:about]} >")
+              sleep 5 # Flood Protection
+            }
+          else
+            send_notice(@ch, "rss bot: #{title} < #{e[:about]} >")
+            sleep 5 # Flood Protection
+          end
+        }
+      rescue Exception => e
+        @manager.ndk_error e
+      end
+    }
+  end
+  
+end
+
+

@@ -1,0 +1,296 @@
+Sat, 01 May 2004 14:38:04 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix bootstrap process
+
+	* rice/irc.rb : add easy flood control
+
+	* 0.5.3 released
+
+
+Sat, 01 May 2004 14:03:52 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : fix typo
+
+
+Sat, 01 May 2004 13:24:14 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_config.rb : add nadoka server name
+
+	* nadokarc : fix IRCnet servers
+
+	* 0.5.2 released
+
+
+Sat, 01 May 2004 06:35:28 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_logger.rb : added
+
+	* ndk_bot.rb : add @bot_config
+
+	* ndk_* : use @logger instead of @config to logging
+
+	* ndk_config.rb : extend BotConfig format
+
+	* ndk_manager.rb, rice/irc.rb : fix reconnect process
+
+	* some refactoring
+
+
+Fri, 30 Apr 2004 02:57:46 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : ignore(and report) exception while '/nadoka reload'
+	reloading
+
+
+Wed, 28 Apr 2004 11:24:23 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_err.rb : change exception hierarchy
+
+	* ndk_manager.rb : dup filtered message
+
+
+Wed, 28 Apr 2004 10:31:29 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* 0.5.1 released
+
+
+Wed, 28 Apr 2004 02:37:34 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/shellbot.nb : remove debug print
+
+
+Wed, 28 Apr 2004 02:07:06 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/evalbot.nb, plugins/shellbot.nb : added
+
+	* ndk_bot.rb : add on_client_privmsg, on_nadoka_command
+
+	* ndk_err.rb : add some exception class
+
+	* ndk_manager.rb : fix some bugs
+
+
+Tue, 27 Apr 2004 22:29:07 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_version.rb : added
+
+	* ndk_manager.rb : add Privmsg_Filter, Notice_Filter
+
+
+Mon, 26 Apr 2004 10:46:49 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* 0.5.0 released
+
+
+Mon, 26 Apr 2004 10:29:47 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : change name on_message_default to 
+	on_every_message
+
+	* ndk_manager.rb, ndk_bot.rb : change first argument
+	of bot event handlers to PrefixObject
+
+
+Sun, 25 Apr 2004 22:59:07 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/rss_check.nb : add on_privmsg
+
+	* ndk_manager.rb : make ndk_error message more detail
+
+
+Sun, 25 Apr 2004 20:47:16 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb, ndk_bot.rb : fix typo(bot_destruct)
+
+	* ndk_err.rb : add NDK_BotBreak
+
+	* ndk_state.rb : remove debug output
+
+	* plugins/rss_check.rb : exception handling when translation error
+
+
+Sun, 25 Apr 2004 18:21:30 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : add on_message_default
+
+
+Sun, 25 Apr 2004 14:55:56 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* rss_check.rb : fix recent check
+
+
+Sat, 24 Apr 2004 23:48:07 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix bug TCPServer.new. reported
+	by Tadaaki OKABE <kabe@kabe.ac>.
+
+	* ndk_config.rb : fix ndk_config.rb script.
+
+	* rss_check.rb : add LIRS support
+
+	* rss_check.nb : add space around uri
+
+
+Sat, 24 Apr 2004 13:07:22 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* rss_check.rb, plugins/rss_check.nb : added
+
+
+Sat, 24 Apr 2004 02:37:47 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_config.rb : fix to use string strip
+
+
+Sat, 24 Apr 2004 01:20:55 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb, etc : introduce invoke_event mechanism
+
+	* ndk_config.rb : support Quit_Message which showed when
+	program is quitting
+
+	* ndk_config.rb : support
+	Channel_info{"ch" => {:part_message => '...'}}
+
+	* ndk_manager.rb, etc : fix exception handling with thread
+
+	* ndk_manager.rb : support /nadoka restart
+
+
+Fri, 23 Apr 2004 22:27:17 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_state.rb : remove debug print
+
+
+Fri, 23 Apr 2004 19:56:54 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* support tracing channel state. so nadoka doesn't need to command
+	NAMES when a client join
+
+	* ndk_manager.rb : support channel join when client login
+	(:timing => :login) by U.Nakamura <usa@garbagecollect.jp>
+
+	* ndk_config.rb : fix topic log format and output
+
+	* ndk_manager.rb, ndk_config.rb : add Client_server_host
+
+	* 0.4.0 released
+
+
+Fri, 23 Apr 2004 10:35:04 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manger.rb, ndk_client.rb, ndk_config.rb :
+	support away action with Away_Message, Away_Nick
+
+	* nadoka.rb : fix version string
+
+	* ndk_config.rb : ACL -> ACL_Object
+
+	* 0.3.5 released
+
+
+Fri, 23 Apr 2004 02:45:13 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* add a copyright statement to each file
+
+	* fix a ACL bug
+
+
+Thu, 22 Apr 2004 18:31:39 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* rice/irc.rb : mitigate IRC message check(CRLF)
+
+
+Thu, 22 Apr 2004 17:58:25 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix on_timer event call
+
+	* 0.3.4 released
+
+
+Thu, 22 Apr 2004 17:01:45 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_client.rb : fix that send message to a client which has not
+	logged in.
+
+	* ndk_config.rb : fix ${channel_name} sanitizing
+
+	* ndk_client.rb (login) : fix client login sequence
+
+	* ndk_config.rb : fix expand dir with log_dir
+
+	* ndk_manager.rb : close when client socket when client closed
+
+	* ndk_config.rb : add Client_server_acl
+
+	* ndk_config.rb : GC.start when reload config
+
+	* 0.3.3 released
+
+
+Thu, 22 Apr 2004 11:02:00 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_bot.rb : add on_client_login, on_client_logout event
+
+	* plugins/sixamo.nb : ver. up sixamo bot san
+
+	* 0.3.2 released
+
+
+Wed, 21 Apr 2004 21:19:27 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb (logging) : add some logging action
+
+	* ndk_manager.rb : fix a ctcp VERSION bug.
+
+
+Wed, 21 Apr 2004 20:00:59 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_config.rb : change the Server information setting format
+
+	* ndk_err.rb : add Nadoka::NDK_RestartProgram(not used)
+
+	* 0.3.0 released
+
+
+Wed, 21 Apr 2004 18:32:21 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/sixamo.nb : modify to use configuration
+
+	* ndk_config.rb : Hostname use Socket.gethostname
+
+
+Wed, 21 Apr 2004 13:48:42 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/sixamo.nb : added
+
+
+Wed, 21 Apr 2004 02:32:26 +0900   Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb, ndk_client.rb : move 'send_from_client'
+	method to ndk_client
+
+	* ndk_err.rb : add NDK_QuitProgram class
+
+
+Tue, 20 Apr 2004 18:06:47 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb (send_to_bot) : fix bot round robin routine
+
+	* ndk_bot.rb : add NDK_BotBreak to interrupt bot round robin
+
+	* ndk_config.rb : $C encode with URI.encode
+
+	* ndk_config.rb : Bots -> BotFiles
+
+	* ndk_config.rb : add Log_TimeFormat
+
+	* ndk_config.rb : Plugin_dir suppoort Enumerable
+
+Tue, 20 Apr 2004 13:33:19 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* 0.1 released
+
+
+# ChangeLog of Nadoka
+# $Id: ChangeLog,v 1.48 2004/05/01 05:40:16 ko1 Exp $ 
+#

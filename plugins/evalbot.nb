@@ -1,0 +1,50 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# ruby evaluator on IRC
+#
+# $Id: evalbot.nb,v 1.2 2004/04/29 23:49:47 ko1 Exp $
+#
+require 'timeout'
+class EvalBot < Nadoka::NDK_Bot
+  EvalNick = 'nadoka_eval'
+  
+  def on_client_privmsg client, ch, message
+    if ch == EvalNick
+      ans = eval_message(message)
+      msg = Cmd.privmsg(@state.nick, 'ans: ' + ans)
+      client.send_to_client client.add_prefix(msg, EvalNick)
+      raise ::Nadoka::NDK_BotSendCancel
+    end
+  end
+
+  def on_nadoka_command client, command, *params
+    if command == 'eval'
+      msg = Cmd.privmsg(@state.nick, 'Hello, this is ruby evaluator')
+      client.send_to_client client.add_prefix(msg, EvalNick)
+      raise ::Nadoka::NDK_BotSendCancel
+    end
+  end
+
+  def eval_message message
+    begin
+      ans = Thread.new{
+        $SAFE = 4
+        timeout(3){
+          Kernel.eval(message)
+        }
+      }.value.to_s
+    rescue Exception => e
+      ans = e.message
+    end
+  end
+  
+end
+
+
