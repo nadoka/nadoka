@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-24(Sat) 21:26:30 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/modemanager.nb : added
+
+
 2004-07-24(Sat) 07:30:10 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : fix server login process(reconnect

@@ -1,0 +1,136 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id$
+#
+
+
+=begin
+
+== Abstract
+
+Mode management bot
+
+== Configuration
+
+=== nadokarc
+
+BotConfig => {
+  :ModeManager => {
+    #
+    # You can specify modes setting in file or
+    # String directly.
+    #
+    :file  => 'modes',
+    # or :modes_file => 'modes',
+    
+    :modes => <<-__EOS__,
+    [all]
+    +o=*.jp
+    __EOS__
+  }
+}
+
+=== mode setting format
+
+[<channel name> or 'all']
+<+-><mode> pattern
+<+-><mode> /regexp pattern/
+
+<mode>: 'b' or 'v' or 'o'
+<+->: '+' means add mode, '-' means remove mode
+
+[example] -------------------------------
+[all]
++o=*.jp
++o=/.*\.net/
+
+[#nadoka]
++o=kiyoya*
++o=unak*
+-o=ko1*
+-----------------------------------------
+
+
+=end
+
+class ModeManager < Nadoka::NDK_Bot
+  
+  class Fnmexp
+    def initialize str
+      @str = str
+    end
+
+    def =~ x
+      File.fnmatch @str, x, File::FNM_CASEFOLD
+    end
+  end
+
+  def parse_setting setting
+    s = nil
+    setting.each_line{|l|
+      l.strip!
+      if /^\[(all|[\#\&\!\+].+)\]/ =~ l
+        s = @config.identical_channel_name($1)
+      elsif /^\s*\[%(.+)\]\s*/ =~ l   # for compatibility with madoka
+        s = @config.identical_channel_name("\##{$1}:*.jp")
+      elsif s && l.sub!(/^([+-][bvo]+)\s*=\s*/, '')
+        mode = $1
+        l.scan(/\S+/){|prefix|
+          if %r!^/(.*)\/$! =~ prefix
+            user = [mode, Regexp.new($1, Regexp::IGNORECASE)]
+          else
+            user = [mode, Fnmexp.new(prefix)]
+          end
+          @userlist[s] << user
+        }
+      end
+    }
+  end
+
+  def bot_initialize
+    @userlist = Hash.new{|h, k| h[k] = []}
+    if file = (@bot_config[:modes_file] || @bot_config[:file])
+      begin
+        parse_setting File.read(file)
+      rescue Exception => e
+        "operator manager: #{e.class}(#{e.message})"
+      end
+    end
+    if setting = @bot_config[:modes]
+      parse_setting setting
+    end
+  end
+
+  def search_mode_in_list list, prefix
+    list.each{|e|
+      if e[1] =~ prefix
+        return e[0]
+      end
+    }
+    nil
+  end
+
+  def search_mode ch, prefix
+    search_mode_in_list(@userlist['all'], prefix) ||
+    search_mode_in_list(@userlist[ch], prefix)
+  end
+
+  def on_join prefix, rch
+    ch = @config.canonical_channel_name(rch)
+    if prefix.nick != @state.nick &&
+      (/o/ =~ @state.channel_user_mode(ch, @state.nick))
+      if mode = search_mode(prefix.to_s)
+        change_mode(rch, mode, prefix.nick)
+      end
+    end
+  end
+end
+
+
