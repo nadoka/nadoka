@@ -40,6 +40,8 @@ module Nadoka
       
       @connected = false
       @exitting  = false
+
+      set_signal_trap
     end
     attr_reader :state, :connected
     
@@ -206,6 +208,7 @@ module Nadoka
       if @config.away_nick && @state.original_nick
         send_to_server Cmd.nick(@state.original_nick)
         @state.original_nick = nil
+        sleep 1 # wait for server response
       end
 
       @config.login_channels.each{|ch|
@@ -358,13 +361,17 @@ module Nadoka
         # q[1] must be client object
         begin
           reload_config
-          q[1] << Cmd.notice(@state.nick, "configuration is reloaded")
+          if q[1]
+            q[1] << Cmd.notice(@state.nick, "configuration is reloaded")
+          end
         rescue Exception => e
-          q[1] << Cmd.notice(@state.nick, "error is occure while reloading configuration")
-          q[1] << Cmd.notice(@state.nick, e.message)
-          e.backtrace.each{|line|
-            q[1] << Cmd.notice(@state.nick, line)
-          }
+          if q[1]
+            q[1] << Cmd.notice(@state.nick, "error is occure while reloading configuration")
+            q[1] << Cmd.notice(@state.nick, e.message)
+            e.backtrace.each{|line|
+              q[1] << Cmd.notice(@state.nick, line)
+            }
+          end
         end
         
       when :quit_program
@@ -389,6 +396,22 @@ module Nadoka
           leave_away
         end
       end
+    end
+
+    def set_signal_trap
+      list = Signal.list.keys
+      Signal.trap(:HUP){
+        # reload config
+        invoke_event :reload_config
+      } if list.any?{|e| e == 'HUP'}
+      trap(:USR1){
+        # SIGUSR1
+        invoke_event :invoke_bot, :sigusr1
+      } if list.any?{|e| e == 'USR1' }
+      trap(:USR2){
+        # SIGUSR2
+        invoke_event :invoke_bot, :sigusr2
+      } if list.any?{|e| e == 'USR2' }
     end
     
     # server -> clients

@@ -1,3 +1,9 @@
+Sat, 01 May 2004 23:58:55 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : support nadoka control with signal
+	and bot event on_sigusr[12]
+
+
 Sat, 01 May 2004 23:04:40 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : fix typo

@@ -6,7 +6,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: ndk_bot.rb,v 1.19 2004/05/01 05:40:16 ko1 Exp $
+# $Id$
 # Create : K.S. 04/04/19 00:39:48
 #
 #
@@ -30,12 +30,12 @@ module Nadoka
 
     # To initialize bot insntace, please overide this.
     def bot_initialize
-      # override me
+      # do something
     end
 
     # This method will be called when reload configuration.
     def bot_destruct
-
+      # do something
     end
 
     # To access bot confiuration, please use this.
@@ -111,11 +111,6 @@ module Nadoka
       
     end
     
-    # This method will be called when recieved every message
-    def on_every_message prefix, command, *args
-      # 
-    end
-    
     In above methods, you can access nick, user, host information
     via prefix argument variable like this.
 
@@ -123,8 +118,13 @@ module Nadoka
     - prefix.user
     - prefix.host
 
-    @raw_prefix is obsoleted
+    @raw_prefix is obsolete
     
+
+    # This method will be called when recieved every message
+    def on_every_message prefix, command, *args
+      # 
+    end
 
     
     ######
@@ -153,6 +153,12 @@ module Nadoka
     def on_nadoka_command client, command, *params
       # do something
     end
+
+    # on signal 'sigusr[12]' trapped
+    def on_sigusr[12] # no arguments
+      # do something
+    end
+
     
     You can access your current state on IRC server via @state.
     - @state.nick         # your current nick
