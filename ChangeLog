@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2004-07-21(Wed) 00:57:44 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : part only from own nick when server
+	disconnect
+
+
 2004-07-20(Tue) 11:33:46 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* 0.6.2 release

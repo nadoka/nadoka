@@ -544,12 +544,10 @@ module Nadoka
     end
 
     def part_from_all_channels
-      @state.current_channels.each{|ch, cs|
-        cs.members.each{|m|
-          cmd = Cmd.part(ch)
-          cmd.prefix = m
-          send_to_clients cmd
-        }
+      @state.channels.each{|ch, cs|
+        cmd = Cmd.part(ch)
+        cmd.prefix = @state.nick #m
+        send_to_clients cmd
       }
       @state.clear_channels_member
     end
