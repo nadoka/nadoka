@@ -499,7 +499,7 @@ module Nadoka
     end
     
     def about_me? msg
-      qnick = Regexp.quote(@state.nick)
+      qnick = Regexp.quote(@state.nick || '')
       if msg.prefix =~ /^#{qnick}!/
         true
       else
