@@ -11,7 +11,7 @@
 #
 
 module Nadoka
-  NDK_Version  = '0.5.4'
+  NDK_Version  = '0.5.5'
   NDK_Created  = Time.now
 
   def self.version
