@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-08-25(Wed) 15:00:49 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : fix bug(add ',')
+
+
 2004-08-20(Fri) 18:48:36 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/googlebot.nb : fix googlec prompt

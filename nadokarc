@@ -112,7 +112,7 @@ Channel_info = {
     :log     => '${setting_name}-nadoka-chan-%y%m%d.log',
     # :part_message => "bye bye"
     # :initial_mode => "+s"
-  }
+  },
   '#nadoka:*.jp' => {
     :timing  => :startup,
     :log     => '${setting_name}-nadoka-chan-jp-%y%m%d.log',
