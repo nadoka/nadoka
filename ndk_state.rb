@@ -155,8 +155,8 @@ module Nadoka
       @current_channels.keys
     end
 
-    def channel_member ch
-      ch = canonical_channel_name(ch)
+    # need canonicarized channel name
+    def channel_users ch
       if @current_channels.has_key? ch
         @current_channels[ch].members
       else
@@ -164,10 +164,12 @@ module Nadoka
       end
     end
     
-    def channel_member_mode ch, user
-      ch = canonical_channel_name(ch)
-      if cahnnels.include?[ch] && channel_member(ch).include?(user)
+    # need canonicarized channel name
+    def channel_user_mode ch, user
+      if channel_users(ch).include?(user)
         @current_channels[ch].mode(user)
+      else
+        ''
       end
     end
     

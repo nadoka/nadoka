@@ -93,6 +93,12 @@ module Nadoka
       @manager.send_to_server msg
     end
 
+    # ccn or canonical_channel_name
+    def canonical_channel_name ch
+      @config.canonical_channel_name ch
+    end
+    alias ccn canonical_channel_name
+    
 =begin
     # ...
     # def on_[IRC Command or Reply(3 digits)] prefix(nick only), param1, param2, ...
@@ -175,6 +181,8 @@ module Nadoka
     You can access your current state on IRC server via @state.
     - @state.nick         # your current nick
     - @state.channels     # channels which you are join        ['ch1', 'ch2', ...]
+
+    # need canonicarized channel name
     - @state.channel_users(ch) # channel users ['user1', ...]
     - @state.channel_user_mode(ch, nick)
     

@@ -2,6 +2,15 @@
 # $Id$ 
 #
 
+2004-07-21(Wed) 19:17:13 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_bot.rb(canonical_channel_name) : added
+	and this alias 'ccn' is added
+
+	* ndk_state.rb : rename channel_member to channel_users
+	and channel_member_mode to channel_user_mode
+
+
 2004-07-21(Wed) 00:57:44 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : part only from own nick when server
