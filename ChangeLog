@@ -2,6 +2,17 @@
 # $Id$ 
 #
 
+
+2004-07-17(Sat) 00:06:54 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/googlebot.nb : fix char code bugs
+
+	* ndk_manager.rb : trap SIGINT to quit program
+
+	* ndk_client.rb : add exception hook to protect unexpected
+	disconnect
+
+
 2004-07-14(Wed) 04:29:47 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ToDo : removed

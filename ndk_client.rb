@@ -178,7 +178,11 @@ module Nadoka
     def send_msg msg, logging=true
       @logger.dlog "[C<] #{msg}" if logging
       unless @sock.closed?
-        @sock.write msg.to_s
+        begin
+          @sock.write msg.to_s
+        rescue Exception => e
+          @manager.ndk_error e
+        end
       end
     end
     

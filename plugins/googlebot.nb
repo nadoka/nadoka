@@ -105,10 +105,10 @@ class GoogleBot < Nadoka::NDK_Bot
     
       result.resultElements.each{|e|
         url   = e.URL
-        title = show_char_code(e.title)
+        title = show_char_code_and_erace_tag(e.title)
       }
       
-      "#{erace_tag(title)} - #{url} (and #{count} hits)"
+      "#{title} - #{url} (and #{count} hits)"
     else
       "no match"
     end
@@ -148,13 +148,14 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
   
-  def show_char_code str
+  def show_char_code_and_erace_tag str
     case $KCODE
     when 'EUC', 'SJIS'
-      str.tojis
+      CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).tojis
     when 'NONE', 'UTF-8'
       begin
-        Iconv.conv("EUC-JP", "UTF-8", str).tojis
+        str = Iconv.conv("EUC-JP", "UTF-8", str)
+        CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).tojis
       rescue => e
         "(char code problem: #{e.class}[#{e.message.dump}])"
       end

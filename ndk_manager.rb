@@ -489,6 +489,9 @@ module Nadoka
 
     def set_signal_trap
       list = Signal.list.keys
+      Signal.trap(:INT){
+        invoke_event :quit_program
+      } if list.any?{|e| e == 'INT'}
       Signal.trap(:HUP){
         # reload config
         invoke_event :reload_config
