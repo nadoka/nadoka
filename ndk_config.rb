@@ -168,18 +168,21 @@ module Nadoka
         }
         @config[:server_list] = svl
       end
-      
+
+      # treat with channel information
       if chs = klass.const_get(:Channel_info)
         dchs = []
         lchs = []
         cchs = {}
         chs.each{|ch, setting|
+          ch = canonical_channel_name(ch)
+          
           if setting[:timing] == :startup
             dchs << ch
           elsif setting[:timing] == :login
             lchs << ch
           end
-          cchs[ch.downcase] = setting
+          cchs[ch] = setting
         }
         chs.replace cchs
         @config[:default_channels] = dchs
@@ -227,7 +230,11 @@ module Nadoka
       }.flatten
       
     end
-
+    
+    def canonical_channel_name ch
+      ch.downcase
+    end
+    
     def make_bot_instance bk, cfg
       bot = bk.new @manager, self, cfg || {}
       @logger.slog "bot instance: #{bot}"

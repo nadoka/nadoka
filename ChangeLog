@@ -1,3 +1,12 @@
+2004-05-14(Fri) 02:27:06 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_config.rb(canonical_channel_name) : added
+	and all configuration keys of channel information are canonical
+
+	* ndk_state.rb(canonical_channel_name) : added
+	and all state keys of channel are canonical
+
+
 2004-05-09(Sun) 18:11:30 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : correct command to clients

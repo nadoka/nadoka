@@ -35,8 +35,6 @@ module Nadoka
 
     # channel message
     def clog ch, msg
-      ch = canonical_channel_name(ch)
-      
       logfile = (@config.channel_info[ch] && @config.channel_info[ch][:log]) ||
                  @config.default_log
       logfile = make_logfilename(logfile, ch)
@@ -95,11 +93,6 @@ module Nadoka
           f.puts msg
         }
       end
-    end
-
-    def canonical_channel_name ch
-      ch = ch.sub(/^\!.{5}/, '!')
-      ch.downcase
     end
     
     RName = {        # ('&','#','+','!')

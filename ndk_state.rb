@@ -154,6 +154,7 @@ module Nadoka
     end
 
     def channel_member ch
+      ch = canonical_channel_name(ch)
       if @current_channels.has_key? ch
         @current_channels[ch].members
       else
@@ -161,6 +162,11 @@ module Nadoka
       end
     end
 
+    def canonical_channel_name ch
+      ch = ch.sub(/^\!.{5}/, '!')
+      ch.downcase
+    end
+    
     #
     def backlog_push msg
       if @config.backlog_lines == 0
@@ -181,6 +187,8 @@ module Nadoka
     
     #
     def on_join user, ch
+      ch = canonical_channel_name(ch)
+      
       msg = "+ #{user} to #{ch}"
       if user == nick
         @logger.clog ch, msg
@@ -195,6 +203,8 @@ module Nadoka
     end
     
     def on_part user, ch
+      ch = canonical_channel_name(ch)
+
       msg = "- #{user} from #{ch}"
       if user == nick
         @logger.clog ch, msg
@@ -236,12 +246,16 @@ module Nadoka
     end
     
     def on_mode user, ch, args
+      ch = canonical_channel_name(ch)
+
       if @current_channels.has_key? ch
         @current_channels[ch].on_mode user, args
       end
     end
 
     def on_topic user, ch, topic
+      ch = canonical_channel_name(ch)
+
       if @current_channels.has_key? ch
         @logger.clog ch, "<#{ch}:#{user} TOPIC> #{topic}"
         @current_channels[ch].topic = topic
@@ -250,6 +264,8 @@ module Nadoka
     end
     
     def on_332 ch, topic
+      ch = canonical_channel_name(ch)
+
       if @current_channels.has_key? ch
         @current_channels[ch].topic = topic
         @logger.clog ch, "<#{ch} TOPIC> #{topic}"
@@ -261,6 +277,8 @@ module Nadoka
     # ex) :lalune 353 test_ndk = #nadoka :test_ndk ko1_nmdk
     # 
     def on_353 ch, users
+      ch = canonical_channel_name(ch)
+
       if @current_channels.has_key? ch
         chs = @current_channels[ch]
         users.split(/ /).each{|e|
