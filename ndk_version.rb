@@ -11,12 +11,22 @@
 #
 
 module Nadoka
-    
   NDK_Version  = '0.6.0'
   NDK_Created  = Time.now
 
   if /trunk/ =~ '$HeadURL$'
     NDK_Version.concat('-trunk')
+    rev = '-'
+    $LOAD_PATH.each{|path|
+      path = path + '/ChangeLog'
+      if FileTest.exist?(path)
+        if /^\# ChangeLog of Nadoka\(\$Rev: (\d+) \$\)$/ =~ open(path){|f| s = f.gets}
+          rev = "Rev: #{$1}"
+          break
+        end
+      end
+    }
+    NDK_Version.concat("(#{rev})")
   end
   
   def self.version
@@ -25,4 +35,5 @@ module Nadoka
   end
 end
 
+p Nadoka.version
 

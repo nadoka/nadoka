@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-12(Mon) 16:51:24 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_version.rb : add rev to version string if this in trunk
+
+
 2004-07-12(Mon) 16:39:59 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ChangeLog : add rev keyword
