@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-11-24(Wed) 13:20:17 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/autodump.nb : fix bug	(apply patch from shugo)
+
+
 2004-08-25(Wed) 15:00:49 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : fix bug(add ',')

@@ -76,7 +76,7 @@ class AutoDumpBot < Nadoka::NDK_Bot
     end
   end
 
-  def on_client_logout count
+  def on_client_logout count, client
     if count == 1 && @auto_dump
       dump_cinfo
     end
