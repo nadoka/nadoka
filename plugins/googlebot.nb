@@ -40,6 +40,8 @@ BotConfig = {
     :key     => 'xxxx',              # 
     :keypath => '/x/y/z/google_key', # specify one
                                      # or put google key file on ~/.google_key
+    #
+    :googlec_maxwords => 5,
     :search_default_lang => 'lang_ja',
     :count_default_lang  => '',
   }
@@ -59,8 +61,8 @@ class GoogleBot < Nadoka::NDK_Bot
     @available_channel   = @bot_config[:ch] || /.*/
     @google_key          = google_key
     @search_default_lang = @bot_config[:search_default_lang] || 'lang_ja'
+    @googlec_maxwords    = @bot_config[:googlec_maxwords] || 5
     @count_default_lang  = @bot_config[:count_default_lang]  || ''
-    
     google_wsdl = 'http://api.google.com/GoogleSearch.wsdl'
     @google = SOAP::WSDLDriverFactory.new(google_wsdl).create_driver
   end
@@ -116,7 +118,7 @@ class GoogleBot < Nadoka::NDK_Bot
   def googlec word, lang=@count_default_lang
     lang = lang_check(lang)
     words = Shellwords.shellwords(word)
-    return 'too many options' if words.size > 5
+    return 'too many options' if words.size > @googlec_maxwords
 
     words.map{|w|
       w = search_char_code(w)

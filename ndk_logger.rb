@@ -89,16 +89,21 @@ module Nadoka
 
     def write_log(io, msg)
       msg = "#{Time.now.strftime(@config.log_timeformat)} #{msg}"
-      if io.respond_to? :puts
-        io.puts msg
-      else
-        bdir = File.expand_path(@config.log_dir)
 
-        @lock.synchronize{
-          open(File.expand_path(io, bdir), 'a'){|f|
-            f.puts msg
+      begin
+        if io.respond_to? :puts
+          io.puts msg
+        else
+          bdir = File.expand_path(@config.log_dir)
+          
+          @lock.synchronize{
+            open(File.expand_path(io, bdir), 'a'){|f|
+              f.puts msg
+            }
           }
-        }
+        end
+      rescue IOError
+        # ignore IOError
       end
     end
     

@@ -102,15 +102,6 @@ Quit_Message = 'bye! / quit nadoka'
 Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
 System_log  = '${setting_name}-system.log'
 
-# 'euc' or 'sjis'
-FilenameEncoding =
-when RUBY_PLATFORM
-case /mswin/, /cygwin/, /mingw/
-  'sjis'
-case /linux/,
-  'euc'
-end
-
 Channel_info = {
   # nadoka talk
   '#Nadoka' => {
@@ -182,6 +173,16 @@ BotConfig = {
 
 Privmsg_Filter = nil
 Notice_Filter  = nil
+
+# 'euc' or 'sjis'
+FilenameEncoding =
+when RUBY_PLATFORM
+case /mswin/, /cygwin/, /mingw/
+  'sjis'
+case /linux/,
+  'euc'
+end
+
 
 end
 
