@@ -23,7 +23,7 @@ class ShellBot < Nadoka::NDK_Bot
     if ch == ShellNick
       ans = exec_shell(message)
       ans.each{|line|
-        msg = Nadoka::Cmd.privmsg(@state.nick, 'ans: ' + line)
+        msg = Cmd.privmsg(@state.nick, 'ans: ' + line)
         client.send_to_client client.add_prefix(msg, ShellNick)
       }
       raise ::Nadoka::NDK_BotSendCancel
@@ -32,7 +32,7 @@ class ShellBot < Nadoka::NDK_Bot
 
   def on_nadoka_command client, command, *params
     if command == 'shell'
-      msg = Nadoka::Cmd.privmsg(@state.nick, 'Hello, this is shell command executor')
+      msg = Cmd.privmsg(@state.nick, 'Hello, this is shell command executor')
       client.send_to_client client.add_prefix(msg, ShellNick)
       raise ::Nadoka::NDK_BotSendCancel
     end

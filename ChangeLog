@@ -1,3 +1,10 @@
+2004-07-07(Wed) 17:15:07 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/weba.nb : add basic authentication, and some fixs
+
+	* plugins/shellbot.nb, plugins/evalbot.nb : undo
+
+
 2004-07-07(Wed) 16:04:30 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/shellbot.nb, plugins/evalbot.nb : fix bugs

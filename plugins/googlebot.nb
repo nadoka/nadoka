@@ -7,12 +7,12 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id:$
+# $Id$
 #
 
 =begin
 
-usage with irc client:
+== Usage with irc client
 
   google> keyword
     -> search keyword by google with default search langage
@@ -30,8 +30,7 @@ usage with irc client:
     -> search and show each hit count with [lang] langage
 
 
-
-bot option:
+== Configuration:
 
 BotConfig = {
   :GoogleBot => {

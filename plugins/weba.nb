@@ -12,9 +12,27 @@
 
 =begin
 
+== Abstract
+
 WebA: Web Accessor
   http interface for irc
 
+  You can access IRC via ((<http://host:port/weba>))
+  (by default).
+
+== Configuration
+
+BotConfig = {
+  :Weba => {
+    :passwd  => 'password' # or nil(no authentication, and nil is default)
+                           # If passwd is specified, use Basic Access Authentication
+    :id   => 'weba'        # Basic Authentication ID (default: 'weba')
+    :port => 12345         # httpd port(default: 12345)
+    :entry=> 'weba'        # irc entry(default: 'weba')
+                           # weba access to http://host:#{port}/#{entry}
+    :max_store => 1000     # store message size(default: 1000)
+  }
+}
 
 =end
 
@@ -23,9 +41,16 @@ require 'tagparts'
 
 class WebA < Nadoka::NDK_Bot
   class WebAlet < WEBrick::HTTPServlet::AbstractServlet
+    def initialize server, bot, authorizer
+      super
+      @bot  = bot
+      @auth = authorizer
+    end
+    
     def do_GET req, res
+      @auth.authenticate(req, res) if @auth
       begin
-        res.body = @options[0].htmlpage(req.query).to_s
+        res.body = @bot.htmlpage(req.query).to_s
         res['content-type'] = 'text/html; charset=Shift_JIS'
       rescue WebARedirect => e
         res.set_redirect(WEBrick::HTTPStatus::Found, "#{req.path}?ch=#{URI.encode(e.ch.tosjis)}")
@@ -60,8 +85,8 @@ class WebA < Nadoka::NDK_Bot
       _body(
         _h1("WebA#{ttl}"),
         _p(
-          _a({:href => '?ch='+URI.encode((ch || '').tosjis)}, 'reload'),
-          _a({:href => './weba'}, 'top')
+          _a({:href => "./#{@entry}?ch="+URI.encode((ch || '').tosjis)}, 'reload'),
+          _a({:href => "./#{@entry}"}, 'top')
         ),
         view_ch(ch),
         select_ch(ch)
@@ -72,7 +97,7 @@ class WebA < Nadoka::NDK_Bot
     _p({:class => 'channel-list'},
       (@state.channels.sort + ['all']).map{|e|
         e = e.tosjis
-        [_a({:href => '?ch='+ URI.encode(e)}, e), ' ']
+        [_a({:href => "./#{@entry}?ch="+ URI.encode(e)}, e), ' ']
       }
     )
   end
@@ -82,11 +107,11 @@ class WebA < Nadoka::NDK_Bot
     chs = ch.tosjis
     msgs = (ch == 'all') ? @messages : @messages.find_all{|e| e[:ch] == chs}
     
-    _div({:class => 'sayframe'},
+    _div({:class => 'irc-accessor'},
       if(ch != 'all')
-        _form({:method => 'get', :action => './weba'},
-          "message: ",
-          _input({:type => 'text',   :name => 'message'}),
+        _form({:method => 'get', :action => "./#{@entry}", :class => 'sayform'},
+          "msg: ",
+          _input({:type => 'text',   :name => 'message', :class => 'msgbox'}),
           _input({:type => 'submit', :name => 'say', :value => 'say'}),
           _input({:type => 'hidden', :name => 'ch', :value => ch})
         )
@@ -95,7 +120,7 @@ class WebA < Nadoka::NDK_Bot
       _div({:class => 'messages'},
         msgs.map{|m|
           if ch == 'all'
-            chn = _a({:href => '?ch=' + URI.encode(m[:ch])}, m[:ch])
+            chn = _a({:href => "./#{@entry}?ch=" + URI.encode(m[:ch])}, m[:ch])
           else
             chn = ''
           end
@@ -122,7 +147,28 @@ class WebA < Nadoka::NDK_Bot
     @server = WEBrick::HTTPServer.new({
       :Port => @bot_config[:port] || 12345,
     })
-    @server.mount("/weba", WebAlet, self)
+    @entry = @bot_config[:entry] || 'weba'
+    auth = nil
+    if passwd = @bot_config[:passwd]
+      userdb = Hash.new
+      userdb.extend(WEBrick::HTTPAuth::UserDB)
+      userdb.auth_type = WEBrick::HTTPAuth::BasicAuth
+      userdb.set_passwd("WebA Authentication", @bot_config[:id] || 'weba', passwd)
+
+      auth = WEBrick::HTTPAuth::BasicAuth.new({
+        :Realm        => "WebA Authentication",
+        :UserDB       => userdb,
+        :Algorithm    => 'MD5-sess',
+        :Qop          => [ 'auth' ],
+        :UseOpaque    => true,
+        :NonceExpirePeriod => 60,
+        :NonceExpireDelta  => 5,
+      })
+    end
+    
+    @server.mount("/#{@entry}", WebAlet, self, auth)
+    
+    
     @server_thread = Thread.new{
       begin
         @server.start
@@ -148,8 +194,5 @@ class WebA < Nadoka::NDK_Bot
     ch = @config.canonical_channel_name(ch)
     push_message(ch, prefix.nick, msg, :notice)
   end
-  
 end
-
-
 

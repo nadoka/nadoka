@@ -15,12 +15,11 @@ require 'ndk_err'
 require 'ndk_config'
 require 'ndk_state'
 require 'ndk_client'
-require 'ndk_bot'
 
 module Nadoka
   Cmd = ::RICE::Command
   Rpl = ::RICE::Reply
-  
+
   class NDK_Manager
     TimerIntervalSec = 30
     

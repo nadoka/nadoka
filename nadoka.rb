@@ -24,6 +24,8 @@ if $0 == __FILE__
 
 require 'optparse'
 require 'ndk_manager'
+require 'ndk_bot'
+
 $stdout.sync=true
 $NDK_Debug  = false
 
