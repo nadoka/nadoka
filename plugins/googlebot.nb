@@ -1,0 +1,48 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id: samplebot.nb 2 2004-05-01 09:57:28Z ko1 $
+#
+
+require 'soap/wsdlDriver'
+require 'iconv'
+require 'kconv'
+
+class GoogleBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @available_channel = @bot_config[:ch] || /.*/
+    @key    = @bot_config[:key] || File.open(@bot_config[:key_path]).read.chomp
+    @google = SOAP::WSDLDriverFactory.new(GOOGLE_WSDL).createDriver
+    @ic     = Iconv.open("EUC-JP", "UTF-8")
+  end
+  
+  # Yes person
+  def on_privmsg prefix, ch, msg
+    if @available_channel === ch && /^google>\s*(.+)/
+      send_notice(ch, "google bot: #{search($1)}")
+    end
+  end
+
+  def search word
+    result = google.doGoogleSearch( @key, word, 0, 1, false, "", false, "", 'utf-8', 'utf-8' )
+    url   = ''
+    title = ''
+    count = estimatedTotalResultsCount
+    result.resultElements{|e|
+      url   = e.URL
+      title = u8tojis(e.title)
+    }
+    "#{title} - #{url}(and #{count} hits)"
+  end
+
+  def u8tojis(str)
+    @ic.iconv(str).tojis
+  end
+end
+
