@@ -1,3 +1,12 @@
+2004-07-10(Sat) 17:33:10 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_version.rb : check trunk
+
+	* ndk_bot.rb : add on_quit_from_channel event
+
+	* plugins/backlogbot.nb: added
+
+
 2004-07-09(Fri) 07:45:29 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/drbot.nb : rename method name kick_* -> send/recv...

@@ -128,14 +128,20 @@ module Nadoka
     - prefix.user
     - prefix.host
 
+    
+    ######
+    # spcial event
+
     # This method will be called when recieved every message
     def on_every_message prefix, command, *args
       # 
     end
 
-    
-    ######
-    # spcial event
+    # if 'nick' user quit client and part ch, this event is called.
+    # !! ch is canonicarized channel name !!
+    def on_quit_from_channel ch, nick, qmsg
+      # do something
+    end
     
     # It's special event that will be called about a minute.
     def on_timer timeobj
@@ -143,20 +149,20 @@ module Nadoka
     end
 
     # It's special event that will be called when new client join.
-    def on_client_login client_count
+    def on_client_login client_count, client
       # do something
     end
 
     # It's special event that will be called when a client part.
-    def on_client_logout client_count
+    def on_client_logout client_count, client
       # do something
     end
 
-    # secret api :P
+    # undocumented
     def on_client_privmsg client, ch, msg
       # do something
     end
-    # secret api, too :P
+    # undocumented
     def on_nadoka_command client, command, *params
       # do something
     end

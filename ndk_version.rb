@@ -11,9 +11,14 @@
 #
 
 module Nadoka
-  NDK_Version  = '0.5.5'
+    
+  NDK_Version  = '0.6.0'
   NDK_Created  = Time.now
 
+  if /trunk/ =~ '$HeadURL$'
+    NDK_Version.concat('-trunk')
+  end
+  
   def self.version
     "Nadoka Ver.#{NDK_Version}" +
     " with Ruby #{RUBY_VERSION} (#{RUBY_RELEASE_DATE}) [#{RUBY_PLATFORM}]"

@@ -468,7 +468,7 @@ module Nadoka
         
       when :invoke_bot
         # q[1], q[2] are message and argument
-        send_to_bot q[1], q[2]
+        send_to_bot q[1], *q[2..-1]
         
       when :enter_away
         if q[1] == 0

@@ -49,14 +49,14 @@ module Nadoka
           @connected = true
           begin
             @manager.invoke_event :leave_away, @manager.client_count
-            @manager.invoke_event :invoke_bot, :client_login, @manager.client_count
+            @manager.invoke_event :invoke_bot, :client_login, @manager.client_count, self
             while msg = recv_from_client
               send_from_client msg, self
             end
           rescue NDK_QuitClient
             # finish
           ensure
-            @manager.invoke_event :invoke_bot, :client_logout, @manager.client_count
+            @manager.invoke_event :invoke_bot, :client_logout, @manager.client_count, self
           end
         end
       rescue Exception

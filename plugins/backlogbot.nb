@@ -1,0 +1,137 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id$
+#
+
+=begin
+
+== Abstract
+
+BackLogBot support rich backlog management scheme.
+
+
+== Configuration
+
+BotConfig = {
+  :BackLogBot => {
+    :method => :by_size # or :by_time(default: :by_size)
+    :limit  => 100      # or (60 * 60 * 24) => 1day
+                        # (default: 100 or (60 * 60 * 24))
+                        #
+                        # if 'method' is :by_time, limit means
+                        # how long bot store the messages(sec)
+                        #
+                        # if 'method' is :by_size, limit means
+                        # how many messages to store
+  }
+}
+
+=end
+
+
+class BackLogBot < Nadoka::NDK_Bot
+  
+  class LimitedObjectStore
+    include Enumerable
+    
+    def initialize limit
+      @store = []
+      @limit = limit
+    end
+
+    def push msg
+      @store << [msg, Time.now]
+      if @store.size > @limit
+        @store = @store[@store.size - @limit .. -1]
+      end
+    end
+
+    def each
+      @store.each{|m|
+        # time, msg
+        yield m[1],  m[0]
+      }
+    end
+  end
+  
+  class LimitedObjectStoreByTime < LimitedObjectStore
+    def push msg
+      @store << [msg, Time.now]
+      limit = Time.now - @limit
+      while @store[0] && (@store[0][1] < limit)
+        @store.shift
+      end
+    end
+  end
+  
+  ##########################################################
+  
+  def bot_initialize
+    @method = @bot_config[:method] || :by_size
+    case @method
+    when :by_size
+      @limit = @bot_config[:limit] || 100
+      @store_klass = LimitedObjectStore
+    when :by_time
+      @limit = @bot_config[:limit] || (60 * 60 * 24)
+      @store_klass = LimitedObjectStoreByTime
+    end
+    @store_pool = {}
+  end
+  
+  def push ch, msg
+    unless store = @store_pool[ch]
+      store = @store_pool[ch] = @store_klass.new(@limit)
+    end
+    store.push msg
+  end
+
+  ##
+
+  def on_client_login client_count, client
+    @store_pool.each{|ch, store|
+      store.each{|time, m|
+        nick, msg = m
+        cmd = Cmd.notice(ch, "TAIL(#{time.strftime('%H:%M')}) #{msg}")
+        client.add_prefix(cmd, nick)
+        client.send_msg cmd
+      }
+    }
+  end
+  
+  ###############################################
+  # collect message
+  
+  def on_privmsg prefix, ch, msg
+    ch = @config.canonical_channel_name(ch)
+    push ch, [prefix.nick, msg]
+  end
+  
+  def on_notice prefix, ch, msg
+    ch = @config.canonical_channel_name(ch)
+    push ch, [prefix.nick, msg]
+  end
+
+  def on_join prefix, ch
+    push ch, [nil, "+ #{prefix.nick}"]
+  end
+
+  def on_part prefix, ch, msg = ''
+    push ch, [nil, "- #{prefix.nick}(#{msg})"]
+  end
+
+  def on_quit_from_channel ch, nick, msg = ''
+    push ch, [nil, "- #{nick}(#{msg})"]
+  end
+  
+end
+
+
+
