@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-07-20(Tue) 01:48:45 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_manager.rb : fix invoke time event timing
+
+
 2004-07-20(Tue) 00:37:02 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : add @pong_fail_count and MAX_PONG_FAIL

@@ -7,7 +7,7 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id:$
+# $Id$
 #
 
 =begin
@@ -44,7 +44,7 @@ class TimeStampBot < Nadoka::NDK_Bot
   end
   
   def on_timer tm
-    if tm > @nexttime
+    if tm >= @nexttime
       stamp_log
       @nexttime = nexttime
     end

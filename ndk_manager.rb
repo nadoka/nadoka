@@ -336,7 +336,9 @@ module Nadoka
           @pong_recieved   = true
           @pong_fail_count = 0
           while true
-            sleep(Time.now.to_i % TimerIntervalSec)
+            slp = Time.now.to_i % TimerIntervalSec
+            slp = TimerIntervalSec if slp < (TimerIntervalSec / 2)
+            sleep slp
             send_to_bot :timer, Time.now
 
             if @connected

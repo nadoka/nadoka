@@ -267,7 +267,7 @@ module Nadoka
       when 'STATUS'
         @manager.ndk_status.each{|msg| client_notice msg}
       when 'HELP'
-        self << Cmd.notice(@state.nick, 'available: QUIT, RESTART, RELOAD, HELP')
+        self << Cmd.notice(@state.nick, 'available: QUIT, RECONNECT, RESTART, RELOAD, HELP')
         if args[1]
           self << Cmd.notice(@state.nick, "#{args[1]}: #{NdkCommandDescription[args[1].upcase]}")
         end
