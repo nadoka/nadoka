@@ -67,8 +67,8 @@ class GoogleBot < Nadoka::NDK_Bot
   
   def on_privmsg prefix, ch, msg
     if @available_channel === ch
-      if respons = dispatch_command(msg)
-        send_notice(ch, respons)
+      if response = dispatch_command(msg)
+        send_notice(ch, response)
       end
     end
   end

@@ -1,3 +1,8 @@
+2004-07-04(Sun) 17:50:06 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_logger.rb : synchronize file output
+
+
 2004-07-04(Sun) 16:15:24 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/googlebot.nb : fix character code bugs

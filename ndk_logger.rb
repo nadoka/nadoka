@@ -8,6 +8,8 @@
 # $Id$
 # Create : K.S. 04/05/01 02:04:18
 
+require 'thread'
+
 module Nadoka
   
   class NDK_Logger
@@ -15,6 +17,7 @@ module Nadoka
       @manager = manager
       @config  = config
       @dlog    = @config.debug_log
+      @lock    = Mutex.new
     end
     
     # debug message
@@ -89,8 +92,11 @@ module Nadoka
         io.puts msg
       else
         bdir = File.expand_path(@config.log_dir)
-        open(File.expand_path(io, bdir), 'a'){|f|
-          f.puts msg
+
+        @lock.synchronize{
+          open(File.expand_path(io, bdir), 'a'){|f|
+            f.puts msg
+          }
         }
       end
     end
