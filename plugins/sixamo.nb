@@ -49,7 +49,7 @@ class SixamoBot < Nadoka::NDK_Bot
       @sixamo.memorize msg
 
       unless @sixamo_id === msg
-        rnd = case Time.now - @orev
+        rnd = case Time.now - @prev
         when  0..10; @sixamo_rt[0]
         when 10..20; @sixamo_rt[1]
         when 20..30; @sixamo_rt[2]

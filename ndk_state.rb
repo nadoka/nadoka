@@ -245,7 +245,7 @@ module Nadoka
         @current_channels.each{|ch, chs|
           if chs.on_part(user)
             @manager.invoke_event :invoke_bot, :quit_from_channel, chs.name, user, qmsg
-            @logger.log ch, "- #{user} from #{chs.name}(#{qmsg})"
+            @logger.clog ch, "- #{user} from #{chs.name}(#{qmsg})"
           end
         }
       end

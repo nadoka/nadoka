@@ -17,14 +17,16 @@
 An example using DRb. You can access to nadoka via DRb protocl.
 See sample drbcl.rb
 
+
 == Configuration
 
 BotConfig = {
   :DRbot => {
-    :port => 12345       # (default: 12346)
-    :host => 'localhost' # (default: '')
+    :port => 12345,       # (default: 12346)
+    :host => 'localhost', # (default: '')
   }
 }
+
 
 =end
 

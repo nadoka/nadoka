@@ -67,7 +67,7 @@ Servers = [
   },
 
   # IPv6 Sample
-  # { :host => irc6.nara.wide.ad.jp,
+  # { :host => 'irc6.nara.wide.ad.jp',
   #   :port => 6667
   # }
 ]
@@ -102,8 +102,8 @@ Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
 System_log  = '${setting_name}-system.log'
 
 Channel_info = {
-  # nadoka talk
-  '#nadoka' => {
+  # nadoka talk(from Japanese server only)
+  '#nadoka:*.jp' => {
     # timing
     #  :startup / when nadoka start up <= default
     #  :login   / when user login
