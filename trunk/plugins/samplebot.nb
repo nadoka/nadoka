@@ -1,0 +1,21 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id: samplebot.nb,v 1.4 2004/04/26 01:46:43 ko1 Exp $
+#
+
+class SampleBot < Nadoka::NDK_Bot
+  
+  # Yes person
+  def on_privmsg prefix, ch, msg
+    send_notice(ch, "Yes, #{prefix.nick}!")
+  end
+  
+end
+

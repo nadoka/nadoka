@@ -1,0 +1,20 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# $Id: cron.nb,v 1.2 2004/04/22 17:47:29 ko1 Exp $
+#
+
+class CronBot < Nadoka::NDK_Bot
+  def on_timer t
+    @state.channels.each{|ch|
+      send_notice(ch, t.to_s)
+    }
+  end
+end
+
