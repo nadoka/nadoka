@@ -124,9 +124,7 @@ module Nadoka
       @try_nick         = nil
       
       @current_channels = {}
-      @backlog = []
     end
-    attr_reader :backlog
     attr_reader :current_channels
     attr_reader :current_nick
     attr_accessor :original_nick
@@ -184,24 +182,6 @@ module Nadoka
     end
     
     #
-    def backlog_push msg
-      if @config.backlog_lines == 0
-        if @manager.client_num == 0
-          @backlog << msg
-        end
-      else
-        @backlog << msg
-        while @backlog.size > @config.backlog_lines
-          @backlog.shift
-        end
-      end
-    end
-
-    def backlog_clear
-      @backlog = []
-    end
-    
-    #
     def on_join user, ch
       ch = canonical_channel_name(ch)
       
@@ -254,7 +234,7 @@ module Nadoka
       else
         @current_channels.each{|ch, chs|
           if chs.on_part(user)
-            @manager.invoke_event :quit_from_channel, ch, user, qmsg
+            @manager.invoke_event :invoke_bot, :quit_from_channel, ch, user, qmsg
             @logger.clog ch, "- #{user} from #{ch}(#{qmsg})"
           end
         }

@@ -69,12 +69,17 @@ module Nadoka
     Debug_log   = $stdout
     FilenameEncoding = 'euc'
     
-    Backlog_lines = 20
     Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
     
     # dirs
     Plugins_dir = './plugins'
     Log_dir     = './log'
+
+    Backlog_Lines = 20
+    
+    DefaultBotFiles = [
+      'backlogbot',
+    ]
     
     # bots
     BotFiles    = []
@@ -199,7 +204,7 @@ module Nadoka
       end
 
       # load bots
-      @config[:botfiles].each{|file|
+      (@config[:botfiles] + @config[:defaultbotfiles]).each{|file|
         load_botfile file
       }
       
@@ -229,6 +234,10 @@ module Nadoka
         end
       }.flatten
     end
+
+    def ch_config ch, key
+      channel_info[ch] && channel_info[ch][key]
+    end
     
     def canonical_channel_name ch
       ch = ch.sub(/^\!.{5}/, '!')
@@ -245,7 +254,7 @@ module Nadoka
     
     def make_bot_instance bk, cfg
       bot = bk.new @manager, self, cfg || {}
-      @logger.slog "bot instance: #{bot}"
+      @logger.slog "bot instance: #{bot.bot_state}"
       bot
     end
     

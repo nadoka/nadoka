@@ -2,6 +2,22 @@
 # $Id$ 
 #
 
+2004-07-14(Wed) 04:03:27 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk_config.rb : add DefaultBotFiles
+
+	* ndk_config.rb : ch_config(ch, key) is added
+
+	* ndk_config.rb(make_bot_instance) : logging message to bot_state
+
+	* ndk_manager.rb : fix error recovery process(set @connected to false)
+
+	* plugins/backlogbot.nb : fix some bugs
+	(user to user messages and so on)
+
+	* plugins/weba.nb : fix configuration example's bug
+
+
 2004-07-12(Mon) 16:51:24 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_version.rb : add rev to version string if this in trunk

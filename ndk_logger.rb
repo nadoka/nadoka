@@ -35,6 +35,7 @@ module Nadoka
         write_log(make_logfilename(@config.system_log), str)
       end
       @manager.send_to_clients Cmd.notice(@manager.state.nick, str) if @manager.state
+      dlog msg
     end
 
     # channel message
@@ -42,12 +43,7 @@ module Nadoka
       logfile = (@config.channel_info[ch] && @config.channel_info[ch][:log]) ||
                  @config.default_log
       logfile = make_logfilename(logfile, ch)
-      
       write_log(logfile, msg)
-
-      if @manager.state
-        @manager.state.backlog_push "tail: #{Time.now.strftime(@config.log_timeformat)} #{msg}"
-      end
     end
 
     # other irc log message

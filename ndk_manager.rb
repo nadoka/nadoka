@@ -68,13 +68,13 @@ module Nadoka
         begin
           @server = make_server()
           @logger.slog "Server connection to #{@server.server}:#{@server.port}"
-
           @pong_recieved = true
           @server.start(1){|sv|
             sv << Cmd.quit(@config.quit_message) if @config.quit_message
           }
           
         rescue RICE::Connection::Closed, SystemCallError
+          @connected = false
           part_from_all_channels
           @logger.slog "Connection closed by server. Trying to reconnect"
           
@@ -82,7 +82,9 @@ module Nadoka
           retry
           
         rescue NDK_ReconnectToServer
+          @connected = false
           part_from_all_channels
+          
           begin
             @server.close if @server
           rescue RICE::Connection::Closed

@@ -133,7 +133,7 @@ module Nadoka
       send_reply Rpl.rpl_welcome( nick,
         'Welcome to the Internet Relay Network'+"#{nick}! #{@username}@#{@remote_host}")
       send_reply Rpl.rpl_yourhost(nick, "Your host is nadoka, running version #{NDK_Version}")
-      send_reply Rpl.rpl_created( nick, 'This server was created ' + NDK_Created.to_s)
+      send_reply Rpl.rpl_created( nick, 'This server was created ' + NDK_Created.asctime)
       send_reply Rpl.rpl_myinfo(  nick, "nadoka #{NDK_Version} aoOirw abeiIklmnoOpqrstv")
 
       send_motd(nick)
@@ -152,8 +152,6 @@ module Nadoka
         send_reply Rpl.rpl_endofnames(@state.nick, chs.name, "End of NAMES list.")
       }
 
-      send_backlog
-      
       @logger.slog "Client #{@realname}@#{@remote_host} connected."
       true
     end
@@ -163,15 +161,6 @@ module Nadoka
       send_reply Rpl.rpl_motd(nick, "- Enjoy IRC chat with Nadoka chan!")
       send_reply Rpl.rpl_motd(nick, "- ")
       send_reply Rpl.rpl_endofmotd(nick, "End of MOTD command.")
-    end
-
-    def send_backlog
-      @manager.state.backlog.each{|line|
-        send_msg Cmd.notice(@manager.state.nick, line)
-      }
-      if @config.backlog_lines == 0
-        @manager.state.backlog_clear
-      end
     end
     
     # :who!~username@host CMD ..

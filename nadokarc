@@ -118,12 +118,14 @@ Channel_info = {
   '#nadoka_check' => {
     :timing => :startup,
     :log => '${setting_name}-nadoka-check-%y%m.log',
+    # you can specify store backlog lines
+    :backlog_lines => 5,
   },
 }
 
-Backlog_Lines = 20
 Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
 
+Backlog_Lines = 20
 
 ###############################################
 # Directory
@@ -146,6 +148,9 @@ BotFiles = [
   # If this value is false value(BotFiles = false), bot files are auto
   # loaded with BotConfig(ex: :BotName1 is listed, load botname1)
   #
+  
+  'backlogbot', # strongly recommended
+
 ]
 
 BotConfig = {
