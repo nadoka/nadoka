@@ -17,7 +17,7 @@ require 'kconv'
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize
     @available_channel = @bot_config[:ch] || /.*/
-    @key    = @bot_config[:key] || File.open(@bot_config[:key_path]).read.chomp
+    @key    = google_key
     @google = SOAP::WSDLDriverFactory.new(GOOGLE_WSDL).createDriver
     @ic     = Iconv.open("EUC-JP", "UTF-8")
   end
@@ -41,6 +41,15 @@ class GoogleBot < Nadoka::NDK_Bot
     "#{title} - #{url}(and #{count} hits)"
   end
 
+  def google_key
+    @bot_config[:key] ||
+    if @bot_config[:key_path]
+      File.open(@bot_config[:key_path]).read.chomp
+    else
+      File.open(File.expand_path("~/google_key").read.chomp
+    end
+  end
+  
   def u8tojis(str)
     @ic.iconv(str).tojis
   end
