@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2004-12-20(Mon) 20:15:03 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/weatherbot.nb : change unkown region error message
+	and ignore region's case
+
+
 2004-12-20(Mon) 20:04:53 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/weatherbot.nb : strip region name

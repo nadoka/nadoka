@@ -137,9 +137,10 @@ class WeatherBot < Nadoka::NDK_Bot
   end
   
   def get_forecast region
-    return "Unknown Region" unless PageMap[region]
+    page = PageMap[region.downcase]
+    return "Unknown region. You can check regions at http://weather.yahoo.com/regional/JAXX.html" unless page
     res = nil
-    open('http://weather.yahoo.com' + PageMap[region]){|f|
+    open('http://weather.yahoo.com' + page){|f|
       res = f.each{|line|
         if /\A<!--TEXT FORECAST-->$/ =~ line
           break read_text_forecast f
