@@ -246,10 +246,10 @@ module Nadoka
 
     def identical_channel_name ch
       # use 4 gsub() because of the compatibility of RFC2813(3.2)
-      ch.toeuc.downcase.gsub( "[", "{" ).
-                        gsub( "]", "}" ).
-                        gsub( "\\", "|" ).
-                        gsub( "~", "^" ).tojis
+      ch.toeuc.downcase.gsub( /\[/e, "{" ).
+                        gsub( /\]/e, "}" ).
+                        gsub( /\\/e, "|" ).
+                        gsub( /\~/e, "^" ).tojis
     end
     
     def make_bot_instance bk, cfg
