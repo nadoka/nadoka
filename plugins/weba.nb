@@ -144,17 +144,17 @@ class WebA < Nadoka::NDK_Bot
   end
   
   def bot_initialize
-    @max_store = @bot_config[:max_store] || 1000
+    @max_store = @bot_config.fetch(:max_store, 1000)
     @server = WEBrick::HTTPServer.new({
-      :Port => @bot_config[:port] || 12345,
+      :Port => @bot_config.fetch(:port, 12345),
     })
-    @entry = @bot_config[:entry] || 'weba'
+    @entry = @bot_config.fetch(:entry, 'weba')
     auth = nil
     if passwd = @bot_config[:passwd]
       userdb = Hash.new
       userdb.extend(WEBrick::HTTPAuth::UserDB)
       userdb.auth_type = WEBrick::HTTPAuth::BasicAuth
-      userdb.set_passwd("WebA Authentication", @bot_config[:id] || 'weba', passwd)
+      userdb.set_passwd("WebA Authentication", @bot_config.fetch(:id, 'weba'), passwd)
 
       auth = WEBrick::HTTPAuth::BasicAuth.new({
         :Realm        => "WebA Authentication",

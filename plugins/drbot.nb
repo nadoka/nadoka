@@ -69,8 +69,8 @@ class DRbot < Nadoka::NDK_Bot
   end
   
   def bot_initialize
-    @port = @bot_config[:port] || 12346
-    @host = @bot_config[:host] || ''
+    @port = @bot_config.fetch(:port, 12346)
+    @host = @bot_config.fetch(:host, '')
     @invoker   = Dispatcher.new(self)
     @uri       = "druby://#{@host}:#{@port}"
     @drbserver = DRb.start_service(@uri, @invoker)

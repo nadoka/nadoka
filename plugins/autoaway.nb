@@ -1,0 +1,67 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# This bot is created by
+#   akira yamada <akira at arika.org>
+#
+# $Id$
+#
+
+=begin
+
+== Abstract
+
+Auto away if no action
+
+== Configuration
+
+
+=end
+
+class AutoAwayBot < Nadoka::NDK_Bot
+  def bot_initialize
+    if @bot_config.include?(:threshold)
+      @threshold = @bot_config[:threshold].to_i
+    else
+      @threshold = 15*60
+    end
+    if @bot_config.include?(:message) && !@bot_config[:message].empty?
+      @message = @bot_config[:message]
+    else
+      @message = "Away"
+    end
+    @lastseen = Time.now
+    @in_away = false
+  end
+
+  def on_client_privmsg client, ch, msg
+    if @threshold > 0
+      @lastseen = Time.now
+    end
+    if @in_away
+      @manager.send_to_server Nadoka::Cmd.away()
+    end
+  end
+
+  def on_timer time
+    if @threshold > 0 && Time.now - @lastseen > @threshold 
+      @manager.send_to_server Nadoka::Cmd.away(@message)
+    end
+  end
+
+  def on_rpl_unaway *arg
+    @in_away = false
+  end
+
+  def on_rpl_nowaway *arg
+    @in_away = true
+  end
+end
+
+

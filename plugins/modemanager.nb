@@ -134,14 +134,12 @@ class ModeManager < Nadoka::NDK_Bot
         if mode = search_mode(ch, prefix.to_s)
           current_mode = @state.channel_user_mode(ch, prefix.nick)
           if /^\+/ =~ mode
-            noneed = mode.split(//).all?{|c|  current_mode.scan(c)}
+            noneed = mode.split(//).all?{|c|  current_mode.match(c)}
           else
-            noneed = mode.split(//).all?{|c| !current_mode.scan(c)}
+            noneed = mode.split(//).all?{|c| !current_mode.match(c)}
           end
 
-          unless noneed
-            change_mode(rch, mode, prefix.nick)
-          end
+          change_mode(rch, mode, prefix.nick) unless noneed
         end
       end
     }

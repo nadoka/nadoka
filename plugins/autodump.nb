@@ -1,0 +1,227 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+#
+# This bot is created by
+#   akira yamada <akira at arika.org>
+#
+# $Id$
+#
+
+=begin
+
+== Abstract
+
+Auto save configuration
+
+== Configuration
+
+add these program to nadokarc(or your configuration file)
+
+  begin
+    dump_file = File.join(Log_dir, Setting_name + '-channel_info.dump')
+    channel_info = {}
+    begin
+      File.open(dump_file, 'r') {|i| channel_info = Marshal.load(i)}
+    rescue TypeError
+      File.open(dump_file, 'r') {|i| channel_info = YAML.load(i.read)}
+    end
+
+    Channel_info = channel_info
+  rescue
+    Channel_info = {
+    }
+  end
+
+more detail, see [nadoka:162]
+
+=end
+
+
+class AutoDumpBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @auto_dump = @bot_config.fetch(:auto_dump, true)
+    @default_dump_style = @bot_config.fetch(:dump_style, 'yaml')
+    @default_timing = @bot_config.fetch(:dump_timing, :startup)
+
+    @cinfo = {}
+    @manager.state.channels.each do |ch|
+      @manager.send_to_server Nadoka::Cmd.mode(ch)
+    end
+  end
+
+  def canonical_channel_name ch
+    @manager.state.canonical_channel_name ch
+  end
+
+  def on_join prefix, ch
+    if @manager.state.current_nick == prefix.nick
+      dch = canonical_channel_name(ch)
+      @cinfo[dch] ||= {}
+      @cinfo[dch][:name] = ch
+      @cinfo[dch][:mode] ||= []
+
+      @manager.send_to_server Nadoka::Cmd.mode(ch)
+    end
+  end
+
+  def on_part prefix, ch, msg=''
+    if @manager.client_count > 0 && @manager.state.current_nick == prefix.nick
+      @cinfo.delete(canonical_channel_name(ch))
+    end
+  end
+
+  def on_client_logout count
+    if count == 1 && @auto_dump
+      dump_cinfo
+    end
+  end
+  
+  MODE_WITH_NICK_ARG = 'ov'
+  MODE_WITH_ARGS     = 'klbeI'
+  MODE_WITHOUT_ARGS  = 'aimnqpsrt'
+
+  def on_mode prefix, nick, ch, *args
+    dch = canonical_channel_name(ch)
+    if @manager.state.current_channels.has_key? dch
+      @cinfo[dch] ||= {}
+      @cinfo[dch][:name] = ch
+      @cinfo[dch][:mode] ||= []
+
+      while mode = args.shift
+	modes = mode.split(//)
+	flag  = modes.shift
+	modes.each{|m|
+	  if MODE_WITH_NICK_ARG.include? m
+	    #chg_cinfo dch, flag, m, args.shift 
+	  elsif MODE_WITH_ARGS.include? m
+	    chg_cinfo dch, flag, m, args.shift 
+	  elsif MODE_WITHOUT_ARGS.include? m
+	    chg_cinfo dch, flag, m, nil
+	  end
+	}
+      end
+    end
+  end
+  
+  def on_rpl_channelmodeis prefix, nick, ch, *arg
+    on_mode(prefix, nick, ch, *arg)
+  end
+
+  def on_nadoka_command client, command, *params
+    if command == 'dump'
+      dump_cinfo(params.shift)
+      raise ::Nadoka::NDK_BotSendCancel
+    end
+  end
+
+  def chg_cinfo ch, flag, mode, arg
+    @cinfo[ch][:mode] ||= []
+    @cinfo[ch][:mode].delete_if do |m|
+      m[0, 1] == mode
+    end
+    if flag == '+'
+      if arg
+	@cinfo[ch][:mode] << mode + ' ' + arg
+      else
+	@cinfo[ch][:mode] << mode
+      end
+    end
+  end
+
+  def dump_cinfo(style = nil)
+    style = @default_dump_style unless style
+
+    channel_info = {}
+    @cinfo.keys.each do |ch|
+      name = @cinfo[ch][:name]
+      if @state.current_channels.include?(ch)
+	name = @state.current_channels[ch].name
+      end
+      channel_info[name] = cinfo = {}
+      config = @manager.instance_eval {@config}
+
+      if config.default_channels.detect {|tch| canonical_channel_name(tch) == ch}
+      	cinfo[:timing] = :startup
+      elsif config.login_channels.detect {|tch| canonical_channel_name(tch) == ch}
+  	cinfo[:timing] = :login
+      else
+      	cinfo[:timing] = @default_timing
+      end
+      if @cinfo[ch][:mode].include?('i')
+	cinfo[:timing] = :startup
+      elsif !cinfo.include?(:timing)
+	cinfo[:timing] = :login
+      end
+
+      @cinfo[ch][:mode].each do |m|
+	if m[0] == ?k
+	  cinfo[:key] = m[2 .. -1]
+	end
+      end
+
+      m1, m2 = @cinfo[ch][:mode].partition {|m| m.size == 1}
+      imode = nil
+      unless m1.empty?
+	imode ||= '+'
+       	imode << m1.join('')
+      end
+      unless m2.empty?
+	imode ||= '+'
+	imode << m2.join(' +')
+      end
+      cinfo[:initial_mode] = imode
+    end
+
+    begin
+      dump_file = File.join(@config.log_dir,
+	@config.setting_name + '-channel_info.dump')
+      File.open(dump_file, 'wb') do |f|
+	f.chmod(0600)
+	dump_channel_info(channel_info, style, f)
+      end
+      @logger.slog "current channel information was dumped (#{style})"
+    rescue Exception => e
+      @logger.slog "current channel information could not be dumped"
+      @logger.slog e.message
+    end
+  end
+
+  def dump_channel_info(channel_info, style, port)
+    if style == 'marshal'
+      Marshal.dump(channel_info, port)
+
+    elsif style == 'yaml'
+      require 'yaml'
+      YAML.dump(channel_info, port)
+
+    elsif style == 'text'
+      port.puts "Channel_info = {"
+      channel_info.each do |ch, info|
+	port.puts "  #{ch.dump} => {"
+	info.each do |tag, value|
+	  if tag.kind_of?(Symbol)
+	    if value.kind_of?(Symbol)
+	      port.puts "    :#{tag.to_s} => :#{value.to_s},"
+	    else
+	      port.puts "    :#{tag.to_s} => #{value.to_s.dump},"
+	    end
+	  end
+	end
+	port.puts "  },"
+      end
+      port.puts "}"
+
+    else
+      raise RuntimeError, "unsupported dump style: #{style.dump}"
+    end
+  end
+
+end
+
+# vim:filetype=ruby:

@@ -2,6 +2,15 @@
 # $Id$ 
 #
 
+2004-08-13(Fri) 10:18:03 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/modemanager.nb : fix bug
+
+	* plugins/autodump.nb : added
+
+	* plugins/*.nb : fix hash access([] to fetch(key, default)).
+
+
 2004-08-13(Fri) 10:04:26 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_state.rb : fix enbug

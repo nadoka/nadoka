@@ -101,12 +101,12 @@ class BackLogBot < Nadoka::NDK_Bot
       @store_klass = LimitedObjectStoreByTime
     end
 
-    @talker = @bot_config[:talker] || nil
-    @clear  = @bot_config[:clear ] || false
-    @prefix = @bot_config[:prefix] || 'BL'
-    @sender = @bot_config[:sender] || 'backlogbot'
-    @sepr   = @bot_config[:separate]    || true
-    @tmfmt  = @bot_config[:time_format] || '%m/%d-%H:%M'
+    @talker = @bot_config.fetch(:talker, nil)
+    @clear  = @bot_config.fetch(:clear, false)
+    @prefix = @bot_config.fetch(:prefix, 'BL')
+    @sender = @bot_config.fetch(:sender, 'backlogbot')
+    @sepr   = @bot_config.fetch(:separate, true)
+    @tmfmt  = @bot_config.fetch(:time_format, '%m/%d-%H:%M')
     @store_pool = {}
   end
 
