@@ -103,7 +103,7 @@ System_log  = '${setting_name}-system.log'
 
 Channel_info = {
   # nadoka talk(from Japanese server only)
-  '#nadoka:*.jp' => {
+  '#nadoka' => {
     # timing
     #  :startup / when nadoka start up <= default
     #  :login   / when user login
@@ -112,6 +112,10 @@ Channel_info = {
     :log     => '${setting_name}-nadoka-chan-%y%m%d.log',
     # :part_message => "bye bye"
     # :initial_mode => "+s"
+  }
+  '#nadoka:*.jp' => {
+    :timing  => :startup,
+    :log     => '${setting_name}-nadoka-chan-jp-%y%m%d.log',
   },
 
   # nadoka bot channel

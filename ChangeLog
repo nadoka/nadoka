@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2004-08-19(Thu) 01:17:13 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : add '#nadoka' channel setting
+
+
 2004-08-19(Thu) 01:12:03 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/autoaway.nb : fix bug(add condition at on_timer)
