@@ -1,3 +1,8 @@
+Sun, 02 May 2004 03:34:54 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadoka.rb : add location of nadoka.rb to load path
+
+
 Sat, 01 May 2004 23:58:55 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_manager.rb : support nadoka control with signal

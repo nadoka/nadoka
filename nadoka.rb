@@ -12,18 +12,22 @@
 # the same terms of the Ruby's lisence.
 #
 #
-# $Id: nadoka.rb,v 1.24 2004/04/27 13:30:39 ko1 Exp $
+# $Id$
 # Create : K.S. 03/07/10 20:29:07
 #
 
-require 'optparse'
+
+$LOAD_PATH.unshift File.dirname(__FILE__)
 require 'ndk_version'
+
+if $0 == __FILE__
+
+require 'optparse'
 require 'ndk_manager'
 $stdout.sync=true
 $NDK_Debug  = false
 
 rcfile = nil
-
 optparse = OptionParser.new{|opts|
   opts.banner = "Usage: ruby #{$0} [options]"
 
@@ -73,5 +77,7 @@ rescue Nadoka::NDK_QuitProgram
   #
 rescue Nadoka::NDK_RestartProgram
   retry
+end
+
 end
 
