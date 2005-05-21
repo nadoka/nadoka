@@ -2,6 +2,21 @@
 # $Id$ 
 #
 
+2005-05-22(Sun) 01:53:38 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadoka/ : mkdir
+
+	* lib/ : mkdir
+
+	* ndk_*.rb : move to nadoka/ and change require path
+
+	* tagparts.rb, rss_check.rb : move to lib/ and change require path
+
+	* ndk_manager.rb (NDK_Manager) : move to ndk/server.rb and rename NDK_Server
+
+	* ndk_err.rb : move to ndk/error.rb
+
+
 2005-03-15(Tue) 17:30:25 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk_state.rb : re-fix state management

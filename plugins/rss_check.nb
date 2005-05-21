@@ -29,7 +29,7 @@ configuration like follows:
   
 =end
 
-require 'rss_check'
+require 'lib/rss_check'
 require 'iconv'
 require 'kconv'
 

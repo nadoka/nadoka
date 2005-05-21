@@ -18,13 +18,14 @@
 
 
 $LOAD_PATH.unshift File.dirname(__FILE__)
-require 'ndk_version'
+require 'ndk/version'
 
 if $0 == __FILE__
 
 require 'optparse'
-require 'ndk_manager'
-require 'ndk_bot'
+
+require 'ndk/server'
+require 'ndk/bot'
 
 $stdout.sync=true
 $NDK_Debug  = false
@@ -74,7 +75,7 @@ end
 
 begin
   GC.start
-  Nadoka::NDK_Manager.new(rcfile).start
+  Nadoka::NDK_Server.new(rcfile).start
 rescue Nadoka::NDK_QuitProgram
   #
 rescue Nadoka::NDK_RestartProgram

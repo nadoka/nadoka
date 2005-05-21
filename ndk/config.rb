@@ -20,7 +20,7 @@ require 'uri'
 require 'socket'
 require 'kconv'
 
-require 'ndk_logger'
+require 'ndk/logger'
 
 module Nadoka
   

@@ -11,16 +11,16 @@
 #
 
 require 'rice/irc'
-require 'ndk_err'
-require 'ndk_config'
-require 'ndk_state'
-require 'ndk_client'
+require 'ndk/error'
+require 'ndk/config'
+require 'ndk/server_state'
+require 'ndk/client'
 
 module Nadoka
   Cmd = ::RICE::Command
   Rpl = ::RICE::Reply
 
-  class NDK_Manager
+  class NDK_Server
     TimerIntervalSec = 60
     MAX_PONG_FAIL    = 5
     

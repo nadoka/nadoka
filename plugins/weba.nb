@@ -38,7 +38,7 @@ BotConfig = {
 =end
 
 require 'webrick'
-require 'tagparts'
+require 'lib/tagparts'
 
 class WebA < Nadoka::NDK_Bot
   class WebAlet < WEBrick::HTTPServlet::AbstractServlet

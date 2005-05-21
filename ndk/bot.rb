@@ -12,7 +12,7 @@
 #
 # To make bot for nadoka, see this code.
 #
-require 'ndk_manager'
+
 module Nadoka
   class NDK_Bot
     Cmd = ::Nadoka::Cmd
