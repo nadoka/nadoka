@@ -2,6 +2,15 @@
 # $Id$ 
 #
 
+2005-05-22(Sun) 23:40:28 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/dict_bot.nb :  /dic(.)>.../ => /\Adic(.)>.../
+
+	* plugins/googlebot.nb : remove words in results
+
+	* plugins/pastebot.nb : support fpaste
+
+
 2005-05-22(Sun) 23:28:53 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/logger.rb : support directory auto generation

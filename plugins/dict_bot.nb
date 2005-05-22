@@ -16,7 +16,7 @@ class DictBot < Nadoka::NDK_Bot
   
   def on_privmsg prefix, ch, msg
     if @available_channel === ch
-      if /dic(.)>\s*(.+)\s*/ =~ msg
+      if /\Adic(.)>\s*(.+)\s*/ =~ msg
         res = yahoo_dict $1, $2.toeuc
         send_notice(ch, res)
       end

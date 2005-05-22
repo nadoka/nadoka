@@ -8,23 +8,33 @@ This plugin is test version.
 require 'open-uri'
 
 class PasteBot < Nadoka::NDK_Bot
-  
+
   def bot_initialize
     @ch          = @bot_config[:ch]  || /./
     @msg         = @bot_config[:mgs] || /\Apaste>/
     @service_uri = @bot_config[:service_uri] ||
-                   'http://www.atdot.net/~ko1/sp.cgi'
+                   'http://www.atdot.net/sp'
+    @fmsg         = @bot_config[:mgs] || /\Afpaste>/
+    @fservice_uri = @bot_config[:service_uri] ||
+                   'http://www.atdot.net/fp'
   end
-  
+
   def on_privmsg prefix, ch, msg
-    if @ch === ch && @msg === msg
-      nid = ''
-      open("#{@service_uri}/check/newid"){|f|
-        nid = f.gets
-      }
-      send_notice ch, "#{@service_uri}/view/#{nid}"
+    if @ch === ch
+      if @msg === msg
+        nid = ''
+        open("#{@service_uri}/check/newid"){|f|
+          nid = f.gets
+        }
+        send_notice ch, "#{@service_uri}/view/#{nid}"
+      end
+      if @fmsg === msg
+        nid = ''
+        open("#{@fservice_uri}/check/newid"){|f|
+          nid = f.gets
+        }
+        send_notice ch, "#{@fservice_uri}/view/#{nid}"
+      end
     end
   end
 end
-
-

@@ -81,7 +81,7 @@ class GoogleBot < Nadoka::NDK_Bot
         "goo#{$1}gle bot#{$2}: #{search($1.length, $2, $3)}"
         
       when /^googlec(:.*)?>\s*(.+)/
-        "googlec bot(#{$2}): #{googlec($1, $2)}"
+        "googlec bot: #{googlec($1, $2)}"
       end
     rescue Exception => e
       "google bot: #{e.class}(#{e.message})"
