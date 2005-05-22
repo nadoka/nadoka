@@ -10,6 +10,7 @@
 
 require 'thread'
 require 'kconv'
+require 'fileutils'
 
 module Nadoka
   
@@ -99,10 +100,19 @@ module Nadoka
             io.puts msg
           }
         else
-          bdir = File.expand_path(@config.log_dir)
+          basefile = io
+          basedir  = File.expand_path(@config.log_dir) + '/'
+          logfile  = File.expand_path(basefile, basedir)
+          ldir     = File.dirname(logfile) + '/'
+
+          if !FileTest.directory?(ldir)
+            raise "insecure directory: #{Regexp.quote(ldir)} (pls check rc file.)" if /\A#{basedir}/ !~ ldir
+            # make directory recursively
+            FileUtils.mkdir_p(ldir)
+          end
           
           @lock.synchronize{
-            open(File.expand_path(io, bdir), 'a'){|f|
+            open(logfile, 'a'){|f|
               f.puts msg
             }
           }
