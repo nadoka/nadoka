@@ -32,19 +32,17 @@
 
 == Configuration:
 
-BotConfig = {
-  :GoogleBot => {
-    :ch => /.*/,                     # available channel
-    
-    :key     => 'xxxx',              # 
-    :keypath => '/x/y/z/google_key', # specify one
-                                     # or put google key file on ~/.google_key
-    #
-    :googlec_maxwords => 5,
-    :search_default_lang => 'lang_ja',
-    :count_default_lang  => '',
-  }
-}
+BotConfig = [
+{
+  :name                => :GoogleBot,
+  :ch                  => /.*/,
+  :key                 => nil,
+  :keypath             => '~/.google_key'
+  :googlec_maxwords    => 5,
+  :search_default_lang => 'lang_ja',
+  :count_default_lang  => '',
+},
+]
 
 =end
 
@@ -126,13 +124,10 @@ class GoogleBot < Nadoka::NDK_Bot
   
   def google_key
     @bot_config[:key] ||
-    if @bot_config[:key_path]
-      File.open(@bot_config[:key_path]).read.chomp
-    else
-      File.open(File.expand_path("~/.google_key")).read.chomp
-    end
+    File.open(File.expand_path(@bot_config[:key_path] ||
+                               "~/.google_key")).read.chomp
   end
-  
+
   def erace_tag str
     CGI.unescapeHTML(str.gsub(/\<.+?\>/, ''))
   end

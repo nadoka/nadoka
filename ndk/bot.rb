@@ -187,11 +187,10 @@ module Nadoka
     - @state.channel_user_mode(ch, nick)
     
 =end
-    
-    def self.inherited subklass
-      BotClass << subklass
+
+    def self.inherited klass
+      NDK_Config::BotClasses[klass.name.downcase.intern] = klass
     end
-    
   end
 end
 

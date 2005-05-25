@@ -128,8 +128,8 @@ Channel_info = {
 }
 
 Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
+BackLog_Lines = 20
 
-Backlog_Lines = 20
 
 ###############################################
 # Directory
@@ -142,39 +142,21 @@ Plugins_dir = './plugins'
 
 ###############################################
 # Bots
-BotFiles = [
-  # File names of bot description file to load under Plugins_dir
-  #
-  # 'samplebot',
-  # 'opshop',
-  # 'sixamo',
-  #
-  # If this value is false value(BotFiles = false), bot files are auto
-  # loaded with BotConfig(ex: :BotName1 is listed, load botname1)
-  #
-  
-  'backlogbot', # strongly recommended
-
+BotConfig = [
+# :BotName1,
+# :BotName1,
+# 'BotName1',
+# :BotName2,
+# { :name => :BotName3,
+#   :set1 => setting1,
+# },
+# { :name => :BotName3,
+#   :set1 => setting2,
+# },
+# { :name => :BotName4,
+#   :set1 => setting3,
+# },
 ]
-
-BotConfig = {
-  # # make a BotName1 instance with configuration
-  # :BotName1 => {
-  #   :set_x => x,
-  #   :set_y => y,
-  #   ...
-  # },
-  #
-  # # If config is Array, make two BotName2 instance with each config
-  # :BotName2 =>
-  #   [
-  #     {config1},
-  #     {config2},
-  #   ],
-  #
-  # # If no config, loaded bot class (ex: BotName3) is instantiate with no config
-  #
-}
 
 
 ###############################################

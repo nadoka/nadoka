@@ -2,6 +2,28 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 02:35:09 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/version.rb : 0.7.0
+
+
+2005-05-25(Wed) 14:22:32 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/config.rb, nadokarc : change bot configuration format
+	(BotConfig format)
+
+	* ndk/config.rb : Nadoka::require is supported
+	(if reload configuration, required files by Nadoka::require are cleared)
+
+	* ndk/bot.rb : BotClass (Array) => BotClasses (Hash (name => body))
+
+	* plugins/googlebot.nb : fix setting description
+	and fix google_key file path search logic
+
+	* plugins/dict_bot.nb => plugins/dictbot.nb
+
+	* plugins/backlogbot.nb : fix setting description
+
 2005-05-22(Sun) 23:40:28 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/dict_bot.nb :  /dic(.)>.../ => /\Adic(.)>.../

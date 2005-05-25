@@ -22,29 +22,20 @@ BackLogBot support rich backlog management scheme.
 #
 # Maybe you don't have to write config(default setting is very useful)
 #
-
-BotConfig = {
-  :BackLogBot => {
-    :method => :by_size,      # or :by_time(default: :by_size)
-    :limit  => 300,           # or (60 * 60 * 24) => 1day
-                              # (default: 300 or (60 * 60 * 24))
-                              #
-                              # if 'method' is :by_time, limit means
-                              # how long bot store the messages(sec)
-                              #
-                              # if 'method' is :by_size, limit means
-                              # how many messages to store
-                              #
-    :clear  => false,         # (default: false) clear messages after output
-    :talker => nil,           # if :pseudo_owner is specified, talker will be
-                              # original talker (default: nil)
-                              # 
-    :prefix => 'BackLog',     # message prefix (default: 'BL')
-    :sender => 'BackLogger',  # back log messages sender
-                              # (default: 'backlogbot')
-    :time_format => '%H:%M',  # (default: '%m/%d-%H:%M')
-  },
+BotConfig = [
+{
+  :name   => :BackLogBot,
+  
+  :method      => :by_size,     # by_size: store backlog n lines
+                                # by_time: store backlog until time
+  :limit       => 300,
+  :clear       => false,        # if true, clear backlogs when output once
+  :talker      => false,        # if true, talker will be pseudo talker 
+  :prefix      => 'BL',
+  :sender      => 'backlogbot',
+  :time_format => '%H:%M',
 }
+]
 
 =end
 
@@ -101,7 +92,7 @@ class BackLogBot < Nadoka::NDK_Bot
       @store_klass = LimitedObjectStoreByTime
     end
 
-    @talker = @bot_config.fetch(:talker, nil)
+    @talker = @bot_config.fetch(:talker, false)
     @clear  = @bot_config.fetch(:clear, false)
     @prefix = @bot_config.fetch(:prefix, 'BL')
     @sender = @bot_config.fetch(:sender, 'backlogbot')

@@ -70,20 +70,14 @@ module Nadoka
     FilenameEncoding = 'euc'
     
     Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
+    BackLog_Lines = 20
     
     # dirs
     Plugins_dir = './plugins'
     Log_dir     = './log'
-
-    Backlog_Lines = 20
-    
-    DefaultBotFiles = [
-      'backlogbot',
-    ]
     
     # bots
-    BotFiles    = []
-    BotConfig   = {}
+    BotConfig   = []
 
     # filters
     Privmsg_Filter = []
@@ -98,9 +92,9 @@ module Nadoka
     end
   end
   ConfigClass = [NDK_ConfigBase]
-  BotClass = []
   
   class NDK_Config
+    
     NDK_ConfigBase.constants.each{|e|
       eval %Q{
         def #{e.downcase}
@@ -126,18 +120,86 @@ module Nadoka
       end
       ConfigClass.push(klass)
 
-      # remove bot class
-      while k = BotClass.shift
+
+      # clear required files
+      RequiredFiles.replace []
+
+      # remove current NadokaBot
+      Object.module_eval %q{
+        remove_const :NadokaBot
+        module NadokaBot
+          def self.included mod
+            Nadoka::NDK_Config::BotClasses['::' + mod.name.downcase] = mod
+          end
+        end
+      }
+      
+      # clear bot class
+      BotClasses.each{|k, v|
         Object.module_eval{
-          remove_const(k.name)
+          if /\:\:/ !~ k.to_s && const_defined?(v.name)
+            remove_const(v.name)
+          end
         }
-      end
+      }
+      BotClasses.clear
+      
       # destruct bot instances
       @bots.each{|bot|
         bot.bot_destruct
       }
+      @bots = []
+    end
+
+    def load_bots
+      # for compatibility
+      return load_bots_old if @config[:botconfig].kind_of? Hash
+      @bots = @config[:botconfig].map{|bot|
+        if bot.kind_of? Hash
+          name = bot[:name]
+          cfg  = bot
+          raise "No bot name specified. Check rcfile." unless name
+        else
+          name = bot
+          cfg  = nil
+        end
+        load_botfile name.to_s.downcase
+        make_bot_instance name, cfg
+      }
+    end
+
+    # for compatibility
+    def load_bots_old
+      (@config[:botfiles] + @config[:defaultbotfiles]).each{|file|
+        load_botfile file
+      }
       
-      GC.start
+      @config[:botconfig].keys.each{|bk|
+        bkn = bk.to_s
+        bkni= bkn.intern
+        
+        unless BotClasses.any?{|n, c| n == bkni}
+          if @config[:botfiles]
+            raise "No such BotClass: #{bkn}"
+          else
+            load_botfile "#{bkn.downcase}.nb"
+          end
+        end
+      }
+      
+      @bots = BotClasses.map{|bkname, bk|
+        if @config[:botconfig].has_key? bkname
+          if (cfg = @config[:botconfig][bkname]).kind_of? Array
+            cfg.map{|c|
+              make_bot_instance bk, c
+            }
+          else
+            make_bot_instance bk, cfg
+          end
+        else
+          make_bot_instance bk, nil
+        end
+      }.flatten
     end
     
     def load_config(rcfile)
@@ -164,7 +226,7 @@ module Nadoka
           pass  = si[:pass]
           if ports.respond_to? :each
             ports.each{|port|
-              svl << {:host => host, :port => port, :pass => pass}
+              svl << {:host => host, :port => port,  :pass => pass}
             }
           else
             svl <<   {:host => host, :port => ports, :pass => pass}
@@ -204,35 +266,9 @@ module Nadoka
       end
 
       # load bots
-      (@config[:botfiles] + @config[:defaultbotfiles]).each{|file|
-        load_botfile file
-      }
-      
-      @config[:botconfig].keys.each{|bk|
-        bkn = bk.to_s
-        unless BotClass.any?{|e| e.name == bkn}
-          if @config[:botfiles]
-            raise "No such BotClass: #{bkn}"
-          else
-            load_botfile "#{bkn.downcase}.nb"
-          end
-        end
-      }
-      
-      @bots = BotClass.map{|bk|
-        bkname = bk.name.intern
-        if @config[:botconfig].has_key? bkname
-          if (cfg = @config[:botconfig][bkname]).kind_of? Array
-            cfg.map{|c|
-              make_bot_instance bk, c
-            }
-          else
-            make_bot_instance bk, cfg
-          end
-        else
-          make_bot_instance bk, nil
-        end
-      }.flatten
+      load_bots
+
+      GC.start
     end
 
     def ch_config ch, key
@@ -253,6 +289,7 @@ module Nadoka
     end
     
     def make_bot_instance bk, cfg
+      bk = BotClasses[bk.to_s.downcase.intern] unless bk.kind_of? Class
       bot = bk.new @manager, self, cfg || {}
       @logger.slog "bot instance: #{bot.bot_state}"
       bot
@@ -279,13 +316,36 @@ module Nadoka
 
     def load_file file
       if FileTest.exist? file
-        load file
+        Nadoka.require file
         true
       else
         false
       end
     end
     
+    RequiredFiles       = []
+    BotClasses          = {}
+  end
+
+  def self.require file
+    return if NDK_Config::RequiredFiles.include? file
+    
+    NDK_Config::RequiredFiles.push file
+    begin
+      ret = ::Kernel.load(file)
+    rescue
+      NDK_Config::RequiredFiles.pop
+      raise
+    end
+    ret
+  end
+end
+
+module NadokaBot
+  # empty module for bot namespace
+  # this module is reloadable
+  def self.included mod
+    Nadoka::NDK_Config::BotClasses['::' + mod.name.downcase] = mod
   end
 end
 
