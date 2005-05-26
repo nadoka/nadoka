@@ -2,7 +2,12 @@
 # $Id$ 
 #
 
-2005-05-26(Thu) 10:29:16 +0900
+2005-05-26(Thu) 10:37:29 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/timestampbot.nb : fix configuration example
+
+
+2005-05-26(Thu) 10:29:16 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/message.nb => plugins/messagebot.nb
 

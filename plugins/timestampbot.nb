@@ -18,15 +18,13 @@ Add time stamp to each log.
 
 
 == Configuration
-
-  BotConfig = {
-    :TimeStampBot => {
-      :interval    => 60 * 60,             # stamp interval time(sec)
-                                           # default: 60 * 60 (1 hour)
-      :stampformat => '%y/%m/%d-%H:%M:%S', # stamp format
-      # default: '== %y/%m/%d-%H:%M:%S =========================================='
-    },
-  }
+BotConfig = [
+{
+  :name        => :TimeStampBot,
+  :interval    => 60 * 60,       # sec
+  :stampformat => '== %y/%m/%d-%H:%M:%S =========================================='
+}
+]
 
 =end
 
