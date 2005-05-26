@@ -21,23 +21,24 @@ Mode management bot
 
 === nadokarc
 
-BotConfig => {
-  :ModeManager => {
-    #
-    # You can specify modes setting in file or
-    # String directly.
-    #
-    :file  => 'modes',
-    # or :modes_file => 'modes',
-    
-    :modes => <<-__EOS__,
-    [all]
-    +o=*.jp
-    __EOS__
-    # wait for setting modes (by second, avarage)
-    :wait => 5,
-  }
+BotConfig => [
+{
+  :name => :ModeManager,
+  #
+  # You can specify modes setting in file or
+  # String directly.
+  #
+  :file  => 'modes',
+  # or :modes_file => 'modes',
+  
+  :modes => <<-__EOS__,
+  [all]
+  +o=*.jp
+  __EOS__
+  # wait for setting modes (by second, avarage)
+  :wait => 5,
 }
+]
 
 === mode setting format
 

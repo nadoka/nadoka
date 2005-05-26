@@ -13,19 +13,19 @@
 =begin
 configuration like follows:
 
-  BotConfig = {
-    :RSS_CheckBot => {
-      :rss_paths => [
-      'http://www.ruby-lang.org/ja/index.rdf',
-      'http://slashdot.jp/slashdotjp.rss',
-      'http://www3.asahi.com/rss/index.rdf',
-      'LIRS:http://rrr.jin.gr.jp/~znz/samidare/sites.lirs.gz',
-      ],
-      :cache     => "./rss-cache",
-      :ch        => '#nadoka',
-      :tm        => 30 # check interval time(minute)
-    }
-  }
+BotConfig = [
+{
+  :name      => :RSS_CheckBot,
+  :rss_paths => [
+    'http://www.ruby-lang.org/ja/index.rdf',
+    'http://slashdot.jp/slashdotjp.rss',
+    'http://www3.asahi.com/rss/index.rdf',
+    'LIRS:http://rrr.jin.gr.jp/~znz/samidare/sites.lirs.gz',
+    ],
+  :cache => "./rss-cache",
+  :ch        => '#nadoka_check',
+  :tm        => 30 # check interval time(minute)
+}
   
 =end
 

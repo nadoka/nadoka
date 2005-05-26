@@ -20,12 +20,13 @@ See sample drbcl.rb
 
 == Configuration
 
-BotConfig = {
-  :DRbot => {
-    :port => 12345,       # (default: 12346)
-    :host => 'localhost', # (default: '')
-  }
+BotConfig = [
+{
+  :name => :DRbot,
+  :port => 12345,
+  :host => '',
 }
+]
 
 
 =end

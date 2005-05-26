@@ -23,17 +23,16 @@ WebA: Web Accessor
 
 == Configuration
 
-BotConfig = {
-  :Weba => {
-    :passwd  => 'password', # or nil(no authentication, and nil is default)
-                            # If passwd is specified, use Basic Access Authentication
-    :id   => 'weba',        # Basic Authentication ID (default: 'weba')
-    :port => 12345 ,        # httpd port(default: 12345)
-    :entry=> 'weba',        # irc entry(default: 'weba')
-                            # weba access to http://host:#{port}/#{entry}
-    :max_store => 1000,     # store message size(default: 1000)
-  },
+BotConfig = [
+{
+  :name   => :WebA,
+  :passwd => nil,     # if passwd is specified, use Basic Access Authentication with id
+  :id     => 'weba',
+  :port   => 12345,
+  :entry  => 'weba',
+  :max_store => 1000, # store message size
 }
+]
 
 =end
 

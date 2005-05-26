@@ -7,16 +7,17 @@
 # You can redistribute it and/or modify it under the terms of
 # the Ruby's licence.
 #
-#
-# Example:
-#  BotConfig = {
-#    :MessageBot => {
-#      :message_file => 'message.yaml',
-#      :root_key => Setting_name,
-#      :channels => %w[#nadoka #Ruby:*.jp],
-#    },
-#  }
-#
+=begin
+BotConfig = [
+{
+  :name         => :MessageBot,
+  :message_file => 'message.yaml',
+  :root_key     => Setting_name,
+  :channels     => %w[#nadoka #Ruby:*.jp],
+},
+]
+=end
+
 
 require 'nkf'
 require 'time'
