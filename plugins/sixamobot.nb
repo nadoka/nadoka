@@ -11,15 +11,17 @@
 #
 # add config like this:
 #
-# BotConfig = {
-#   :SixamoBot => {
-#     :dir => 'dokoka',
-#     :ch  => /nadoka/,
-#     :tm  => 5
-#     :id  => /(sixamo)|(ししゃも)/
-#   }
-# }
-#
+=begin
+BotConfig = [
+{
+  :name => :SixamoBot,
+  :dir  => '~/sixamo',
+  :ch   => '#nadoka',
+  :tm   => 10,
+  :id   => /(sixamo)|(ししゃも)/,
+  :rt   => [10, 5, 4, 4, 3, 2],
+}
+=end
 #
 # $Id$
 #
