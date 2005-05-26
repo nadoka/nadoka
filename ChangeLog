@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 21:24:50 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* log/.deleteme : remove
+
+
 2005-05-26(Thu) 21:23:03 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/weatherbot.nb : add parentheses
