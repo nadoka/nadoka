@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 10:53:40 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/autoawaybot.nb : add configuration example
+	and some refoctoring
+
+
 2005-05-26(Thu) 10:44:33 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/timestampbot.nb : add :client configuration
