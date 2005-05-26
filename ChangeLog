@@ -2,9 +2,17 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 21:23:03 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/weatherbot.nb : add parentheses
+
+	* plugins/rss_checkbot.nb : add configuration :over_message
+
+
 2005-05-26(Thu) 21:03:24 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* some files : change copyright year
+
 
 2005-05-26(Thu) 20:52:32 +0900  Koichi Sasada  <ko1@atdot.net>
 

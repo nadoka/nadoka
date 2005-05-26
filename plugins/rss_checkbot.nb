@@ -16,15 +16,14 @@ configuration like follows:
 BotConfig = [
 {
   :name      => :RSS_CheckBot,
-  :rss_paths => [
+  :rss_paths =>
+  [
     'http://www.ruby-lang.org/ja/index.rdf',
-    'http://slashdot.jp/slashdotjp.rss',
-    'http://www3.asahi.com/rss/index.rdf',
-    'LIRS:http://rrr.jin.gr.jp/~znz/samidare/sites.lirs.gz',
-    ],
-  :cache => "./rss-cache",
+  ],
+  :cache     => "./rss-cache",
   :ch        => '#nadoka_check',
-  :tm        => 30 # check interval time(minute)
+  :tm        => 30     # check interval time(minute)
+  :over_message => nil #
 }
 
 =end
@@ -35,10 +34,11 @@ require 'kconv'
 
 class RSS_CheckBot < Nadoka::NDK_Bot
   def bot_initialize
-    @cache = File.expand_path(@bot_config[:cache] || '~/.rss_check')
-    @paths = @bot_config[:rss_paths] || ['http://www.ruby-lang.org/ja/index.rdf']
-    @ch    = @bot_config[:ch] || '#nadoka'
-    @tm    = @bot_config[:tm] || 30 # min
+    @cache = File.expand_path(@bot_config.fetch(:cache, '~/.rss_check'))
+    @paths = @bot_config.fetch(:rss_paths, ['http://www.ruby-lang.org/ja/index.rdf'])
+    @ch    = @bot_config.fetch(:ch, '#nadoka_check')
+    @tm    = @bot_config.fetch(:tm,30)              # min
+    @over  = @bot_config.fetch(:over_message, nil)
     @rssc  = RSS_Check.new(@paths, @cache, true)
     @ic    = Iconv.open("EUC-JP", "UTF-8")
     @prevtm= Time.now
@@ -109,8 +109,8 @@ class RSS_CheckBot < Nadoka::NDK_Bot
         send_notice(@ch, "rss bot error: #{e}")
         @manager.ndk_error e
       end
+      send_notice(@ch, "rss bot: #{@over}") if @over
     }
-    send_notice(@ch, "rss bot: over")
   end
   
 end

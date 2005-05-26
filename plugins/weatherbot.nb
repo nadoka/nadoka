@@ -143,7 +143,7 @@ class WeatherBot < Nadoka::NDK_Bot
     open('http://weather.yahoo.com' + page){|f|
       res = f.each{|line|
         if /\A<!--TEXT FORECAST-->$/ =~ line
-          break read_text_forecast f
+          break read_text_forecast(f)
         end
       }
     }
