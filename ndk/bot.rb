@@ -15,19 +15,6 @@
 
 module Nadoka
   class NDK_Bot
-    Cmd = ::Nadoka::Cmd
-    Rpl = ::Nadoka::Rpl
-
-    def initialize manager, config, bot_config
-      @manager = manager
-      @config  = config
-      @logger  = config.logger
-      @state   = manager.state
-      @bot_config = bot_config
-      
-      bot_initialize
-    end
-
     # To initialize bot insntace, please overide this.
     def bot_initialize
       # do something
@@ -51,18 +38,19 @@ module Nadoka
     # To access bot confiuration, please use this.
     #
     # in configuration file, 
-    # BotConfig = {
-    #   :BotClassName => {
-    #     ... # you can access this value
-    #   }
-    # }
+    # BotConfig = [
+    # :BotClassName1,
+    # :BotClassName2,
+    # {
+    #   :name => :BotClassName3,
+    #   :setX => X,
+    #   :setY => Y,
+    #   ...
+    # },
+    # ]
     #
-    # !! This method is obsoleted. Use @bot_config instead !!
+    # You can access above setting via @bot_config
     #
-    def config
-      @logger.dlog "NDK_Bot#config is obsolete. Use @bot_config instead"
-      @bot_config
-    end
 
     # Mostly, you need this method.
     def send_notice ch, msg
@@ -187,6 +175,23 @@ module Nadoka
     - @state.channel_user_mode(ch, nick)
     
 =end
+
+    Cmd = ::Nadoka::Cmd
+    Rpl = ::Nadoka::Rpl
+
+    def initialize manager, config, bot_config
+      @manager    = manager
+      @config     = config
+      @logger     = config.logger
+      @state      = manager.state
+      @bot_config = bot_config
+      
+      bot_initialize
+    end
+
+    def config
+      @bot_config
+    end
 
     def self.inherited klass
       NDK_Config::BotClasses[klass.name.downcase.intern] = klass
