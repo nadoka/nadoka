@@ -33,7 +33,7 @@ BotConfig = [
   :talker      => false,        # if true, talker will be pseudo talker 
   :prefix      => 'BL',
   :sender      => 'backlogbot',
-  :time_format => '%H:%M',
+  :time_format => '%m/%d-%H:%M',
 }
 ]
 
