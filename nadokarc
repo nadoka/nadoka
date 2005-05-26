@@ -31,11 +31,11 @@ Client_server_pass = 'NadokaPassWord'
 Client_server_acl  = nil
 
 # ACL(Access Control List) example:
-# Client_server_acl = %q{  # ACL must be string
+# Client_server_acl = %q{
 #   deny all
 #   allow 192.168.1.1
 #   allow 192.168.2.0/24
-# }
+# } # ACL setting must be String
 #
 # or you can set acl directly like follows:
 #

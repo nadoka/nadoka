@@ -2,9 +2,15 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 21:45:49 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : fix ACL comment
+
+
 2005-05-26(Thu) 21:42:29 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/backlogbot.nb : fix configuration example
+
 
 2005-05-26(Thu) 21:24:50 +0900  Koichi Sasada  <ko1@atdot.net>
 
