@@ -169,7 +169,7 @@ module Nadoka
 
     # for compatibility
     def load_bots_old
-      (@config[:botfiles] + @config[:defaultbotfiles]).each{|file|
+      (@config[:botfiles] + (@config[:defaultbotfiles]||[])).each{|file|
         load_botfile file
       }
       

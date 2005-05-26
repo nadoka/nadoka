@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 22:07:15 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/config.rb : fix a bug
+
+
 2005-05-26(Thu) 21:51:10 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : change default quit message
