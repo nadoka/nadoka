@@ -19,7 +19,7 @@
 
 2005-05-26(Thu) 10:18:18 +0900  Koichi Sasada  <ko1@atdot.net>
 
-	* plugins/rss_check.nb => * plugins/rss_check.nb,
+	* plugins/rss_check.nb => plugins/rss_checkbot.nb,
 
 	* plugins/cron.nb => plugins/cronbot.nb
 
