@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 22:11:48 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/autodumpbot.nb, plugins/sixamobot.nb :
+	change copyright year
+
+
 2005-05-26(Thu) 22:07:15 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/config.rb : fix a bug
