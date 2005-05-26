@@ -102,7 +102,7 @@ class GoogleBot < Nadoka::NDK_Bot
         url   = e['URL']
         title = show_char_code_and_erace_tag(e.title)
       }
-      "#{title} - #{url} (and #{count} hit#{(count > 1) ? 's' : ''})"
+      "#{title} - #{url} (and #{count} hit#{(count.to_i > 1) ? 's' : ''})"
     else
       "no match"
     end

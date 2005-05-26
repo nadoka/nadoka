@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 20:52:32 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/googlebot.nb : fix plural support bug
+
+
 2005-05-26(Thu) 20:27:16 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/googlebot.nb : fix configuration example
