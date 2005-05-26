@@ -2,6 +2,18 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 20:27:16 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/googlebot.nb : fix configuration example
+	and support plural
+
+	* plugins/rss_checkbot.nb : change bot_state format and
+	separate rss check function
+
+	* lib/rss_check.rb : return failed information if
+	exception is raised
+
+
 2005-05-26(Thu) 11:21:31 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/bot.rb : some refactoring

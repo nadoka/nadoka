@@ -26,7 +26,7 @@ BotConfig = [
   :ch        => '#nadoka_check',
   :tm        => 30 # check interval time(minute)
 }
-  
+
 =end
 
 require 'lib/rss_check'
@@ -46,12 +46,12 @@ class RSS_CheckBot < Nadoka::NDK_Bot
 
   def bot_state
     nt = Time.at(@prevtm.to_i + @tm * 60)
-    "<#{self.class}: next check at #{nt.asctime}>" 
+    "<#{self.class}: next check at #{nt.asctime}@#{@ch}>" 
   end
   
   def __on_privmsg prefix, ch, msg
-    if /^rss> status/ =~ msg && ch == @ch && prefix.nick == @state.nick
-      #
+    if /^rss> check/ =~ msg && ch == @ch && prefix.nick == @state.nick
+      make_notice Time.now
     end
   end
   
@@ -62,13 +62,23 @@ class RSS_CheckBot < Nadoka::NDK_Bot
   def check
     tm = Time.now
     if tm.to_i - @tm * 60 > @prevtm.to_i
-      @prevtm = tm
-      items = @rssc.check
-      @rssc.dump
-      make_notice_thread items
+      make_notice tm
     end
   end
 
+  def make_notice tm
+    @prevtm = tm
+    begin
+      items = @rssc.check
+      @rssc.save
+    rescue => e
+      send_notice(@ch, "rss bot error: #{e}")
+      @manager.ndk_error e
+      return
+    end
+    make_notice_thread items
+  end
+  
   def make_notice_thread items
     Thread.new{
       begin
@@ -96,11 +106,12 @@ class RSS_CheckBot < Nadoka::NDK_Bot
           end
         }
       rescue Exception => e
+        send_notice(@ch, "rss bot error: #{e}")
         @manager.ndk_error e
       end
     }
+    send_notice(@ch, "rss bot: over")
   end
   
 end
-
 

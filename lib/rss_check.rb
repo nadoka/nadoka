@@ -22,6 +22,7 @@ require 'csv'
 require 'stringio'
 require 'zlib'
 
+
 class RSS_Check
   class RSS_File
     def initialize path, init_now
@@ -30,11 +31,19 @@ class RSS_Check
     end
     
     def check
-      if (mt=mtime) > @file_time
-        @file_time = mt
-        check_entries
-      else
-        []
+      begin
+        if (mt=mtime) > @file_time
+          @file_time = mt
+          check_entries
+        else
+          []
+        end
+      rescue => e
+        [{
+          :about => e.message,
+          :title => "RSS Check Error (#{@uri})",
+          :ccode => 'UTF-8'
+        }]
       end
     end
 
@@ -137,7 +146,7 @@ class RSS_Check
     }.flatten
   end
 
-  def dump
+  def save
     @db.transaction{
       @paths.each_with_index{|path, i|
         @db[path] = @rss_files[i]

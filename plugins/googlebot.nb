@@ -37,7 +37,7 @@ BotConfig = [
   :name                => :GoogleBot,
   :ch                  => /.*/,
   :key                 => nil,
-  :keypath             => '~/.google_key'
+  :key_path            => '~/.google_key',
   :googlec_maxwords    => 5,
   :search_default_lang => 'lang_ja',
   :count_default_lang  => '',
@@ -99,11 +99,10 @@ class GoogleBot < Nadoka::NDK_Bot
       url   =  title = ''
     
       result.resultElements.each_with_index{|e, i|
-        url   = e.URL
+        url   = e['URL']
         title = show_char_code_and_erace_tag(e.title)
       }
-      
-      "#{title} - #{url} (and #{count} hits)"
+      "#{title} - #{url} (and #{count} hit#{(count > 1) ? 's' : ''})"
     else
       "no match"
     end
