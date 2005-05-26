@@ -87,7 +87,7 @@ Away_Message = 'away'
 # be that when no clients are connected.
 Away_Nick    = nil
 
-Quit_Message = 'bye! / quit nadoka'
+Quit_Message = "Quit Nadoka #{Nadoka::NDK_Version} (http://www.atdot.net/nadoka/)"
 
 
 ###############################################
