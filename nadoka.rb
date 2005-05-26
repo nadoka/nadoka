@@ -5,7 +5,7 @@
 ##  Irc Client Server Program
 ##
 #
-# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+# Copyright (c) 2004-2005 SASADA Koichi <ko1 at atdot.net>
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
 # You can re-distribute and/or modify this program under
