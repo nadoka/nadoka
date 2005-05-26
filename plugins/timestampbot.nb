@@ -22,7 +22,8 @@ BotConfig = [
 {
   :name        => :TimeStampBot,
   :interval    => 60 * 60,       # sec
-  :stampformat => '== %y/%m/%d-%H:%M:%S =========================================='
+  :stampformat => '== %y/%m/%d-%H:%M:%S ==========================================',
+  :client      => false,
 }
 ]
 
@@ -33,6 +34,7 @@ class TimeStampBot < Nadoka::NDK_Bot
     @interval    = @bot_config.fetch(:interval, 60 * 60) # default: 1 hour
     @stampformat = @bot_config.fetch(:stampformat,
       '== %y/%m/%d-%H:%M:%S ==========================================')
+    @client      = @bot_config.fetch(:client, false)
     @nexttime    = nexttime
   end
 
@@ -53,7 +55,7 @@ class TimeStampBot < Nadoka::NDK_Bot
     @state.channels.each{|ch|
       @logger.clog(ch, msg, true)
     }
-    @logger.slog(msg, true)
+    @logger.slog(msg, true) if @client
   end
 end
 

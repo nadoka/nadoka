@@ -2,6 +2,12 @@
 # $Id$ 
 #
 
+2005-05-26(Thu) 10:44:33 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/timestampbot.nb : add :client configuration
+	(if true, output timestamp to clients. default: false)
+
+
 2005-05-26(Thu) 10:37:29 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/timestampbot.nb : fix configuration example
