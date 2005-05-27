@@ -87,7 +87,7 @@ Away_Message = 'away'
 # be that when no clients are connected.
 Away_Nick    = nil
 
-Quit_Message = "Quit Nadoka #{Nadoka::NDK_Version} (http://www.atdot.net/nadoka/)"
+# Quit_Message = "Quit Nadoka"
 
 
 ###############################################
@@ -98,7 +98,7 @@ Quit_Message = "Quit Nadoka #{Nadoka::NDK_Version} (http://www.atdot.net/nadoka/
 #  ${channel_name} : Channel name
 #  %? : Time#strftime format(see ruby reference)
 #
-Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
+'${setting_name}-${channel_name}/%y%m%d.log'
 System_log  = '${setting_name}-system.log'
 
 Channel_info = {
@@ -127,7 +127,7 @@ Channel_info = {
   },
 }
 
-Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
+Log_TimeFormat= '%H:%M:%S'
 BackLog_Lines = 20
 
 

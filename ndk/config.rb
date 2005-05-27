@@ -58,18 +58,32 @@ module Nadoka
     Away_Message = 'away'
     Away_Nick    = nil
 
-    Quit_Message = 'bye'
+    Quit_Message = "Quit Nadoka #{::Nadoka::NDK_Version} - http://www.atdot.net/nadoka/"
     
     #
     Channel_info = {}
     # log
-    Default_log = '${setting_name}-${channel_name}-%y%m%d.log'
-    System_log  = '${setting_name}-system_log'
+    Default_log = '${setting_name}-${channel_name}/%y%m%d.log'
+    System_log  = '${setting_name}-system.log'
     Debug_log   = $stdout
     FilenameEncoding = 'euc'
+
+    SystemLog_TimeFormat = '%y%m%d-%H:%M:%S'
+    Log_TimeFormat       = '%H:%M:%S'
+    BackLog_Lines        = 20
     
-    Log_TimeFormat= '%y/%m/%d-%H:%M:%S'
-    BackLog_Lines = 20
+    Log_MessageFormat = {
+      'PRIVMSG' => '<{user}> {msg}',
+      'NOTICE'  => '{{user}} {msg}',
+      'JOIN'    => '+ {user} to {ch}',
+      'NICK'    => '* {user} -> {newnick}',
+      'QUIT'    => '- {user} ({msg})',
+      'PART'    => '- {user} from {ch}',
+      'KICK'    => '- {user} kicked by {kicker} ({msg}) from {ch}',
+      'MODE'    => '* {user} changed mode ({msg})',
+      'TOPIC'   => '<{ch} TOPIC> {msg}',
+      'SYSTEM'  => '[NDK] {msg}'
+    }
     
     # dirs
     Plugins_dir = './plugins'
@@ -93,7 +107,6 @@ module Nadoka
   ConfigClass = [NDK_ConfigBase]
   
   class NDK_Config
-    
     NDK_ConfigBase.constants.each{|e|
       eval %Q{
         def #{e.downcase}
@@ -281,10 +294,30 @@ module Nadoka
 
     def identical_channel_name ch
       # use 4 gsub() because of the compatibility of RFC2813(3.2)
-      ch.toeuc.downcase.gsub( /\[/e, "{" ).
-                        gsub( /\]/e, "}" ).
-                        gsub( /\\/e, "|" ).
-                        gsub( /\~/e, "^" ).tojis
+      ch.toeuc.downcase.tr('[]\\~', '{}|^').tojis
+    end
+
+    def log_file_name ch
+      ch = ch.sub(/^\!.{5}/, '!')
+      
+    end
+
+    def escape_log_file_name ch
+      
+    end
+    
+    def make_channel_from_server rch
+      cn = canonical_channel_name rch
+      id = identical_channel_name rch
+      ln = log_file_name rch
+      ChannelName.new(rch, id, cn, ln)
+    end
+
+    def make_channel_from_configuration rch
+      ln  = escape_log_file_name rch
+      rch = raw_channel_name rch
+      id  = cn = identical_channel_name rch
+      ChannelName.new(rch, id, cn, ln)
     end
     
     def make_bot_instance bk, cfg

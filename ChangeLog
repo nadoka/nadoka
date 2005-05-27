@@ -2,6 +2,17 @@
 # $Id$ 
 #
 
+2005-05-27(Fri) 21:32:35 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : comment out Quit_Message and change
+	Default_log, Log_TimeFormat setting
+
+	* ndk/client.rb : fix welcome message
+
+	* ndk/config.rb : change Default_log, System_log path,
+	Log_TimeFormat and add Log_MessageFormat.
+
+
 2005-05-26(Thu) 22:11:48 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/autodumpbot.nb, plugins/sixamobot.nb :
