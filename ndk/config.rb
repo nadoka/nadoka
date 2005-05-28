@@ -407,11 +407,13 @@ module Nadoka
     def make_logfilename tmpl, rch
       ch = rch.sub(/^\!.{5}/, '!')
 
-      case (filenameencoding || '')[0]
+      case (@config[:filenameencoding].downcase || '')[0]
       when ?e # EUC
         ch = ch.toeuc.downcase
       when ?s # SJIS
         ch = ch.tosjis.downcase
+      when ?u # utf-8
+        ch = ch.toutf8.downcase
       else    # JIS
         ch = ch.toeuc.downcase.tojis
         ch = URI.encode(ch)

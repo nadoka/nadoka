@@ -2,6 +2,11 @@
 # $Id$ 
 #
 
+2005-05-29(Sun) 03:04:53 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/config.rb : support filename encoding(utf-8)
+
+
 2005-05-29(Sun) 02:49:12 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/server_state.rb, ndk/config.rb, ndk/logger.rb :
