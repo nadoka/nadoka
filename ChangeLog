@@ -2,6 +2,14 @@
 # $Id$ 
 #
 
+2005-05-29(Sun) 03:31:07 +0900
+
+	* ndk/server.rb : add @rc read accessor
+
+	* nadokarc, ndk/config.rb : support default setting_name
+	as rc file name
+
+
 2005-05-29(Sun) 03:04:53 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/config.rb : support filename encoding(utf-8)

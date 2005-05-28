@@ -48,7 +48,7 @@ module Nadoka
 
       set_signal_trap
     end
-    attr_reader :state, :connected
+    attr_reader :state, :connected, :rc
     
     def client_count
       @clients.size

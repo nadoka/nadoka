@@ -27,7 +27,7 @@ module Nadoka
     # system
     # 0: quiet, 1: normal, 2: system, 3: debug
     Loglevel     = 2
-    Setting_name = 'DefaultSetting',
+    Setting_name = nil
     
     # client server
     Client_server_port = 6667
@@ -366,8 +366,10 @@ module Nadoka
       @config = {}
       klass = ConfigClass.last
       klass.constants.each{|e|
-        @config[e.downcase.intern] = klass.const_get(e)
+        @config[e.downcase.intern] = v = klass.const_get(e)
       }
+      
+      @config[:setting_name] ||= File.basename(@manager.rc).sub(/\.?rc$/, '')
 
       if $NDK_Debug
         @config[:loglevel] = 3

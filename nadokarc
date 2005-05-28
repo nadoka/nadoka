@@ -14,8 +14,14 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
 
   ###############################################
   # System setting
-  Setting_name = 'IRCNet'
-
+  
+  # Setting_name = 'IRCNet'
+  #  # If you don't specify Setting_name,
+  #  # system use rc file name as setting name
+  #  # if your rc file is "test.rc", setting name is "test"
+  #  # (remove last .rc)
+  #
+  
   # 0: quiet
   # 1: ch log only
   # 2: normal
@@ -202,8 +208,16 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   }
 
   BackLog_Lines = 20
-
-
+  
+  # FilenameEncoding =
+  #  'euc'
+  #  'sjis'
+  #  'utf8'
+  #
+  # If you not specify FilenameEncoding, nadoka infers
+  # suitable encoding (see last of nadokarc)
+  #
+  
   ###############################################
   # Directory
   Log_dir     = './log'
