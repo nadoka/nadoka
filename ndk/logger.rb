@@ -138,6 +138,8 @@ module Nadoka
         @pools  = {}
       end
 
+      attr_reader :pools
+
       def push msgobj
         ch = msgobj[:ccn]
         
@@ -236,18 +238,6 @@ module Nadoka
       ch_ = ch = @config.canonical_channel_name(rch)
 
       msgobj = make_msgobj(msg)
-      
-      unless /\A[\&\#\+\!]/ =~ ch # talk?
-        ch = :__talk__
-        msgobj[:sender]   = user
-        msgobj[:receiver] = rch
-
-        if ch == @config.canonical_channel_name(@manager.state.nick)
-          ch_ = @config.canonical_channel_name(user)
-          rch = user
-        end
-      end
-
       msgobj[:ch]   = rch  # should be raw
       msgobj[:ccn]  = ch
       msgobj[:user] = user
@@ -255,6 +245,11 @@ module Nadoka
       
       case msg.command
       when 'PRIVMSG', 'NOTICE', 'TOPIC', 'JOIN', 'PART', 'QUIT'
+        unless /\A[\&\#\+\!]/ =~ ch # talk?
+          msgobj[:sender]   = user
+          msgobj[:receiver] = rch
+          msgobj[:ccn]      = :__talk__
+        end
         clog_msgobj ch, msgobj
 
       when  'NICK',

@@ -2,6 +2,19 @@
 # $Id$ 
 #
 
+2005-05-29(Sun) 07:06:55 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/weba.nb : use logger's message store
+
+	* ndk/logger.rb, ndk/config.rb : some changes for weba
+
+	* nadokarc : add vim pragma and FilenameEncoding setting
+
+	* ndk/client.rb, ndk/server.rb : fix logger relaod process
+
+	* ndk/server_state.rb : add channel_raw_names
+
+
 2005-05-29(Sun) 03:35:28 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : add BackLogBot as default bot

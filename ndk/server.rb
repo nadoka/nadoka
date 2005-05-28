@@ -32,11 +32,7 @@ module Nadoka
       @state  = nil
 
       @state  = NDK_State.new self
-      @config = reload_config
-      @logger = @config.logger
-
-      @state.logger = @logger
-      @state.config = @config
+      reload_config
       
       @server = nil
       
@@ -63,6 +59,14 @@ module Nadoka
     def reload_config
       @config.remove_previous_setting if defined?(@config)
       @config = NDK_Config.new(self, @rc)
+
+      # reset logger
+      @logger = @config.logger
+      @state.logger = @logger
+      @state.config = @config
+      @clients.each{|c|
+        c.logger = @logger
+      }
     end
 
     def start_server_thread

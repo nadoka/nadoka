@@ -31,7 +31,9 @@ module Nadoka
       @realname = nil
       @hostname = nil
     end
-    
+
+    attr_writer :logger
+
     def start
       send_thread = Thread.new{
         begin

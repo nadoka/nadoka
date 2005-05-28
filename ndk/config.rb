@@ -122,8 +122,18 @@ module Nadoka
     Default_Logwriter = nil
     Talk_Logwriter    = nil
 
-    FilenameEncoding  = 'euc'
     BackLog_Lines     = 20
+
+    # file name encoding setting
+    # 'euc' or 'sjis' or 'jis' or 'utf8'
+    FilenameEncoding =
+      case RUBY_PLATFORM
+      when /mswin/, /cygwin/, /mingw/
+        'sjis'
+      when /linux/
+        'euc'
+      end
+    
     # dirs
     Plugins_dir = './plugins'
     Log_dir     = './log'

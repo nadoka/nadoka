@@ -30,7 +30,7 @@ BotConfig = [
   :id     => 'weba',
   :port   => 12345,
   :entry  => 'weba',
-  :max_store => 1000, # store message size
+  # :message_format => ... (see source)
 }
 ]
 
@@ -67,16 +67,17 @@ class WebA < Nadoka::NDK_Bot
   end
   
   include HTMLParts
+  
   def htmlpage query
-    ch = (query['ch'] || '').tojis
+    rch = (query['ch'] || '').tojis
+    ch  = ccn(rch)
     ch = !ch.empty? && (@state.channels.include?(ch) || ch == 'all') && ch
-    
-    ttl = ch ? " - #{ch.tosjis}" : ''
+p rch
+    ttl = ch ? " - #{rch.tosjis}" : ' - '
     
     if ch && (msg = query['message']) && !msg.empty?
       msg = msg.tojis + ' (from WebA)'
       send_privmsg(ch, msg)
-      push_message(ch, @state.nick, msg, :privmsg)
       raise WebARedirect.new(ch)
     end
     
@@ -85,27 +86,37 @@ class WebA < Nadoka::NDK_Bot
       _body(
         _h1("WebA#{ttl}"),
         _p(
-          _a({:href => "./#{@entry}?ch="+URI.encode((ch || '').tosjis)}, 'reload'),
+          _a({:href => "./#{@entry}?ch="+URI.encode((rch || '').tosjis)}, 'reload'),
           _a({:href => "./#{@entry}"}, 'top')
         ),
-        view_ch(ch),
-        select_ch(ch)
+        view_ch(rch, ch),
+        select_ch(rch, ch)
       ))
   end
 
-  def select_ch ch
+  def select_ch rch, ch
     _p({:class => 'channel-list'},
-      (@state.channels.sort + ['all']).map{|e|
+      (@state.channel_raw_names.sort + ['all']).map{|e|
         e = e.tosjis
         [_a({:href => "./#{@entry}?ch="+ URI.encode(e)}, e), ' ']
       }
     )
   end
 
-  def view_ch ch
+  def view_ch rch, ch
     return unless ch
+    
     chs = ch.tosjis
-    msgs = (ch == 'all') ? @messages : @messages.find_all{|e| e[:ch] == chs}
+    
+    if ch == 'all'
+      msgs = []
+      @stores.pools.each{|_, store|
+        msgs.concat store.pool
+      }
+      msgs = msgs.sort_by{|msg| msg[:time]}
+    else
+      msgs = (@stores.pools[ch] && @stores.pools[ch].pool) || []
+    end
     
     _div({:class => 'irc-accessor'},
       if(ch != 'all')
@@ -119,41 +130,37 @@ class WebA < Nadoka::NDK_Bot
       _h2("channel #{ch.tosjis}"),
       _div({:class => 'messages'},
         msgs.map{|m|
-          if ch == 'all'
-            chn = _a({:href => "./#{@entry}?ch=" + URI.encode(m[:ch])}, m[:ch])
+          if ch == 'all' && m[:ch]
+            chn = _a({:href => "./#{@entry}?ch=#{URI.encode(m[:ch])}"}, m[:ch].tosjis)
+          elsif m[:type] == 'PRIVMSG'
+            chn = _a({:href => "./#{@entry}?user=#{URI.encode(m[:user])}"}, "<#{m[:user].tosjis}>")
           else
             chn = ''
           end
+          msg = @config.log_format_message(@message_format, m)
           
-          nick = (m[:type] == :privmsg) ? m[:nick] : "(#{m[:nick]})"
           _div({:class=>'msg'},
-               "#{m[:time].strftime('%H:%M')} ", chn, "- #{nick}: #{m[:msg]}")
+            "#{m[:time].strftime('%H:%M')} ", chn, "#{msg}".tosjis)
         }.reverse
       )
     )
   end
   
-  def push_message ch, nick, msg, type
-    @messages << {:ch => ch.tosjis, :nick => nick, :msg => msg.tosjis,
-                  :type => type, :time => Time.now}
-    
-    if @messages.size > @max_store
-      @messages = @messages[(@messages.size - @max_store) .. -1]
-    end
-  end
-  
   def bot_initialize
-    @max_store = @bot_config.fetch(:max_store, 1000)
+    @stores = @logger.message_stores
     @server = WEBrick::HTTPServer.new({
       :Port => @bot_config.fetch(:port, 12345),
     })
     @entry = @bot_config.fetch(:entry, 'weba')
+    
     auth = nil
     if passwd = @bot_config[:passwd]
+      id = @bot_config.fetch(:id, 'weba')
+      
       userdb = Hash.new
       userdb.extend(WEBrick::HTTPAuth::UserDB)
       userdb.auth_type = WEBrick::HTTPAuth::BasicAuth
-      userdb.set_passwd("WebA Authentication", @bot_config.fetch(:id, 'weba'), passwd)
+      userdb.set_passwd("WebA Authentication", id, passwd)
 
       auth = WEBrick::HTTPAuth::BasicAuth.new({
         :Realm        => "WebA Authentication",
@@ -168,7 +175,6 @@ class WebA < Nadoka::NDK_Bot
     
     @server.mount("/#{@entry}", WebAlet, self, auth)
     
-    
     @server_thread = Thread.new{
       begin
         @server.start
@@ -176,23 +182,17 @@ class WebA < Nadoka::NDK_Bot
         @manager.ndk_error e
       end
     }
-    @messages  = []
+    @message_format = @config.default_log[:message_format].merge(
+      @bot_config.fetch(:message_format, {
+        'PRIVMSG' => '{msg}',
+        'NOTICE'  => '{{user}} {msg}',
+      }))
   end
 
   def bot_destruct
     @server_thread.kill
     @server.shutdown
     sleep 1
-  end
-  
-  def on_privmsg prefix, ch, msg
-    ch = @config.canonical_channel_name(ch)
-    push_message(ch, prefix.nick, msg, :privmsg)
-  end
-
-  def on_notice prefix, ch, msg
-    ch = @config.canonical_channel_name(ch)
-    push_message(ch, prefix.nick, msg, :notice)
   end
 end
 
