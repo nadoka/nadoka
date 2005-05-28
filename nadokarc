@@ -243,6 +243,8 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     # { :name => :BotName4,
     #   :set1 => setting3,
     # },
+
+    :BackLogBot, # strongly recommended
   ]
 
 

@@ -2,7 +2,12 @@
 # $Id$ 
 #
 
-2005-05-29(Sun) 03:31:07 +0900
+2005-05-29(Sun) 03:35:28 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : add BackLogBot as default bot
+
+
+2005-05-29(Sun) 03:31:07 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/server.rb : add @rc read accessor
 
