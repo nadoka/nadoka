@@ -192,38 +192,27 @@ module Nadoka
     #
     def on_join user, rch
       ch = canonical_channel_name(rch)
-      
-      msg = "+ #{user} to #{ch}"
       if user == nick
-        @logger.clog ch, msg
         chs = @current_channels[ch] = ChannelState.new(rch)
       else
         if @current_channels.has_key? ch
-          @logger.clog ch, msg
           @current_channels[ch].on_join(user)
         end
       end
-      @logger.log msg
     end
     
     def on_part user, rch
       ch = canonical_channel_name(rch)
-
-      msg = "- #{user} from #{ch}"
       if user == nick
-        @logger.clog ch, msg
         @current_channels.delete ch
       else
         if @current_channels.has_key? ch
-          @logger.clog ch, msg
           @current_channels[ch].on_part user
         end
       end
-      @logger.log msg
     end
     
     def on_nick user, newnick
-      msg = "#{user} -> #{newnick}"
       if user == nick
         @current_nick = newnick
         @try_nick     = nil
@@ -231,10 +220,8 @@ module Nadoka
       # logging
       @current_channels.each{|ch, chs|
         if chs.on_nick user, newnick
-          @logger.clog ch, msg
         end
       }
-      @logger.log msg
     end
     
     def on_quit user, qmsg
@@ -245,48 +232,35 @@ module Nadoka
         @current_channels.each{|ch, chs|
           if chs.on_part(user)
             @manager.invoke_event :invoke_bot, :quit_from_channel, chs.name, user, qmsg
-            @logger.clog ch, "- #{user} from #{chs.name}(#{qmsg})"
           end
         }
       end
-      @logger.log "- #{user}(#{qmsg})"
     end
     
     def on_mode user, rch, args
       ch = canonical_channel_name(rch)
-      @logger.log "* #{user} changed mode(#{args.join(', ')}) at #{ch}"
-
       if @current_channels.has_key? ch
-        @logger.clog ch, "* #{user} changed mode(#{args.join(', ')})"
         @current_channels[ch].on_mode user, args
       end
     end
 
     def on_kick kicker, rch, user, comment
       ch = canonical_channel_name(rch)
-      msg = "- #{user} kicked by #{kicker} (#{comment}) from #{ch}"
-
       if user == nick
-        @logger.clog ch, msg
         @current_channels.delete ch
       else
         if @current_channels.has_key? ch
-          @logger.clog ch, msg
           @current_channels[ch].on_kick user
         end
       end
-      
-      @logger.log msg
     end
 
     def on_topic user, rch, topic
       ch = canonical_channel_name(rch)
 
       if @current_channels.has_key? ch
-        @logger.clog ch, "<#{ch}:#{user} TOPIC> #{topic}"
         @current_channels[ch].topic = topic
       end
-      @logger.log "<#{ch} TOPIC> #{topic}"
     end
     
     def on_332 rch, topic
@@ -294,9 +268,7 @@ module Nadoka
 
       if @current_channels.has_key? ch
         @current_channels[ch].topic = topic
-        @logger.clog ch, "<#{ch} TOPIC> #{topic}"
       end
-      @logger.log "<#{ch} TOPIC> #{topic}"
     end
     
     # RPL_NAMREPLY

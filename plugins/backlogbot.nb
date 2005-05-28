@@ -26,9 +26,6 @@ BotConfig = [
 {
   :name   => :BackLogBot,
   
-  :method      => :by_size,     # by_size: store backlog n lines
-                                # by_time: store backlog until time
-  :limit       => 300,
   :clear       => false,        # if true, clear backlogs when output once
   :talker      => false,        # if true, talker will be pseudo talker 
   :prefix      => 'BL',
@@ -41,140 +38,51 @@ BotConfig = [
 
 
 class BackLogBot < Nadoka::NDK_Bot
-  
-  class LimitedObjectStore
-    include Enumerable
-    
-    def initialize limit
-      @store = []
-      @limit = limit
-    end
-
-    def push ch, nick, msg
-      @store << [ch, nick, msg, Time.now]
-      if @store.size > @limit
-        @store = @store[@store.size - @limit .. -1]
-      end
-    end
-
-    def each
-      @store.each{|m|
-        # ch, nick, msg, time
-        yield m[0], m[1], m[2], m[3]
-      }
-    end
-
-    def clear
-      @store.replace []
-    end
-  end
-  
-  class LimitedObjectStoreByTime < LimitedObjectStore
-    def push ch, nick, msg
-      @store << [ch, nick, msg, Time.now]
-      limit = Time.now - @limit
-      while @store[0] && (@store[0][3] < limit)
-        @store.shift
-      end
-    end
-  end
-  
-  ##########################################################
-  
   def bot_initialize
-    @method = @bot_config[:method] || :by_size
-    case @method
-    when :by_size
-      @limit = @bot_config[:limit] || 300
-      @store_klass = LimitedObjectStore
-    when :by_time
-      @limit = @bot_config[:limit] || (60 * 60 * 24)
-      @store_klass = LimitedObjectStoreByTime
-    end
-
+    @store  = @logger.message_stores
     @talker = @bot_config.fetch(:talker, false)
     @clear  = @bot_config.fetch(:clear, false)
     @prefix = @bot_config.fetch(:prefix, 'BL')
     @sender = @bot_config.fetch(:sender, 'backlogbot')
     @sepr   = @bot_config.fetch(:separate, true)
     @tmfmt  = @bot_config.fetch(:time_format, '%m/%d-%H:%M')
-    @store_pool = {}
+    @msgfmts= @bot_config.fetch(:message_format, @config.default_log[:message_format])
   end
 
   def channel_message? ch
     /\A[\&\#\+\!]/ =~ ch
   end
 
-  def push rch, nick, msg
-    ch = ccn(rch)
-    if !channel_message?(ch)
-      nick = "#{nick} => #{ch}"
-      ch   = nil
-    end
-    
-    ch = nil unless @sepr
-    
-    unless store = @store_pool[ch]
-      store = @store_pool[ch] =
-        @store_klass.new(@config.ch_config(ch, :backlog_lines) ||
-                         @config.backlog_lines                 ||
-                         @limit)
-    end
-    
-    store.push ch, nick, msg
-  end
-
-  ##
-
   def on_client_login client_count, client
-    @store_pool.each{|chkey, store|
-      store.each{|ch, nick, msg, time|
-        sch = @state.current_channels[ch] ? ch : @state.nick
-        
-        if ch
-          if chs = @state.current_channels[ch]
-            cmd = Cmd.notice(chs.name, "#{@prefix}(#{time.strftime(@tmfmt)}) #{nick}: #{msg}")
-            client.add_prefix(cmd, @talker ? nick : @sender)
+    @store.each_channel_pool{|ch, msgobjs|
+      if @state.current_channels[ch]
+        msgobjs.each{|msgobj|
+          msg  = @config.log_format_message(@msgfmts, msgobj)
+          rch  = msgobj[:ch]
+          time = msgobj[:time]
+
+          cmd = Cmd.notice(rch, "#{@prefix}(#{time.strftime(@tmfmt)}) #{msg}")
+          client.add_prefix(cmd, @talker ? nick : @sender)
+          client.send_msg cmd
+        }
+      else
+        msgobjs.each{|msgobj|
+          if ch == :__talk__
+            msg  = @config.log_format_message(@config.talk_log[:message_format], msgobj)
           else
-            cmd = Cmd.notice(sch, "#{@prefix}(#{time.strftime(@tmfmt)}) #{ch} - #{nick}: #{msg}")
+            msg  = @config.log_format_message(@config.system_log[:message_format], msgobj)
           end
-        else
-          cmd = Cmd.notice(@state.nick, "#{@prefix}(#{time.strftime(@tmfmt)}) #{nick}: #{msg}")
-        end
-        
-        client.send_msg cmd
-      }
-      store.clear if @clear
+          
+          rch  = msgobj[:ch]
+          time = msgobj[:time]
+          
+          cmd = Cmd.notice(@state.nick, "#{@prefix}(#{time.strftime(@tmfmt)}) #{msg}")
+          client.send_msg cmd
+        }
+      end
     }
+    store.clear if @clear
   end
-  
-  ###############################################
-  # collect message
-  
-  def on_privmsg prefix, ch, msg
-    push ch, prefix.nick, msg
-  end
-  
-  def on_notice prefix, ch, msg
-    push ch, prefix.nick, msg
-  end
-
-  def on_join prefix, ch
-    push ch, nil, "+ #{prefix.nick}"
-  end
-
-  def on_part prefix, ch, msg = ''
-    push ch, nil, "- #{prefix.nick}(#{msg})"
-  end
-
-  def on_topic prefix, ch, topic
-    push ch, nil, "<TOPIC:#{prefix.nick}> - #{topic}"
-  end
-
-  def on_quit_from_channel ch, nick, msg = ''
-    push ch, nil, "- #{nick}(#{msg})*"
-  end
-  
 end
 
 

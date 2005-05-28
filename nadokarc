@@ -2,7 +2,7 @@
 ## Nadoka Sample resource file
 ## $Id$
 #
-# Copyright (c) 2004 SASADA Koichi <ko1 at atdot.net>
+# Copyright (c) 2004-2005 SASADA Koichi <ko1 at atdot.net>
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
 # You can re-distribute and/or modify this program under
@@ -12,167 +12,242 @@
 
 class NADOKA_Config < Nadoka::NDK_ConfigBase
 
-###############################################
-# System setting
-Setting_name = 'IRCNet'
+  ###############################################
+  # System setting
+  Setting_name = 'IRCNet'
 
-# 0: quiet
-# 1: ch log only
-# 2: normal
-# 3: debug
-Loglevel = 2
-
-
-###############################################
-# client server setting
-Client_server_port = 6667
-Client_server_host = nil # You can specify binding host(interface)
-Client_server_pass = 'NadokaPassWord'
-Client_server_acl  = nil
-
-# ACL(Access Control List) example:
-# Client_server_acl = %q{
-#   deny all
-#   allow 192.168.1.1
-#   allow 192.168.2.0/24
-# } # ACL setting must be String
-#
-# or you can set acl directly like follows:
-#
-# ACL_Object = ::ACL.new(...)
-#
+  # 0: quiet
+  # 1: ch log only
+  # 2: normal
+  # 3: debug
+  Loglevel = 2
 
 
-###############################################
-# server setting
+  ###############################################
+  # client server setting
+  Client_server_port = 6667
+  Client_server_host = nil # You can specify binding host(interface)
+  Client_server_pass = 'NadokaPassWord'
+  Client_server_acl  = nil
 
-# IRCnet servers from
-#   http://irc.kyoto-u.ac.jp/list-of-servers.html
-Servers = [
-  { :host => 'irc.fujisawa.wide.ad.jp',  # default: 6667
-    :port => (6660 .. 6669),             # default: nil
-    :pass => nil,
-  },
-  { :host => 'irc.tokyo.wide.ad.jp',
-    :port => (6660 .. 6669),
-  },
-  { :host => 'irc.media.kyoto-u.ac.jp',
-    :port => (6660 .. 6669),
-  },
-  { :host => 'irc.nara.wide.ad.jp',
-    :port => (6660 .. 6669),
-  },
-  { :host => 'irc.huie.hokudai.ac.jp',
-    # without :port, use 6667 as default port
-  },
-
-  # IPv6 Sample
-  # { :host => 'irc6.nara.wide.ad.jp',
-  #   :port => 6667
-  # }
-]
+  # ACL(Access Control List) example:
+  # Client_server_acl = %q{
+  #   deny all
+  #   allow 192.168.1.1
+  #   allow 192.168.2.0/24
+  # } # ACL setting must be String
+  #
+  # or you can set acl directly like follows:
+  #
+  # ACL_Object = ::ACL.new(...)
+  #
 
 
-###############################################
-# userinfo
-User     = ENV['USER'] || ENV['USERNAME'] || 'nadokatest'
-Nick     = ENV['USER'] || ENV['USERNAME'] || 'ndk_nick'
-Hostname = Socket.gethostname
-Realname = 'test bot on nadoka'
-Mode     = nil
+  ###############################################
+  # server setting
 
-Away_Message = 'away'
+  # IRCnet servers from
+  #   http://irc.kyoto-u.ac.jp/list-of-servers.html
+  Servers = [
+    { :host => 'irc.fujisawa.wide.ad.jp',  # default: 6667
+      :port => (6660 .. 6669),             # default: nil
+      :pass => nil,
+    },
+    { :host => 'irc.tokyo.wide.ad.jp',
+      :port => (6660 .. 6669),
+    },
+    { :host => 'irc.media.kyoto-u.ac.jp',
+      :port => (6660 .. 6669),
+    },
+    { :host => 'irc.nara.wide.ad.jp',
+      :port => (6660 .. 6669),
+    },
+    { :host => 'irc.huie.hokudai.ac.jp',
+      # without :port, use 6667 as default port
+    },
 
-# If this item is String, your nick will
-# be that when no clients are connected.
-Away_Nick    = nil
-
-# Quit_Message = "Quit Nadoka"
-
-
-###############################################
-# channel info
-
-# log filename format
-#  ${setting_name} : Setting name
-#  ${channel_name} : Channel name
-#  %? : Time#strftime format(see ruby reference)
-#
-'${setting_name}-${channel_name}/%y%m%d.log'
-System_log  = '${setting_name}-system.log'
-
-Channel_info = {
-  # nadoka talk(from Japanese server only)
-  '#nadoka' => {
-    # timing
-    #  :startup / when nadoka start up <= default
-    #  :login   / when user login
-    #  otherwise nadoka won't login automatically
-    :timing  => :startup,
-    :log     => '${setting_name}-nadoka-chan-%y%m%d.log',
-    # :part_message => "bye bye"
-    # :initial_mode => "+s"
-  },
-  '#nadoka:*.jp' => {
-    :timing  => :startup,
-    :log     => '${setting_name}-nadoka-chan-jp-%y%m%d.log',
-  },
-
-  # nadoka bot channel
-  '#nadoka_check' => {
-    :timing => :startup,
-    :log => '${setting_name}-nadoka-check-%y%m.log',
-    # you can specify store backlog lines
-    :backlog_lines => 5,
-  },
-}
-
-Log_TimeFormat= '%H:%M:%S'
-BackLog_Lines = 20
+    # IPv6 Sample
+    # { :host => 'irc6.nara.wide.ad.jp',
+    #   :port => 6667
+    # }
+  ]
 
 
-###############################################
-# Directory
-Log_dir     = './log'
+  ###############################################
+  # userinfo
+  User     = ENV['USER'] || ENV['USERNAME'] || 'nadokatest'
+  Nick     = ENV['USER'] || ENV['USERNAME'] || 'ndk_nick'
+  Hostname = Socket.gethostname
+  Realname = 'nadoka user'
+  Mode     = nil
 
-Plugins_dir = './plugins'
-# You can set Plugins_dir as Enumerable object.
-# ex: ['./dir1', './dir2', ...]
+  Away_Message = 'away'
 
+  # If this item is String, your nick will
+  # be that when no clients are connected.
+  Away_Nick    = nil
 
-###############################################
-# Bots
-BotConfig = [
-# :BotName1,
-# :BotName1,
-# 'BotName1',
-# :BotName2,
-# { :name => :BotName3,
-#   :set1 => setting1,
-# },
-# { :name => :BotName3,
-#   :set1 => setting2,
-# },
-# { :name => :BotName4,
-#   :set1 => setting3,
-# },
-]
+  # Quit_Message = "Quit Nadoka"
 
 
-###############################################
-# Misc
+  ###############################################
+  # channel info
 
-Privmsg_Filter = nil
-Notice_Filter  = nil
+  # log filename format
+  #  ${setting_name} : Setting name
+  #  ${channel_name} : Channel name
+  #  %? : Time#strftime format(see ruby reference)
+  #
 
-# 'euc' or 'sjis' or 'jis'
-FilenameEncoding =
-case RUBY_PLATFORM
-when /mswin/, /cygwin/, /mingw/
-  'sjis'
-when /linux/
-  'euc'
+
+  Default_log = {
+    :file           => '${setting_name}-${channel_name}/%y%m%d.log',
+    :time_format    => '%H:%M:%S',
+    :message_format => {
+      'PRIVMSG' => '<{user}> {msg}',
+      'NOTICE'  => '{{user}} {msg}',
+      'JOIN'    => '+ {user}',
+      'NICK'    => '* {user} -> {newnick}',
+      'QUIT'    => '- {user} ({msg})',
+      'PART'    => '- {user} ({msg})',
+      'KICK'    => '- {user} kicked by {kicker} ({msg})',
+      'MODE'    => '* {user} changed mode ({msg})',
+      'TOPIC'   => '<{ch} TOPIC> {msg} (by {user})',
+      'SYSTEM'  => '[NDK] {orig}',
+      'OTHER'   => '{orig}',
+      'SIMPLE'  => '{orig}',
+    },
+  }
+
+  System_log = {
+    :file           => '${setting_name}-system.log',
+    :time_format    => '%y/%m/%d-%H:%M:%S',
+    :message_format => {
+      'PRIVMSG' => '{ch} <{user}> {msg}',
+      'NOTICE'  => '{ch} {{user}} {msg}',
+      'JOIN'    => '{ch} + {user}',
+      'NICK'    => '{ch} * {user} -> {newnick}',
+      'QUIT'    => '{ch} - {user} ({msg})',
+      'PART'    => '{ch} - {user} ({msg})',
+      'KICK'    => '{ch} - {user} kicked by {kicker} ({msg})',
+      'MODE'    => '{ch} * {user} changed mode ({msg})',
+      'TOPIC'   => '{ch} <{ch} TOPIC> {msg} (by {user})',
+      'SYSTEM'  => '[NDK] {orig}',
+      'OTHER'   => nil,
+      'SIMPLE'  => nil,
+    },
+  }
+
+  Talk_log = {
+    :file           => '${setting_name}-talk/%y%m%d.log',
+    :time_format    => Default_log[:time_format],
+    :message_format => {
+      'PRIVMSG' => '[{sender} => {receiver}] {msg}',
+      'NOTICE'  => '{{sender} => {receiver}} {msg}',
+    }
+  }
+
+  Channel_info = {
+    # nadoka talk (from Japanese server only)
+    '#nadoka' => {
+      # timing
+      #  :startup / when nadoka start up <= default
+      #  :login   / when user login
+      #  otherwise nadoka won't login automatically
+      :timing  => :startup,
+      :log     => '${setting_name}-nadoka-chan/%y%m%d.log',
+      # :part_message => "bye bye"
+      # :initial_mode => "+s"
+    },
+    '#nadoka:*.jp' => {
+      :timing  => :startup,
+      :log     => '${setting_name}-nadoka-chan-jp/%y%m%d.log',
+    },
+
+    # nadoka bot channel
+    '#nadoka_check' => {
+      :timing => :startup,
+      :log => '${setting_name}-nadoka-check/%y%m.log',
+      # you can specify store backlog lines
+      :backlog_lines => 5,
+    },
+
+    # 
+    # '#log_setting_example' => {
+    #   :log => {
+    #      :file        => 'logfilename',   # log filename
+    #      # :io => $stderr, # or IO object is supported
+    #      :time_format => '%H:%M:%S',
+    #
+    #      :message_format => {
+    #        'PRIVMSG' => '<{user}> {msg}',
+    #        'NOTICE'  => '{{user}} {msg}',
+    #        'JOIN'    => '+ {user} to {ch}',
+    #        'NICK'    => '* {user} -> {newnick}',
+    #        'QUIT'    => '- {user} ({msg})',
+    #        'PART'    => '- {user} from {ch} (#{msg})',
+    #        'KICK'    => '- {user} kicked by {kicker} ({msg}) from {ch}',
+    #        'MODE'    => '* {user} changed mode ({msg})',
+    #        'TOPIC'   => '<{ch} TOPIC> {msg}',
+    #        'SYSTEM'  => '[NDK] {msg}',
+    #        'OTHER'   => nil,
+    #        'SIMPLE'  => nil,
+    #   
+    #     # for more complex log output:
+    #     # :logwriterclass => your_log_writer_class,
+    #     # :logwriter      => your_log_writer_instance,
+    #     # :other_logwriterclass_specific_setting => ...,
+    #   },
+    # },
+  }
+
+  BackLog_Lines = 20
+
+
+  ###############################################
+  # Directory
+  Log_dir     = './log'
+
+  Plugins_dir = './plugins'
+  # You can set Plugins_dir as Enumerable object.
+  # ex: ['./dir1', './dir2', ...]
+
+
+  ###############################################
+  # Bots
+  BotConfig = [
+    # :BotName1,
+    # :BotName1,
+    # 'BotName1',
+    # :BotName2,
+    # { :name => :BotName3,
+    #   :set1 => setting1,
+    # },
+    # { :name => :BotName3,
+    #   :set1 => setting2,
+    # },
+    # { :name => :BotName4,
+    #   :set1 => setting3,
+    # },
+  ]
+
+
+  ###############################################
+  # Misc
+
+  Privmsg_Filter = nil
+  Notice_Filter  = nil
+
+  # file name encoding setting
+  # 'euc' or 'sjis' or 'jis' or 'utf8'
+  unless defined?(FilenameEncoding)
+    FilenameEncoding =
+      case RUBY_PLATFORM
+      when /mswin/, /cygwin/, /mingw/
+        'sjis'
+      when /linux/
+        'euc'
+      end
+  end
+
 end
-
-end
-

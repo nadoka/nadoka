@@ -2,6 +2,16 @@
 # $Id$ 
 #
 
+2005-05-29(Sun) 02:49:12 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/server_state.rb, ndk/config.rb, ndk/logger.rb :
+	new logging scheme is added
+
+	* nadokarc : add indent and log detail setting
+
+	* plugins/backlogbot.nb : use logger's message store
+
+
 2005-05-27(Fri) 21:32:35 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : comment out Quit_Message and change

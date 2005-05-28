@@ -63,28 +63,67 @@ module Nadoka
     #
     Channel_info = {}
     # log
-    Default_log = '${setting_name}-${channel_name}/%y%m%d.log'
-    System_log  = '${setting_name}-system.log'
-    Debug_log   = $stdout
-    FilenameEncoding = 'euc'
-
-    SystemLog_TimeFormat = '%y%m%d-%H:%M:%S'
-    Log_TimeFormat       = '%H:%M:%S'
-    BackLog_Lines        = 20
     
-    Log_MessageFormat = {
-      'PRIVMSG' => '<{user}> {msg}',
-      'NOTICE'  => '{{user}} {msg}',
-      'JOIN'    => '+ {user} to {ch}',
-      'NICK'    => '* {user} -> {newnick}',
-      'QUIT'    => '- {user} ({msg})',
-      'PART'    => '- {user} from {ch}',
-      'KICK'    => '- {user} kicked by {kicker} ({msg}) from {ch}',
-      'MODE'    => '* {user} changed mode ({msg})',
-      'TOPIC'   => '<{ch} TOPIC> {msg}',
-      'SYSTEM'  => '[NDK] {msg}'
+    Default_log = {
+      :file           => '${setting_name}-${channel_name}/%y%m%d.log',
+      :time_format    => '%H:%M:%S',
+      :message_format => {
+        'PRIVMSG' => '<{user}> {msg}',
+        'NOTICE'  => '{{user}} {msg}',
+        'JOIN'    => '+ {user}',
+        'NICK'    => '* {user} -> {newnick}',
+        'QUIT'    => '- {user} ({msg})',
+        'PART'    => '- {user} ({msg})',
+        'KICK'    => '- {user} kicked by {kicker} ({msg})',
+        'MODE'    => '* {user} changed mode ({msg})',
+        'TOPIC'   => '<{ch} TOPIC> {msg} (by {user})',
+        'SYSTEM'  => '[NDK] {orig}',
+        'OTHER'   => '{orig}',
+        'SIMPLE'  => '{orig}',
+      },
     }
-    
+
+    System_log = {
+      :file           => '${setting_name}-system.log',
+      :time_format    => '%y/%m/%d-%H:%M:%S',
+      :message_format => {
+        'PRIVMSG' => '{ch} <{user}> {msg}',
+        'NOTICE'  => '{ch} {{user}} {msg}',
+        'JOIN'    => '{ch} + {user}',
+        'NICK'    => '{ch} * {user} -> {newnick}',
+        'QUIT'    => '{ch} - {user} ({msg})',
+        'PART'    => '{ch} - {user} ({msg})',
+        'KICK'    => '{ch} - {user} kicked by {kicker} ({msg})',
+        'MODE'    => '{ch} * {user} changed mode ({msg})',
+        'TOPIC'   => '{ch} <{ch} TOPIC> {msg} (by {user})',
+        'SYSTEM'  => '[NDK] {orig}',
+        'OTHER'   => nil,
+        'SIMPLE'  => nil,
+      },
+    }
+
+    Debug_log = {
+      :io             => $stdout,
+      :time_format    => '%y/%m/%d-%H:%M:%S',
+      :message_format => System_log[:message_format],
+    }
+
+    Talk_log = {
+      :file           => '${setting_name}-talk/%y%m%d.log',
+      :time_format    => Default_log[:time_format],
+      :message_format => {
+        'PRIVMSG' => '[{sender} => {receiver}] {msg}',
+        'NOTICE'  => '{{sender} -> {receiver}} {msg}',
+      }
+    }
+
+    System_Logwriter  = nil
+    Debug_Logwriter   = nil
+    Default_Logwriter = nil
+    Talk_Logwriter    = nil
+
+    FilenameEncoding  = 'euc'
+    BackLog_Lines     = 20
     # dirs
     Plugins_dir = './plugins'
     Log_dir     = './log'
@@ -161,6 +200,8 @@ module Nadoka
         bot.bot_destruct
       }
       @bots = []
+
+      GC.start
     end
 
     def load_bots
@@ -213,24 +254,9 @@ module Nadoka
         end
       }.flatten
     end
-    
-    def load_config(rcfile)
-      load(rcfile) if rcfile
-      
-      @config = {}
-      klass = ConfigClass.last
-      klass.constants.each{|e|
-        @config[e.downcase.intern] = klass.const_get(e)
-      }
 
-      if $NDK_Debug
-        @config[:loglevel] = 3
-      end
-      
-      @logger = NDK_Logger.new(@manager, self)
-      @logger.slog "load config: #{rcfile}"
-
-      if svrs = klass.const_get(:Servers)
+    def server_setting
+      if svrs = @config[:servers]
         svl = []
         svrs.each{|si|
           ports = si[:port] || 6667
@@ -246,9 +272,60 @@ module Nadoka
         }
         @config[:server_list] = svl
       end
+    end
 
+    def make_logwriter log
+      return unless log
+      
+      case log
+      when Hash
+        if    log.has_key?(:logwriter)
+          return log[:logwriter]
+        elsif log.has_key?(:logwriterclass)
+          klass = log[:logwriterclass]
+        elsif log.has_key?(:io)
+          klass = IOLogWriter
+        elsif log.has_key?(:file)
+          klass = FileLogWriter
+        else
+          klass = FileLogWriter
+        end
+        opts = @config[:default_log].merge(log)
+        klass.new(self, opts)
+        
+      when String
+        opts = @config[:default_log].dup
+        opts[:file] = log
+        FileLogWriter.new(self, opts)
+        
+      when IO
+        opts = @config[:default_log].dup
+        opts[:io] = log
+        IOLogWriter.new(self, opts)
+        
+      else
+        raise "Unknown LogWriter setting"
+      end
+    end
+
+    def make_default_logwriter
+      unless @config[:default_log].kind_of? Hash
+        # defult_log must be Hash
+        dl = @config[:default_log]
+        @config[:default_log] = NDK_ConfigBase::Default_log.dup
+      else
+        dl = @config[:default_log]
+      end
+      
+      @config[:default_logwriter] ||= make_logwriter(dl)
+      @config[:system_logwriter]  ||= make_logwriter(@config[:system_log])
+      @config[:debug_logwriter]   ||= make_logwriter(@config[:debug_log])
+      @config[:talk_logwriter]    ||= make_logwriter(@config[:talk_log])
+    end
+    
+    def channel_setting
       # treat with channel information
-      if chs = klass.const_get(:Channel_info)
+      if chs = @config[:channel_info]
         dchs = []
         lchs = []
         cchs = {}
@@ -261,26 +338,49 @@ module Nadoka
           elsif setting[:timing] == :login
             lchs << ch
           end
+
+          # log writer
+          setting[:logwriter] ||= make_logwriter(setting[:log]) || @config[:default_logwriter]
+          
           cchs[ch] = setting
         }
         chs.replace cchs
         @config[:default_channels] = dchs
         @config[:login_channels]   = lchs
       end
+    end
 
-      # acl setting
+    def acl_setting
       if @config[:client_server_acl] && !@config[:acl_object]
         require 'drb/acl'
         
         acl = @config[:client_server_acl].strip.split(/\s+/)
         @config[:acl_object] = ACL.new(acl)
-        logger.slog "ACL: #{acl.join(' ')}"
+        @logger.slog "ACL: #{acl.join(' ')}"
       end
+    end
 
-      # load bots
+    def load_config(rcfile)
+      load(rcfile) if rcfile
+      
+      @config = {}
+      klass = ConfigClass.last
+      klass.constants.each{|e|
+        @config[e.downcase.intern] = klass.const_get(e)
+      }
+
+      if $NDK_Debug
+        @config[:loglevel] = 3
+      end
+      
+      make_default_logwriter
+      @logger = NDK_Logger.new(@manager, self)
+      @logger.slog "load config: #{rcfile}"
+
+      server_setting
+      channel_setting
+      acl_setting
       load_bots
-
-      GC.start
     end
 
     def ch_config ch, key
@@ -297,36 +397,71 @@ module Nadoka
       ch.toeuc.downcase.tr('[]\\~', '{}|^').tojis
     end
 
-    def log_file_name ch
-      ch = ch.sub(/^\!.{5}/, '!')
+    RName = {        # ('&','#','+','!')
+      '#' => 'CS-',
+      '&' => 'CA-',
+      '+' => 'CP-',
+      '!' => 'CE-',
+    }
+    
+    def make_logfilename tmpl, rch
+      ch = rch.sub(/^\!.{5}/, '!')
+
+      case (filenameencoding || '')[0]
+      when ?e # EUC
+        ch = ch.toeuc.downcase
+      when ?s # SJIS
+        ch = ch.tosjis.downcase
+      else    # JIS
+        ch = ch.toeuc.downcase.tojis
+        ch = URI.encode(ch)
+      end
       
+
+      # escape
+      ch  = ch.sub(/^[\&\#\+\!]|/){|c|
+        RName[c]
+      }
+      ch  = ch.gsub(/\*|\:/, '_').gsub(/\//, 'I')
+
+      # format
+      str = Time.now.strftime(tmpl)
+      str.gsub(/\$\{setting_name\}/, setting_name).
+          gsub(/\$\{channel_name\}|\{ch\}/, ch)
     end
 
-    def escape_log_file_name ch
+    def log_format timefmt, msgfmts, msgobj
+      text = log_format_message(msgfmts, msgobj)
       
-    end
-    
-    def make_channel_from_server rch
-      cn = canonical_channel_name rch
-      id = identical_channel_name rch
-      ln = log_file_name rch
-      ChannelName.new(rch, id, cn, ln)
+      if timefmt && !msgobj[:nostamp]
+        text = "#{msgobj[:time].strftime(timefmt)} #{text}"
+      end
+      
+      text
     end
 
-    def make_channel_from_configuration rch
-      ln  = escape_log_file_name rch
-      rch = raw_channel_name rch
-      id  = cn = identical_channel_name rch
-      ChannelName.new(rch, id, cn, ln)
+    def log_format_message msgfmts, msgobj
+      type   = msgobj[:type]
+      format = msgfmts.fetch(type, @config[:default_log][:message_format][type])
+
+      if format.kind_of? Proc
+        text = format.call(params)
+      elsif format
+        text = format.gsub(/\{([a-z]+)\}/){|key|
+          msgobj[$1.intern]
+        }
+      else
+        text = msgobj[:orig].to_s
+      end
     end
-    
+
     def make_bot_instance bk, cfg
       bk = BotClasses[bk.to_s.downcase.intern] unless bk.kind_of? Class
       bot = bk.new @manager, self, cfg || {}
       @logger.slog "bot instance: #{bot.bot_state}"
       bot
     end
-    
+
     def load_botfile file
       loaded = false
       
@@ -348,7 +483,7 @@ module Nadoka
 
     def load_file file
       if FileTest.exist? file
-        Nadoka.require file
+        Nadoka.require_bot file
         true
       else
         false
@@ -359,7 +494,7 @@ module Nadoka
     BotClasses          = {}
   end
 
-  def self.require file
+  def self.require_bot file
     return if NDK_Config::RequiredFiles.include? file
     
     NDK_Config::RequiredFiles.push file
