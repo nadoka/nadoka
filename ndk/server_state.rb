@@ -216,7 +216,7 @@ module Nadoka
       end
     end
     
-    def on_nick user, newnick
+    def on_nick user, newnick, msg
       if user == nick
         @current_nick = newnick
         @try_nick     = nil
@@ -224,17 +224,19 @@ module Nadoka
       # logging
       @current_channels.each{|ch, chs|
         if chs.on_nick user, newnick
+          @config.logger.logging_nick ch, chs.name, user, newnick, msg
         end
       }
     end
     
-    def on_quit user, qmsg
+    def on_quit user, qmsg, msg
       if user == nick
         @current_channels = {} # clear
       else
         # logging
         @current_channels.each{|ch, chs|
           if chs.on_part(user)
+            @config.logger.logging_quit ch, chs.name, user, qmsg, msg
             @manager.invoke_event :invoke_bot, :quit_from_channel, chs.name, user, qmsg
           end
         }

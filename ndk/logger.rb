@@ -244,7 +244,7 @@ module Nadoka
       msgobj[:msg]  = msg.params[1]
       
       case msg.command
-      when 'PRIVMSG', 'NOTICE', 'TOPIC', 'JOIN', 'PART', 'QUIT'
+      when 'PRIVMSG', 'NOTICE', 'TOPIC', 'JOIN', 'PART'
         unless /\A[\&\#\+\!]/ =~ ch # talk?
           msgobj[:sender]   = user
           msgobj[:receiver] = rch
@@ -252,15 +252,9 @@ module Nadoka
         end
         clog_msgobj ch, msgobj
 
-      when  'NICK'
-        @manager.state.current_channels.each{|ch, chs|
-          if chs.member.has_key? rch
-            msgobj[:user]    = user
-            msgobj[:newnick] = rch
-            clog_msgobj ch, msgobj
-          end
-        }
-        
+      when  'NICK', 'QUIT'
+        # ignore. see below.
+
       when 'MODE'
         msgobj[:msg] = msg.params[1..-1].join(', ')
 
@@ -285,7 +279,24 @@ module Nadoka
         olog msg.to_s
       end
     end
-    
+
+    def logging_nick ccn, rch, nick, newnick, msg
+      msgobj = make_msgobj(msg)
+      msgobj[:ch]      = rch  # should be raw
+      msgobj[:ccn]     = ccn
+      msgobj[:user]    = nick
+      msgobj[:newnick] = newnick
+      clog_msgobj ccn, msgobj
+    end
+
+    def logging_quit ccn, rch, user, qmsg, msg
+      msgobj = make_msgobj(msg)
+      msgobj[:ch]      = rch  # should be raw
+      msgobj[:ccn]     = ccn
+      msgobj[:user]    = user
+      msgobj[:msg]     = qmsg
+      clog_msgobj ccn, msgobj
+    end
 
     ###
   end

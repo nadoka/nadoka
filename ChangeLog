@@ -2,6 +2,14 @@
 # $Id$ 
 #
 
+2005-05-29(Sun) 14:01:02 +0900
+
+	* ndk/server.rb, ndk/server_state.rb, ndk/logger.rb :
+	NICK and QUIT logging from server_state
+
+	* nadokarc, ndk/config.rb : change default PART, QUIT message format
+
+
 2005-05-29(Sun) 12:53:48 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/weba.nb : set default password on

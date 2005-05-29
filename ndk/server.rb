@@ -214,9 +214,9 @@ module Nadoka
         when 'PART'
           @state.on_part(nick_of(q), q.params[0])
         when 'NICK'
-          @state.on_nick(nick_of(q), q.params[0])
+          @state.on_nick(nick_of(q), q.params[0], q)
         when 'QUIT'
-          @state.on_quit(nick_of(q), q.params[0])
+          @state.on_quit(nick_of(q), q.params[0], q)
         when 'TOPIC'
           @state.on_topic(nick_of(q), q.params[0], q.params[1])
         when 'MODE'
