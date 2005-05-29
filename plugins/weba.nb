@@ -26,7 +26,7 @@ WebA: Web Accessor
 BotConfig = [
 {
   :name   => :WebA,
-  :passwd => nil,     # if passwd is specified, use Basic Access Authentication with id
+  :passwd => 'WebAPassWord', # if passwd is specified, use Basic Access Authentication with id
   :id     => 'weba',
   :port   => 12345,
   :entry  => 'weba',
@@ -72,8 +72,8 @@ class WebA < Nadoka::NDK_Bot
     rch = (query['ch'] || '').tojis
     ch  = ccn(rch)
     ch = !ch.empty? && (@state.channels.include?(ch) || ch == 'all') && ch
-p rch
-    ttl = ch ? " - #{rch.tosjis}" : ' - '
+
+    ttl = ch ? " - #{rch.tosjis}" : ''
     
     if ch && (msg = query['message']) && !msg.empty?
       msg = msg.tojis + ' (from WebA)'
@@ -89,8 +89,14 @@ p rch
           _a({:href => "./#{@entry}?ch="+URI.encode((rch || '').tosjis)}, 'reload'),
           _a({:href => "./#{@entry}"}, 'top')
         ),
-        view_ch(rch, ch),
-        select_ch(rch, ch)
+
+        case ch
+        when 'command'
+          command_ch
+        else
+          view_ch(rch, ch)
+          select_ch(rch, ch)
+        end
       ))
   end
 
@@ -132,12 +138,14 @@ p rch
         msgs.map{|m|
           if ch == 'all' && m[:ch]
             chn = _a({:href => "./#{@entry}?ch=#{URI.encode(m[:ch])}"}, m[:ch].tosjis)
+            msg = @config.log_format_message(@all_message_format, m)
           elsif m[:type] == 'PRIVMSG'
             chn = _a({:href => "./#{@entry}?user=#{URI.encode(m[:user])}"}, "<#{m[:user].tosjis}>")
+            msg = @config.log_format_message(@message_format, m)
           else
+            msg = @config.log_format_message(@message_format, m)
             chn = ''
           end
-          msg = @config.log_format_message(@message_format, m)
           
           _div({:class=>'msg'},
             "#{m[:time].strftime('%H:%M')} ", chn, "#{msg}".tosjis)
@@ -154,7 +162,7 @@ p rch
     @entry = @bot_config.fetch(:entry, 'weba')
     
     auth = nil
-    if passwd = @bot_config[:passwd]
+    if passwd = @bot_config.fetch(:passwd, 'WebAPassWord')
       id = @bot_config.fetch(:id, 'weba')
       
       userdb = Hash.new
@@ -187,6 +195,9 @@ p rch
         'PRIVMSG' => '{msg}',
         'NOTICE'  => '{{user}} {msg}',
       }))
+
+    @all_message_format = @config.default_log[:message_format].merge(
+      @bot_config.fetch(:all_message_format, {}))
   end
 
   def bot_destruct

@@ -252,9 +252,14 @@ module Nadoka
         end
         clog_msgobj ch, msgobj
 
-      when  'NICK',
-        msgobj[:newnick] = rch
-        clog_msgobj ch, msgobj
+      when  'NICK'
+        @manager.state.current_channels.each{|ch, chs|
+          if chs.member.has_key? rch
+            msgobj[:user]    = user
+            msgobj[:newnick] = rch
+            clog_msgobj ch, msgobj
+          end
+        }
         
       when 'MODE'
         msgobj[:msg] = msg.params[1..-1].join(', ')
