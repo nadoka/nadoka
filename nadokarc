@@ -174,7 +174,7 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     # nadoka bot channel
     '#nadoka_check' => {
       :timing => :startup,
-      :log => '${setting_name}-nadoka-check/%y%m.log',
+      :log => '${setting_name}-nadoka-check/%y%m%d.log',
       # you can specify store backlog lines
       :backlog_lines => 5,
     },

@@ -2,7 +2,12 @@
 # $Id$ 
 #
 
-2005-05-29(Sun) 14:01:02 +0900
+2005-05-31(Tue) 14:08:26 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadokarc : change log setting of "#nadoka_check"
+
+
+2005-05-29(Sun) 14:01:02 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/server.rb, ndk/server_state.rb, ndk/logger.rb :
 	NICK and QUIT logging from server_state
