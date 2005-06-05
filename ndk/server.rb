@@ -359,7 +359,7 @@ module Nadoka
               else
                 # fail
                 @pong_fail_count += 1
-                @logger.dlog "PONG MISS: #{@pong_fail_count}"
+                @logger.slog "PONG MISS: #{@pong_fail_count}"
                 
                 if @pong_fail_count > MAX_PONG_FAIL
                   @pong_fail_count = 0

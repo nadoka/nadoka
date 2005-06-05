@@ -2,6 +2,10 @@
 # $Id$ 
 #
 
+2005-06-05(Sun) 22:47:15 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/server.rb : PONG MISS message dlog -> slog
+
 2005-05-31(Tue) 14:08:26 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc : change log setting of "#nadoka_check"
