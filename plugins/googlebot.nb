@@ -109,7 +109,7 @@ class GoogleBot < Nadoka::NDK_Bot
   end
 
   def googlec lang, word
-    lang = lang_check(lang)
+    lang = lang_check(lang, @count_default_lang)
     words = Shellwords.shellwords(word)
     return 'too many options' if words.size > @googlec_maxwords
 
@@ -131,7 +131,7 @@ class GoogleBot < Nadoka::NDK_Bot
     CGI.unescapeHTML(str.gsub(/\<.+?\>/, ''))
   end
 
-  def lang_check lang
+  def lang_check lang, default = @search_default_lang
     if !lang
       @search_default_lang
     else

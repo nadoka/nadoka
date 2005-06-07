@@ -1,6 +1,10 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
-#
+
+2005-06-08(Wed) 07:42:17 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/googlebot.nb : fix to use count default language
+
 
 2005-06-08(Wed) 06:21:25 +0900  Koichi Sasada  <ko1@atdot.net>
 
