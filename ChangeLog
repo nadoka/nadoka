@@ -2,9 +2,25 @@
 # $Id$ 
 #
 
+2005-06-08(Wed) 06:21:25 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/server.rb : trap IOError and change error output
+
+	* ndk/config.rb : support {prefix:(nick|user|host)} specifier
+
+	* ndk/logger.rb : {user} -> {nick}
+
+	* nadokarc : apply above changes
+
+	* rice/irc.rb : output unless port is closed
+
+	* plugins/backlogbot.nb : change spell (@store -> @stores)
+
+
 2005-06-05(Sun) 22:47:15 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/server.rb : PONG MISS message dlog -> slog
+
 
 2005-05-31(Tue) 14:08:26 +0900  Koichi Sasada  <ko1@atdot.net>
 

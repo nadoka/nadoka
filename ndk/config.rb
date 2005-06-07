@@ -68,15 +68,15 @@ module Nadoka
       :file           => '${setting_name}-${channel_name}/%y%m%d.log',
       :time_format    => '%H:%M:%S',
       :message_format => {
-        'PRIVMSG' => '<{user}> {msg}',
-        'NOTICE'  => '{{user}} {msg}',
-        'JOIN'    => '+ {user}',
-        'NICK'    => '* {user} -> {newnick}',
-        'QUIT'    => '- {user} (QUIT: {msg})',
-        'PART'    => '- {user} (PART: {msg})',
-        'KICK'    => '- {user} kicked by {kicker} ({msg})',
-        'MODE'    => '* {user} changed mode ({msg})',
-        'TOPIC'   => '<{ch} TOPIC> {msg} (by {user})',
+        'PRIVMSG' => '<{nick}> {msg}',
+        'NOTICE'  => '{{nick}} {msg}',
+        'JOIN'    => '+ {nick} ({prefix:user}@{prefix:host})',
+        'NICK'    => '* {nick} -> {newnick}',
+        'QUIT'    => '- {nick} (QUIT: {msg}) ({prefix:user}@{prefix:host})',
+        'PART'    => '- {nick} (PART: {msg}) ({prefix:user}@{prefix:host})',
+        'KICK'    => '- {nick} kicked by {kicker} ({msg})',
+        'MODE'    => '* {nick} changed mode ({msg})',
+        'TOPIC'   => '<{ch} TOPIC> {msg} (by {nick})',
         'SYSTEM'  => '[NDK] {orig}',
         'OTHER'   => '{orig}',
         'SIMPLE'  => '{orig}',
@@ -87,15 +87,15 @@ module Nadoka
       :file           => '${setting_name}-system.log',
       :time_format    => '%y/%m/%d-%H:%M:%S',
       :message_format => {
-        'PRIVMSG' => '{ch} <{user}> {msg}',
-        'NOTICE'  => '{ch} {{user}} {msg}',
-        'JOIN'    => '{ch} + {user}',
-        'NICK'    => '{ch} * {user} -> {newnick}',
-        'QUIT'    => '{ch} - {user} (QUIT: {msg})',
-        'PART'    => '{ch} - {user} (PART: {msg})',
-        'KICK'    => '{ch} - {user} kicked by {kicker} ({msg})',
-        'MODE'    => '{ch} * {user} changed mode ({msg})',
-        'TOPIC'   => '{ch} <{ch} TOPIC> {msg} (by {user})',
+        'PRIVMSG' => '{ch} <{nick}> {msg}',
+        'NOTICE'  => '{ch} {{nick}} {msg}',
+        'JOIN'    => '{ch} + {nick} ({prefix:user}@{prefix:host})',
+        'NICK'    => '{ch} * {nick} -> {newnick}',
+        'QUIT'    => '{ch} - {nick} (QUIT: {msg}) ({prefix:user}@{prefix:host})',
+        'PART'    => '{ch} - {nick} (PART: {msg}) ({prefix:user}@{prefix:host})',
+        'KICK'    => '{ch} - {nick} kicked by {kicker} ({msg})',
+        'MODE'    => '{ch} * {nick} changed mode ({msg})',
+        'TOPIC'   => '{ch} <{ch} TOPIC> {msg} (by {nick})',
         'SYSTEM'  => '[NDK] {orig}',
         'OTHER'   => nil,
         'SIMPLE'  => nil,
@@ -375,8 +375,11 @@ module Nadoka
       
       @config = {}
       klass = ConfigClass.last
-      klass.constants.each{|e|
-        @config[e.downcase.intern] = v = klass.const_get(e)
+
+      klass.ancestors[0..-3].reverse_each{|kl|
+        kl.constants.each{|e|
+          @config[e.downcase.intern] = klass.const_get(e)
+        }
       }
       
       @config[:setting_name] ||= File.basename(@manager.rc).sub(/\.?rc$/, '')
@@ -461,8 +464,29 @@ module Nadoka
       if format.kind_of? Proc
         text = format.call(params)
       elsif format
-        text = format.gsub(/\{([a-z]+)\}/){|key|
-          msgobj[$1.intern]
+        text = format.gsub(/\{([a-z]+)\}|\{prefix\:([a-z]+)\}/){|key|
+          if $2
+            method = $2.intern
+            if msgobj[:orig].respond_to?(:prefix)
+              (msgobj[:orig].prefix || '') =~ /^(.+?)\!(.+?)@(.+)/
+              case method
+              when :nick
+                $1
+              when :user
+                $2
+              when :host
+                $3
+              else
+                "!!unknown prefix attribute: #{method}!!"
+              end
+            end
+          else
+            if m = msgobj[$1.intern]
+              m
+            else
+              "!!unknown attribute: #{$1}!!"
+            end
+          end
         }
       else
         text = msgobj[:orig].to_s
@@ -481,13 +505,13 @@ module Nadoka
       
       if @config[:plugins_dir].respond_to? :each
         @config[:plugins_dir].each{|dir|
-          if load_file "#{dir}/#{file}.nb"
+          if load_file File.expand_path("#{file}.nb", dir)
             loaded = true
             break
           end
         }
       else
-        loaded = load_file "#{@config[:plugins_dir]}/#{file}.nb"
+        loaded = load_file File.expand_path("#{file}.nb", @config[:plugins_dir])
       end
 
       unless loaded

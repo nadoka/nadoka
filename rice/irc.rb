@@ -311,12 +311,12 @@ module RICE
           if cmd == 'PRIVMSG' || cmd == 'NOTICE'
             # flood control
             t = Time.now
-            if t.to_i <= @prev_send_time.to_i + 1
+            if t.to_i <= @prev_send_time.to_i + 2
               sleep 1
             end
             @prev_send_time = t
           end
-          @conn[0].print message.to_s
+          @conn[0].print message.to_s unless @conn[0].closed?
         end
       else
         nil

@@ -240,7 +240,7 @@ module Nadoka
       msgobj = make_msgobj(msg)
       msgobj[:ch]   = rch  # should be raw
       msgobj[:ccn]  = ch
-      msgobj[:user] = user
+      msgobj[:nick] = user
       msgobj[:msg]  = msg.params[1]
       
       case msg.command
@@ -284,7 +284,7 @@ module Nadoka
       msgobj = make_msgobj(msg)
       msgobj[:ch]      = rch  # should be raw
       msgobj[:ccn]     = ccn
-      msgobj[:user]    = nick
+      msgobj[:nick]    = nick
       msgobj[:newnick] = newnick
       clog_msgobj ccn, msgobj
     end
@@ -293,7 +293,7 @@ module Nadoka
       msgobj = make_msgobj(msg)
       msgobj[:ch]      = rch  # should be raw
       msgobj[:ccn]     = ccn
-      msgobj[:user]    = user
+      msgobj[:nick]    = user
       msgobj[:msg]     = qmsg
       clog_msgobj ccn, msgobj
     end

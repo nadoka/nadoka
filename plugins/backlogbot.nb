@@ -39,7 +39,7 @@ BotConfig = [
 
 class BackLogBot < Nadoka::NDK_Bot
   def bot_initialize
-    @store  = @logger.message_stores
+    @stores = @logger.message_stores
     @talker = @bot_config.fetch(:talker, false)
     @clear  = @bot_config.fetch(:clear, false)
     @prefix = @bot_config.fetch(:prefix, 'BL')
@@ -54,7 +54,7 @@ class BackLogBot < Nadoka::NDK_Bot
   end
 
   def on_client_login client_count, client
-    @store.each_channel_pool{|ch, msgobjs|
+    @stores.each_channel_pool{|ch, msgobjs|
       if @state.current_channels[ch]
         msgobjs.each{|msgobj|
           msg  = @config.log_format_message(@msgfmts, msgobj)
@@ -81,7 +81,7 @@ class BackLogBot < Nadoka::NDK_Bot
         }
       end
     }
-    store.clear if @clear
+    @stores.clear if @clear
   end
 end
 

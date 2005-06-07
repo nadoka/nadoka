@@ -73,16 +73,17 @@ module Nadoka
       @server_thread = Thread.new{
         begin
           @server = make_server()
-          @logger.slog "Server connection to #{@server.server}:#{@server.port}"
+          @logger.slog "Server connection to #{@server.server}:#{@server.port}."
           @pong_recieved = true
+          
           @server.start(1){|sv|
             sv << Cmd.quit(@config.quit_message) if @config.quit_message
           }
           
-        rescue RICE::Connection::Closed, SystemCallError
+        rescue RICE::Connection::Closed, SystemCallError, IOError
           @connected = false
           part_from_all_channels
-          @logger.slog "Connection closed by server. Trying to reconnect"
+          @logger.slog "Connection closed by server. Trying to reconnect."
           
           sleep @config.reconnect_delay
           retry
@@ -93,10 +94,10 @@ module Nadoka
           
           begin
             @server.close if @server
-          rescue RICE::Connection::Closed, SystemCallError
+          rescue RICE::Connection::Closed, SystemCallError, IOError
           end
           
-          @logger.slog "Reconnect request(no server response, or client request)"
+          @logger.slog "Reconnect request (no server response, or client request)."
           
           sleep @config.reconnect_delay
           retry
@@ -245,8 +246,8 @@ module Nadoka
 
         
         send_to_clients q
-        send_to_bot q
         @logger.logging q
+        send_to_bot q
       end
     end
 
@@ -720,10 +721,11 @@ module Nadoka
     end
     
     def ndk_error err
-      $stderr.puts err
-      $stderr.puts err.backtrace.join("\n")
-      @logger.slog err
-      @logger.slog err.backtrace.join(' // ')
+      @logger.slog "Exception #{err.class} - #{err}"
+      @logger.slog "-- backtrace --"
+      err.backtrace.each{|line|
+        @logger.slog "| " + line
+      }
     end
     
   end
