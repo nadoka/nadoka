@@ -342,6 +342,7 @@ module Nadoka
         
         chs.each{|ch, setting|
           ch = identical_channel_name(ch)
+          setting = {} unless setting.kind_of?(Hash)
           
           if !setting[:timing] || setting[:timing] == :startup
             dchs << ch
