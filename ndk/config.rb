@@ -423,7 +423,7 @@ module Nadoka
     def make_logfilename tmpl, rch
       ch = rch.sub(/^\!.{5}/, '!')
 
-      case (@config[:filenameencoding].downcase || '')[0]
+      case @config[:filenameencoding].to_s.downcase[0]
       when ?e # EUC
         ch = ch.toeuc.downcase
       when ?s # SJIS

@@ -1,6 +1,13 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2005-06-09(Thu) 05:11:58 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/config.rb : fix to get FilenameEncoding
+
+	* ndk/server.rb : stop away message until server connection
+
+
 2005-06-08(Wed) 07:56:17 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/config.rb : clear if channel setting is not hash

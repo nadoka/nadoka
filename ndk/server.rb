@@ -260,7 +260,7 @@ module Nadoka
     end
     
     def enter_away
-      return if @exitting
+      return if @exitting && !@connected
       
       send_to_server Cmd.away(@config.away_message) if @config.away_message
 
@@ -283,14 +283,15 @@ module Nadoka
     end
 
     def leave_away
-      return if @exitting
+      return if @exitting && !@connected
 
       send_to_server Cmd.away()
 
       if @config.away_nick && @state.original_nick
+        sleep 2 # wait for server response
         send_to_server Cmd.nick(@state.original_nick)
         @state.original_nick = nil
-        sleep 2 # wait for server response
+        sleep 1 # wait for server response
       end
 
       @config.login_channels.each{|ch|
