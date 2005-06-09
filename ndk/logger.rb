@@ -11,6 +11,7 @@
 
 require 'kconv'
 require 'fileutils'
+require 'thread'
 
 module Nadoka
 
@@ -44,13 +45,16 @@ module Nadoka
   end
   
   class IOLogWriter < LogWriter
+    Lock = Mutex.new
     def initialize config, opts
       super
       @io = opts[:io]
     end
     
     def write_log msg
-      @io.puts msg
+      Lock.synchronize{
+        @io.puts msg
+      }
     end
   end
 
