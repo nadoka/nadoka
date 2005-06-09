@@ -260,7 +260,7 @@ module Nadoka
     end
     
     def enter_away
-      return if @exitting && !@connected
+      return if @exitting || !@connected
       
       send_to_server Cmd.away(@config.away_message) if @config.away_message
 
@@ -283,7 +283,7 @@ module Nadoka
     end
 
     def leave_away
-      return if @exitting && !@connected
+      return if @exitting || !@connected
 
       send_to_server Cmd.away()
 

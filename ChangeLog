@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2005-06-10(Fri) 04:38:25 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/server.rb : fix logic operation
+
+
 2005-06-09(Thu) 17:22:25 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/logger.rb : synchronize IOLogWriter output
