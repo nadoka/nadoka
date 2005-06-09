@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2005-06-09(Thu) 17:18:21 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/config.rb : set default file encoding to EUC
+
+
 2005-06-09(Thu) 05:11:58 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/config.rb : fix to get FilenameEncoding

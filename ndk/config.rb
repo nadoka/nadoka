@@ -130,7 +130,7 @@ module Nadoka
       case RUBY_PLATFORM
       when /mswin/, /cygwin/, /mingw/
         'sjis'
-      when /linux/
+      else
         'euc'
       end
     
