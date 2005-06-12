@@ -21,12 +21,12 @@ module Nadoka
       path = path + '/ChangeLog'
       if FileTest.exist?(path)
         if /^\# ChangeLog of Nadoka\(\$Rev: (\d+) \$\)$/ =~ open(path){|f| s = f.gets}
-          rev = "Rev: #{$1}"
+          rev = "rev: #{$1}"
           break
         end
       end
     }
-    NDK_Version.concat("(#{rev})")
+    NDK_Version.concat(" (#{rev})")
   end
   
   def self.version

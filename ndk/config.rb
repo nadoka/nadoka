@@ -131,7 +131,11 @@ module Nadoka
       when /mswin/, /cygwin/, /mingw/
         'sjis'
       else
-        'euc'
+        if /UTF-?8/i =~ ENV['LANG']
+          'utf8'
+        else
+          'euc'
+        end
       end
     
     # dirs

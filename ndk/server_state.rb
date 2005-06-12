@@ -165,7 +165,7 @@ module Nadoka
       @current_channels.map{|k, cs| cs.name}
     end
 
-    # need canonicarized channel name
+    # need canonicalized channel name
     def channel_users ch
       if @current_channels.has_key? ch
         @current_channels[ch].members
@@ -174,7 +174,7 @@ module Nadoka
       end
     end
     
-    # need canonicarized channel name
+    # need canonicalized channel name
     def channel_user_mode ch, user
       if channel_users(ch).include?(user)
         @current_channels[ch].mode(user)

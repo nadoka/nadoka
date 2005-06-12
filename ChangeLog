@@ -1,6 +1,18 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+
+2005-06-13(Mon) 00:11:39 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/server_state.rb : fix typo
+
+	* ndk/config.rb : see ENV['LANG'] to decide filename encoding
+
+	* ndk/version.rb : fix version format
+
+	* ndk/bot.rb : fix comment
+
+
 2005-06-10(Fri) 04:38:25 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/server.rb : fix logic operation

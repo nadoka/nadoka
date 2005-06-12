@@ -132,7 +132,6 @@ module Nadoka
     end
 
     # if 'nick' user quit client and part ch, this event is called.
-    # !! ch is canonicarized channel name !!
     def on_quit_from_channel ch, nick, qmsg
       # do something
     end
@@ -170,7 +169,7 @@ module Nadoka
     - @state.nick         # your current nick
     - @state.channels     # channels which you are join        ['ch1', 'ch2', ...]
 
-    # need canonicarized channel name
+    # need canonicalized channel name
     - @state.channel_users(ch) # channel users ['user1', ...]
     - @state.channel_user_mode(ch, nick)
     
