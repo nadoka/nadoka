@@ -185,6 +185,7 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     #      :file        => 'logfilename',   # log filename
     #      # :io => $stderr, # or IO object is supported
     #      :time_format => '%H:%M:%S',
+    #      # :channel_name_in_file_name => 'hoge'
     #
     #      :message_format => {
     #        'PRIVMSG' => '<{nick}> {msg}',

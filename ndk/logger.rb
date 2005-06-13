@@ -62,12 +62,13 @@ module Nadoka
     def initialize config, opts
       super
       @filename_fmt = opts[:file]
+      @channel_name_in_file_name = opts[:channel_name_in_file_name]
     end
 
     def logging msgobj
       msg = log_format(msgobj)
       return if msg.empty?
-      write_log_file make_logfilename(@filename_fmt, msgobj[:ch] || ''), msg
+      write_log_file make_logfilename(@filename_fmt, msgobj[:ch] || '', @channel_name_in_file_name), msg
     end
     
     def write_log_file basefile, msg
@@ -87,8 +88,8 @@ module Nadoka
       }
     end
 
-    def make_logfilename tmpl, ch
-      @config.make_logfilename tmpl, ch
+    def make_logfilename tmpl, ch, cn
+      @config.make_logfilename tmpl, ch, cn
     end
   end
 

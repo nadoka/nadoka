@@ -424,7 +424,7 @@ module Nadoka
       '!' => 'CE-',
     }
     
-    def make_logfilename tmpl, rch
+    def make_logfilename tmpl, rch, cn
       ch = rch.sub(/^\!.{5}/, '!')
 
       case @config[:filenameencoding].to_s.downcase[0]
@@ -449,7 +449,7 @@ module Nadoka
       # format
       str = Time.now.strftime(tmpl)
       str.gsub(/\$\{setting_name\}/, setting_name).
-          gsub(/\$\{channel_name\}|\{ch\}/, ch)
+          gsub(/\$\{channel_name\}|\{ch\}/, cn || ch)
     end
 
     def log_format timefmt, msgfmts, msgobj
