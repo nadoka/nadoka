@@ -2,6 +2,11 @@
 # $Id$ 
 
 
+2005-06-14(Tue) 21:26:07 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/server.rb : change reloaded message output method to slog
+
+
 2005-06-13(Mon) 18:25:33 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* nadokarc, ndk/logger.rb, ndk/config.rb : support

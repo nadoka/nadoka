@@ -479,17 +479,10 @@ module Nadoka
         # q[1] must be client object
         begin
           reload_config
-          if q[1]
-            q[1] << Cmd.notice(@state.nick, "configuration is reloaded")
-          end
+          @logger.slog "configuration is reloaded"
         rescue Exception => e
-          if q[1]
-            q[1] << Cmd.notice(@state.nick, "error is occure while reloading configuration")
-            q[1] << Cmd.notice(@state.nick, e.message)
-            e.backtrace.each{|line|
-              q[1] << Cmd.notice(@state.nick, line)
-            }
-          end
+          @logger.slog "error is occure while reloading configuration"
+          ndk_error e
         end
         
       when :quit_program
