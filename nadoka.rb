@@ -80,6 +80,11 @@ rescue Nadoka::NDK_QuitProgram
   #
 rescue Nadoka::NDK_RestartProgram
   retry
+rescue Exception => e
+  open('nadoka_fatal_error', 'w'){|f|
+    f.puts e
+    f.puts e.backtrace.join("\n")
+  } 
 end
 
 end

@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2005-06-25(Sat) 19:02:24 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* nadoka.rb : output error information  to file
+	'nadoka_fatal_error' when unhandled error is occure (bug)
+
 
 2005-06-14(Tue) 21:26:07 +0900  Koichi Sasada  <ko1@atdot.net>
 
