@@ -1,0 +1,41 @@
+# gonzui bot
+#
+
+require 'open-uri'
+require 'uri'
+
+class GonzuiBot < Nadoka::NDK_Bot
+  ResultRegexp = %r(>Results <strong\n>(\d+)</strong\n> - <strong\n>(\d+)</strong\n> of <strong\n>(\d+)</strong)
+
+  def on_privmsg prefix, ch, msg
+    if /\Agonzui(?:\:([\w\-\+]+))?>\s*(.+)/ =~ msg
+      send_notice ch, "gonzui bot: #{gonzui_result($1, $2)}"
+    end
+  end
+
+  EngineURI = {
+    'raa'   => 'http://raa.ruby-lang.org/gonzui/',
+    'gnome' => 'http://gonzui.tagonome.org/',
+    'cpan'  => 'http://cpansearch.bulknews.net/',
+    'b-src' => 'http://b-src.cbrc.jp/'
+  }
+
+  def gonzui_result engine, key
+    engine ||= 'raa'
+    key_uri = URI.encode(key)
+    engine_uri = EngineURI[engine.downcase]
+    return "unknown engine: #{engine}" unless engine_uri 
+
+    url = "#{engine_uri}search?q=#{key_uri}"
+    open(url){|f|
+      result = f.read
+      if ResultRegexp =~ result
+        "#{$3} for #{key} - #{url}"
+      else
+        "#{key} - not found in #{engine}"
+      end
+    }
+    
+  end
+end
+

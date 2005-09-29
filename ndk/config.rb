@@ -323,12 +323,12 @@ module Nadoka
     end
 
     def make_default_logwriter
-      unless @config[:default_log].kind_of? Hash
+      if @config[:default_log].kind_of? Hash
+        dl = @config[:default_log]
+      else
         # defult_log must be Hash
         dl = @config[:default_log]
         @config[:default_log] = NDK_ConfigBase::Default_log.dup
-      else
-        dl = @config[:default_log]
       end
       
       @config[:default_logwriter] ||= make_logwriter(dl)
