@@ -51,7 +51,7 @@ module Nadoka
     end
     
     def next_server_info
-      svinfo = @config.server_list.shift
+      svinfo = @config.server_list.sort_by{rand}.shift
       @config.server_list.push svinfo
       [svinfo[:host], svinfo[:port], svinfo[:pass]]
     end

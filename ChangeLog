@@ -1,6 +1,17 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2006-03-27(Mon) 19:50:27 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/dictbot.nb : fix dict index
+
+	* plugins/roulettebot.nb : added
+
+	* rice/irc.rb : loosen nick regexp
+
+	* ndk/server.rb : randomize server if serching next server
+
+
 2005-09-30(Fri) 00:05:19 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/googlebot.nb : fix bugs

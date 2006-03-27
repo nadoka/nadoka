@@ -1,0 +1,33 @@
+=begin
+
+This plugin is test version.
+
+=end
+
+require 'shellwords'
+require 'kconv'
+
+class RouletteBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @available_channel = @bot_config[:ch] || /.*/
+  end
+  
+  def on_privmsg prefix, ch, msg
+    if @available_channel === ch
+      if /\Aroulette>\s*(.+)\s*/ =~ msg
+        send_notice(ch, "roulette bot: #{randomize($1)[0].tojis}")
+      elsif /\Ashuffle>\s*(.+)\s*/ =~ msg
+        send_notice(ch, "shuffle bot: #{ randomize($1).join(' ').tojis}")
+      elsif /\Arandom>\s*((\d+)|)/ =~ msg
+        num = $2 ? $2.to_i : 1000
+        send_notice(ch, "random bot: #{prefix.nick} -> #{rand num}")
+      end
+    end
+  end
+
+  def randomize msgs
+    res = Shellwords.shellwords(msgs.toeuc).sort_by{rand}
+  end
+end
+
+

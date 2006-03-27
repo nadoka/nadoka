@@ -26,8 +26,8 @@ class DictBot < Nadoka::NDK_Bot
 
   YAHOO_DICT_TYPE ={
     't' => 2,
-    'e' => 0,
-    'j' => 1,
+    'e' => 1,
+    'j' => 0,
   }
   def yahoo_dict type, word
     if type = YAHOO_DICT_TYPE[type]
