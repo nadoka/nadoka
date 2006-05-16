@@ -519,6 +519,11 @@ module Nadoka
         # invoke_event :quit_program
         Thread.main.raise NDK_QuitProgram
       } if list.any?{|e| e == 'INT'}
+      Signal.trap(:TERM){
+        # invoke_event :quit_program
+        Thread.main.raise NDK_QuitProgram
+      } if list.any?{|e| e == 'TERM'}
+
       Signal.trap(:HUP){
         # reload config
         invoke_event :reload_config

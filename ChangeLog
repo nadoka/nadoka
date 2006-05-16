@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+
+2006-05-16(Tue) 16:16:30 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* ndk/server.rb : handle TERM signal
+ 
+
 2006-03-27(Mon) 19:50:27 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/dictbot.nb : fix dict index
