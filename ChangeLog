@@ -2,6 +2,15 @@
 # $Id$ 
 
 
+2006-08-11(Fri) 14:45:01 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/gonzuibot.nb : add a comma
+
+	* plugins/pastebot.nb : add nick to paste page name
+
+	* plugins/googlebot.nb : fix show_char_code_and_erace_tag
+
+
 2006-05-16(Tue) 16:16:30 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* ndk/server.rb : handle TERM signal

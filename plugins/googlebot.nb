@@ -146,6 +146,8 @@ class GoogleBot < Nadoka::NDK_Bot
   end
   
   def show_char_code_and_erace_tag str
+    return CGI.unescapeHTML(erace_tag(str.toeuc)).tojis
+
     case $KCODE
     when 'EUC', 'SJIS'
       CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).tojis

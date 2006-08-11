@@ -17,7 +17,7 @@ class GonzuiBot < Nadoka::NDK_Bot
     'raa'   => 'http://raa.ruby-lang.org/gonzui/',
     'gnome' => 'http://gonzui.tagonome.org/',
     'cpan'  => 'http://cpansearch.bulknews.net/',
-    'b-src' => 'http://b-src.cbrc.jp/'
+    'b-src' => 'http://b-src.cbrc.jp/',
   }
 
   def gonzui_result engine, key

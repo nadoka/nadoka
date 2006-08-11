@@ -19,21 +19,27 @@ class PasteBot < Nadoka::NDK_Bot
                    'http://www.atdot.net/fp'
   end
 
+  def nick_escape nick
+    nick.gsub(/[^A-Za-z\d\-_]/, '_')
+  end
+
   def on_privmsg prefix, ch, msg
+    nick = nick_escape prefix.nick
+
     if @ch === ch
       if @msg === msg
         nid = ''
         open("#{@service_uri}/check/newid"){|f|
           nid = f.gets
         }
-        send_notice ch, "#{@service_uri}/view/#{nid}"
+        send_notice ch, "#{@service_uri}/view/#{nid}_#{nick}"
       end
       if @fmsg === msg
         nid = ''
         open("#{@fservice_uri}/check/newid"){|f|
           nid = f.gets
         }
-        send_notice ch, "#{@fservice_uri}/view/#{nid}"
+        send_notice ch, "#{@fservice_uri}/view/#{nid}_#{nick}"
       end
     end
   end
