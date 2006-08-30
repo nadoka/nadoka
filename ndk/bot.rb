@@ -3,7 +3,7 @@
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
 # You can re-distribute and/or modify this program under
-# the same terms of the Ruby's lisence.
+# the same terms of the Ruby's licence.
 #
 #
 # $Id$
@@ -15,7 +15,7 @@
 
 module Nadoka
   class NDK_Bot
-    # To initialize bot insntace, please overide this.
+    # To initialize bot instance, please override this.
     def bot_initialize
       # do something
     end
@@ -35,9 +35,9 @@ module Nadoka
       end
     end
 
-    # To access bot confiuration, please use this.
+    # To access bot configuration, please use this.
     #
-    # in configuration file, 
+    # in configuration file,
     # BotConfig = [
     # :BotClassName1,
     # :BotClassName2,
@@ -59,7 +59,7 @@ module Nadoka
       @manager.send_to_clients_otherwise msg, nil
     end
 
-    # Usualy, you must not use this
+    # Usually, you must not use this
     def send_privmsg ch, msg
       msg = Cmd.privmsg(ch, msg)
       @manager.send_to_server  msg
@@ -86,14 +86,14 @@ module Nadoka
       @config.canonical_channel_name ch
     end
     alias ccn canonical_channel_name
-    
+
 =begin
     # ...
     # def on_[IRC Command or Reply(3 digits)] prefix(nick only), param1, param2, ...
     #   
     # end
     #
-    
+
     # like these
     def on_privmsg prefix, ch, msg
       
@@ -124,9 +124,9 @@ module Nadoka
 
     
     ######
-    # spcial event
+    # special event
 
-    # This method will be called when recieved every message
+    # This method will be called when received every message
     def on_every_message prefix, command, *args
       # 
     end
@@ -184,7 +184,7 @@ module Nadoka
       @logger     = config.logger
       @state      = manager.state
       @bot_config = bot_config
-      
+
       bot_initialize
     end
 
