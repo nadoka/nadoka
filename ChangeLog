@@ -2,6 +2,16 @@
 # $Id$ 
 
 
+2006-09-01(Fri) 01:44:06 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
+
+	* ndk/bot.rb : support send to a safe channel
+
+	* nadokarc : fix misalignment
+
+2006-08-31(Thu) 01:40:39 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
+
+	* ndk/bot.rb : fix typos
+
 2006-08-11(Fri) 14:45:01 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/gonzuibot.nb : add a comma

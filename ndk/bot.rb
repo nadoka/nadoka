@@ -54,21 +54,24 @@ module Nadoka
 
     # Mostly, you need this method.
     def send_notice ch, msg
-      msg = Cmd.notice(ch, msg)
+      rch = @manager.state.current_channels[ch] || ch
+      msg = Cmd.notice(rch, msg)
       @manager.send_to_server  msg
       @manager.send_to_clients_otherwise msg, nil
     end
 
     # Usually, you must not use this
     def send_privmsg ch, msg
-      msg = Cmd.privmsg(ch, msg)
+      rch = @manager.state.current_channels[ch] || ch
+      msg = Cmd.privmsg(rch, msg)
       @manager.send_to_server  msg
       @manager.send_to_clients_otherwise msg, nil
     end
 
     # Change user's mode as 'mode' on ch.
     def change_mode ch, mode, user
-      send_msg Cmd.mode(ch, mode, user)
+      rch = @manager.state.current_channels[ch] || ch
+      send_msg Cmd.mode(rch, mode, user)
     end
 
     # Change your nick to 'nick'.

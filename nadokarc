@@ -56,9 +56,9 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   # IRCnet servers from
   #   http://irc.kyoto-u.ac.jp/list-of-servers.html
   Servers = [
-    { :host => 'irc.fujisawa.wide.ad.jp',  # default: 6667
-      :port => (6660 .. 6669),             # default: nil
-      :pass => nil,
+    { :host => 'irc.fujisawa.wide.ad.jp',
+      :port => (6660 .. 6669),             # default: 6667
+      :pass => nil,                        # default: nil
     },
     { :host => 'irc.tokyo.wide.ad.jp',
       :port => (6660 .. 6669),
