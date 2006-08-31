@@ -2,7 +2,7 @@
 # $Id$ 
 
 
-2006-09-01(Fri) 01:44:06 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
+2006-09-01(Fri) 02:04:15 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
 
 	* ndk/bot.rb : support send to a safe channel
 
