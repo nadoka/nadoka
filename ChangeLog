@@ -1,14 +1,6 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
-
-2006-10-02(Mon) 21:58:40 +0900  Koichi Sasada  <ko1@atdot.net>
-
-	* 0.7.0 : released
-
-	* ndk/version.rb : 0.7.1
-
-
 2006-10-02(Mon) 21:41:24 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/weatherbot.nb : removed
