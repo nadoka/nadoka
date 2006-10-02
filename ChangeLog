@@ -1,6 +1,16 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2006-10-02(Mon) 21:41:24 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugins/weatherbot.nb : removed
+
+	* plugins/sendpingbot.nb : added
+
+	* ndk/client.rb : modified for pingbot
+
+	* ndk/server.rb : ditto
+
 
 2006-09-01(Fri) 02:04:15 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
 

@@ -587,6 +587,12 @@ module Nadoka
       end
     end
 
+    def ping_to_clients
+      @clients.each{|cl|
+        cl << Cmd.ping(cl.remote_host)
+      }
+    end
+
     # clientA -> other clients
     # bot     -> clients
     def send_to_clients_otherwise msg, elt

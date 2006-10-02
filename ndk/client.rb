@@ -33,6 +33,7 @@ module Nadoka
     end
 
     attr_writer :logger
+    attr_reader :remote_host
 
     def start
       send_thread = Thread.new{
