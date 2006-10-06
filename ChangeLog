@@ -2,6 +2,11 @@
 # $Id$ 
 
 
+2006-10-07(Sat) 03:52:11 +0900  Koichi Sasada  <ko1@atdot.net>
+
+	* plugin/tenkibot.nb : added
+
+
 2006-10-02(Mon) 21:58:40 +0900  Koichi Sasada  <ko1@atdot.net>
 
 	* 0.7.0 : released

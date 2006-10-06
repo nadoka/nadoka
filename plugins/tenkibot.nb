@@ -1,0 +1,97 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2004-2006 SASADA Koichi <ko1 at atdot.net>
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's lisence.
+#
+
+=begin
+
+== Abstract
+
+Answer weather information using "Livedoor Weather Web Service / LWWS".
+
+LWWS: http://weather.livedoor.com/weather_hacks/webservice.html
+
+
+== Usage
+
+  tenki> [CITY] 
+  tenki:[today|tomorrow|dayaftertomorrow]> [CITY]
+
+  [CITY] should be city name in Kanji listed on following table.
+  http://weather.livedoor.com/forecast/rss/forecastmap.xml
+
+  If timing is not specified, show today's information.
+
+
+== Configuration
+
+BotConfig = [
+{
+  :name => :TenkiBot,
+  :ch   => /nadoka/,  # default: /.*/
+}
+]
+
+
+=end
+
+require 'open-uri'
+require 'pp'
+require 'kconv'
+require 'rexml/document'
+
+class TenkiBot < Nadoka::NDK_Bot
+
+  CityIDs = {}
+
+  def bot_initialize
+    @available_channel = @bot_config[:ch] || /.*/
+
+    open('http://weather.livedoor.com/forecast/rss/forecastmap.xml'){|f|
+      f.each{|line|
+        if /city title="(.+?)" id="(\d+)"/ =~ line
+          CityIDs[$1.toeuc] = $2.to_i
+        end
+      }
+    }
+  end
+
+  def tenki city, timing
+    doc = open(
+      "http://weather.livedoor.com/forecast/webservice/rest/v1?" \
+      "city=#{CityIDs.fetch(city)}&day=#{timing}"){|f|
+      REXML::Document.new f.read
+    }
+    
+    title = doc.elements['/lwws/title'].text.toeuc
+    telop = doc.elements['/lwws/telop'].text.toeuc
+    desc = doc.elements['/lwws/description'].text.toeuc
+    max = doc.elements['/lwws/temperature/max/celsius/'].text.toeuc
+    min = doc.elements['/lwws/temperature/min/celsius/'].text.toeuc
+    
+    "#{title}: #{telop} - (max: #{max}, min: #{min}) #{desc}".tojis
+  end
+
+  def on_privmsg prefix, ch, msg
+    if @available_channel === ch
+      if /\Atenki(|:(.+?))>(.+)/ =~ msg
+        city = $3.strip.toeuc
+        timing = ($2 || 'today').strip
+        begin
+          result = tenki(city, timing)
+        rescue IndexError
+          result = "Unknown city.  Check http://weather.livedoor.com/forecast/rss/forecastmap.xml" 
+        rescue => e
+          result = "#{e}"
+        end
+        send_notice ch, "tenki bot: #{result}" 
+      end
+    end
+  end
+end
+
+
