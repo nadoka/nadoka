@@ -52,14 +52,14 @@ module Nadoka
     # You can access above setting via @bot_config
     #
 
+    def ccn2rcn ccn
+      chs = @manager.state.current_channels[ccn]
+      chs ? chs.name : ccn
+    end
+
     # Mostly, you need this method.
     def send_notice ch, msg
-      chs = @manager.state.current_channels[ch]
-      if chs
-        rch = chs.name
-      else
-        rch = ch
-      end
+      rch = ccn2rcn(ch)
       msg = Cmd.notice(rch, msg)
       @manager.send_to_server  msg
       @manager.send_to_clients_otherwise msg, nil
@@ -67,12 +67,7 @@ module Nadoka
 
     # Usually, you must not use this
     def send_privmsg ch, msg
-      chs = @manager.state.current_channels[ch]
-      if chs
-        rch = chs.name
-      else
-        rch = ch
-      end
+      rch = ccn2rcn(ch)
       msg = Cmd.privmsg(rch, msg)
       @manager.send_to_server  msg
       @manager.send_to_clients_otherwise msg, nil
@@ -80,12 +75,7 @@ module Nadoka
 
     # Change user's mode as 'mode' on ch.
     def change_mode ch, mode, user
-      chs = @manager.state.current_channels[ch]
-      if chs
-        rch = chs.name
-      else
-        rch = ch
-      end
+      rch = ccn2rcn(ch)
       send_msg Cmd.mode(rch, mode, user)
     end
 
