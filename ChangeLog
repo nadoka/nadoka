@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2006-10-28(Sat) 22:08:11 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
+
+	* ndk/server_state.rb : fix bug on_mode after server split
+
+
 2006-10-20(Fri) 22:22:07 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
 
 	* ndk/bot.rb : new method ccn2rcn

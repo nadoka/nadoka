@@ -84,20 +84,18 @@ module Nadoka
       MODE_WITHOUT_ARGS  = 'aimnqpsrt'
       
       def on_mode nick, args
-        if @member.has_key? nick || nick == @current_nick
-          while mode = args.shift
-            modes = mode.split(//)
-            flag  = modes.shift
-            modes.each{|m|
-              if MODE_WITH_NICK_ARG.include? m
-                chg_mode args.shift, flag, m
-              elsif MODE_WITH_ARGS.include? m
-                args.shift
-              elsif MODE_WITHOUT_ARGS.include? m
-                # ignore
-              end
-            }
-          end
+        while mode = args.shift
+          modes = mode.split(//)
+          flag  = modes.shift
+          modes.each{|m|
+            if MODE_WITH_NICK_ARG.include? m
+              chg_mode args.shift, flag, m
+            elsif MODE_WITH_ARGS.include? m
+              args.shift
+            elsif MODE_WITHOUT_ARGS.include? m
+              # ignore
+            end
+          }
         end
       end
 
