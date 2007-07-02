@@ -348,7 +348,7 @@ module RICE
       #                 ; as specified in RFC 1123 [HNAME]
       # hostname   =  shortname *( "." shortname )
       SHORTNAME = "[#{LETTER}#{DIGIT}](?:[-#{LETTER}#{DIGIT}\/]*[#{LETTER}#{DIGIT}])?"
-      HOSTNAME  = "#{SHORTNAME}(?:\\.#{SHORTNAME})*"
+      HOSTNAME  = "#{SHORTNAME}(?:\\.#{SHORTNAME})*\\.?"
       
       # servername =  hostname
       SERVERNAME = HOSTNAME

@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2007-07-02(Mon) 18:01:58 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
+
+	* rice/irc.rb: allow trailing "." in HOSTNAME (for NickServ
+	on Freenode)
+
 2007-02-20(Tue) 23:35:41 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
 
 	* **/*.rb, plugins/*.nb : fix typos
