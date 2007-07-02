@@ -222,6 +222,7 @@ module Nadoka
       # for compatibility
       return load_bots_old if @config[:botconfig].kind_of? Hash
       @bots = @config[:botconfig].map{|bot|
+        next nil if bot[:disable]
         if bot.kind_of? Hash
           name = bot[:name]
           cfg  = bot
@@ -232,7 +233,7 @@ module Nadoka
         end
         load_botfile name.to_s.downcase
         make_bot_instance name, cfg
-      }
+      }.compact
     end
 
     # for compatibility

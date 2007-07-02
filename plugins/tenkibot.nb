@@ -43,6 +43,8 @@ require 'open-uri'
 require 'pp'
 require 'kconv'
 require 'rexml/document'
+require 'date'
+
 
 class TenkiBot < Nadoka::NDK_Bot
 
@@ -67,24 +69,27 @@ class TenkiBot < Nadoka::NDK_Bot
       REXML::Document.new f.read
     }
     
-    title = doc.elements['/lwws/title'].text.toeuc
-    telop = doc.elements['/lwws/telop'].text.toeuc
-    desc = doc.elements['/lwws/description'].text.toeuc
-    max = doc.elements['/lwws/temperature/max/celsius/'].text.toeuc
-    min = doc.elements['/lwws/temperature/min/celsius/'].text.toeuc
-    
-    "#{title}: #{telop} - (max: #{max}, min: #{min}) #{desc}".tojis
+    title = doc.elements['/lwws/title/'].text.toeuc
+    telop = doc.elements['/lwws/telop/'].text.toeuc
+    link = doc.elements['/lwws/link/'].text.toeuc
+    desc = doc.elements['/lwws/description/'].text.toeuc
+    max = doc.elements['/lwws/temperature/max/celsius/'].text
+    min = doc.elements['/lwws/temperature/min/celsius/'].text
+    date = Date.parse(doc.elements['/lwws/forecastdate/'].text)
+    datestr = date.strftime('%m/%d')
+
+    "#{title} (#{datestr}): #{telop} - #{max ? "(max: #{max}, min: #{min})" : ""} #{desc} - #{link}".tojis
   end
 
   def on_privmsg prefix, ch, msg
     if @available_channel === ch
-      if /\Atenki(|:(.+?))>(.+)/ =~ msg
+      if /\Atenki(|:(today|tomorrow|dayaftertomorrow))>(.+)/ =~ msg
         city = $3.strip.toeuc
         timing = ($2 || 'today').strip
         begin
-          result = tenki(city, timing)
+          result = tenki(city, timing).gsub(/\n/, ' ')
         rescue IndexError
-          result = "Unknown city.  Check http://weather.livedoor.com/forecast/rss/forecastmap.xml" 
+          result = "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/forecastmap.xml" 
         rescue => e
           result = "#{e}"
         end
