@@ -49,9 +49,9 @@ class RSS_Check
 
     def date_of e
       if e.respond_to? :dc_date
-        e.dc_date || 0
+        e.dc_date || Time.at(0)
       else
-        e.pubDate || 0
+        e.pubDate || Time.at(0)
       end
     end
     
@@ -61,9 +61,10 @@ class RSS_Check
       items = rss.items.sort_by{|e|
         date_of(e)
       }.map{|e|
-        if e.dc_date > @entry_time
-          if date_of(e) > et
-            et = date_of(e)
+        e_date = date_of(e)
+        if e_date > @entry_time
+          if e_date > et
+            et = e_date
           end
           {
             :about => e.about,
