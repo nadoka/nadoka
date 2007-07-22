@@ -49,7 +49,7 @@ class RSS_Check
 
     def date_of e
       if e.respond_to? :dc_date
-        e.dc_date
+        e.dc_date || 0
       else
         e.pubDate || 0
       end

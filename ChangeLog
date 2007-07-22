@@ -18,7 +18,7 @@ Mon Jul 02 19:01:04 2007  Koichi Sasada  <ko1@atdot.net>
 
 2007-07-02(Mon) 18:01:58 +0900  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
 
-	* rice/irc.rb: allow trailing "." in HOSTNAME (for NickServ
+	* rice/irc.rb : allow trailing "." in HOSTNAME (for NickServ
 	on Freenode)
 
 
