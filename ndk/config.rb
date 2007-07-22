@@ -222,8 +222,8 @@ module Nadoka
       # for compatibility
       return load_bots_old if @config[:botconfig].kind_of? Hash
       @bots = @config[:botconfig].map{|bot|
-        next nil if bot[:disable]
         if bot.kind_of? Hash
+          next nil if bot[:disable]
           name = bot[:name]
           cfg  = bot
           raise "No bot name specified. Check rcfile." unless name

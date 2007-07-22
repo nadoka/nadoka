@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+Mon Jul 23 01:07:08 2007  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
+
+	* ndk/config.rb : fix bug when non-Hash in BotConfig array.
+
+
 Mon Jul 02 19:01:04 2007  Koichi Sasada  <ko1@atdot.net>
 
 	* plugins/tenkibot.nb : fix output format detail.
