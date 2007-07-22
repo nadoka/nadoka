@@ -3,6 +3,8 @@
 
 Mon Jul 23 01:07:08 2007  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
 
+	* lib/rss_check.rb : bug fix when dc_date is nil.
+
 	* ndk/config.rb : fix bug when non-Hash in BotConfig array.
 
 
