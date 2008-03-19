@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+Wed Mar 19 19:46:52 2008  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* ndk/logger.rb : pass ch to msgobj from clog.
+
+	* ndk/config.rb : unify safe channel log filename.
+
 Mon Jul 23 01:07:08 2007  Kazuhiro NISHIAYMA <zn@mbf.nifty.com>
 
 	* lib/rss_check.rb : bug fix when dc_date is nil.

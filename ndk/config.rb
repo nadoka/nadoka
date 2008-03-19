@@ -426,31 +426,32 @@ module Nadoka
     }
     
     def make_logfilename tmpl, rch, cn
-      ch = rch.sub(/^\!.{5}/, '!')
+      unless cn
+        cn = rch.sub(/^\!.{5}/, '!')
 
-      case @config[:filenameencoding].to_s.downcase[0]
-      when ?e # EUC
-        ch = ch.toeuc.downcase
-      when ?s # SJIS
-        ch = ch.tosjis.downcase
-      when ?u # utf-8
-        ch = ch.toutf8.downcase
-      else    # JIS
-        ch = ch.toeuc.downcase.tojis
-        ch = URI.encode(ch)
+        case @config[:filenameencoding].to_s.downcase[0]
+        when ?e # EUC
+          cn = cn.toeuc.downcase
+        when ?s # SJIS
+          cn = cn.tosjis.downcase
+        when ?u # utf-8
+          cn = cn.toutf8.downcase
+        else    # JIS
+          cn = cn.toeuc.downcase.tojis
+          cn = URI.encode(cn)
+        end
+
+        # escape
+        cn = cn.sub(/^[\&\#\+\!]|/){|c|
+          RName[c]
+        }
+        cn = cn.tr("*:/", "__I")
       end
-      
-
-      # escape
-      ch  = ch.sub(/^[\&\#\+\!]|/){|c|
-        RName[c]
-      }
-      ch  = ch.gsub(/\*|\:/, '_').gsub(/\//, 'I')
 
       # format
       str = Time.now.strftime(tmpl)
       str.gsub(/\$\{setting_name\}/, setting_name).
-          gsub(/\$\{channel_name\}|\{ch\}/, cn || ch)
+          gsub(/\$\{channel_name\}|\{ch\}/, cn)
     end
 
     def log_format timefmt, msgfmts, msgobj
