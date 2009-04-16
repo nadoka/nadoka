@@ -1,6 +1,10 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-04-16  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* nadokarc, ndk/config.rb, ndk/server.rb, rice/irc.rb: support SSL.
+
 Wed Mar 19 19:46:52 2008  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* ndk/logger.rb : pass ch to msgobj from clog.

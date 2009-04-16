@@ -77,6 +77,14 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     # { :host => 'irc6.nara.wide.ad.jp',
     #   :port => 6667
     # }
+    # SSL Sample
+    # {
+    #   :host => 'ircs.example.net',
+    #   :port => 994,
+    #   :ssl_params => { # with :ssl_params hash, use ssl
+    #     # :ca_cert => "/etc/ssl/certs", # default: openssl's default certificates
+    #  },
+    # }
   ]
 
 

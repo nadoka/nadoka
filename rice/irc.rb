@@ -19,6 +19,11 @@ Original Credit:
 require 'socket'
 require 'thread'
 require 'monitor'
+begin
+  require "openssl"
+rescue LoadError
+end
+
 
 module RICE
   class Error < StandardError; end
@@ -41,7 +46,7 @@ module RICE
 
 =end
 
-    def initialize(server, port, eol = "\r\n")
+    def initialize(server, port, eol = "\r\n", ssl_params = nil)
       @conn = []
       @conn.extend(MonitorMixin)
       @main_th = nil
@@ -49,6 +54,7 @@ module RICE
       self.server = server
       self.port   = port
       self.eol    = eol
+      self.ssl_params = ssl_params
 
       @read_q  = Queue.new
 
@@ -81,7 +87,7 @@ module RICE
       @prev_send_time = Time.now
     end
     attr :delay, true
-    attr_reader :server, :port
+    attr_reader :server, :port, :ssl_params
     
 =begin
 
@@ -117,6 +123,45 @@ module RICE
       raise RuntimeError, 
         "Already connected to #{@server}:#{@port}" unless @conn.empty?
       @eol = eol
+    end
+
+=begin
+
+--- RICE::Connection#ssl_params=(ssl_params)
+
+=end
+
+    def ssl_params=(ssl_params)
+      raise RuntimeError, 
+        "Already connected to #{@server}:#{@port}" unless @conn.empty?
+      unless ssl_params
+        @ssl_params = false
+      end
+      raise 'openssl library not installed' unless defined?(OpenSSL)
+      ssl_params = ssl_params.to_hash
+      ssl_params[:verify_mode] ||= OpenSSL::SSL::VERIFY_PEER
+      store = OpenSSL::X509::Store.new
+      if ssl_params.key?(:ca_cert)
+        ca_cert = ssl_params.delete(:ca_cert)
+        if ca_cert
+          # auto setting ca_path or ca_file like open-uri.rb
+          if File.directory? ca_cert
+            store.add_path ca_cert
+          else
+            store.add_file ca_cert
+          end
+        else
+          # use ssl_params={:ca_cert=>nil} if you want to disable auto setting
+          store = nil
+        end
+      else
+        # use default of openssl
+        store.set_default_paths
+      end
+      if store
+        ssl_params[:cert_store] = store
+      end
+      @ssl_params = ssl_params
     end
 
 =begin
@@ -163,7 +208,18 @@ module RICE
 
     def open_conn
       @conn.synchronize do
-        @conn[0] = TCPSocket.new(@server, @port)
+        conn = TCPSocket.new(@server, @port)
+        if ssl_params
+          context = OpenSSL::SSL::SSLContext.new
+          context.set_params(ssl_params)
+          conn = OpenSSL::SSL::SSLSocket.new(conn, context)
+          conn.sync_close = true
+          conn.connect
+          if context.verify_mode != OpenSSL::SSL::VERIFY_NONE
+            conn.post_connection_check(@server)
+          end
+        end
+        @conn[0] = conn
       end
       @conn[0].extend(MonitorMixin)
 
