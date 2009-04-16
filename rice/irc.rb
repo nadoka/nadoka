@@ -136,6 +136,7 @@ module RICE
         "Already connected to #{@server}:#{@port}" unless @conn.empty?
       unless ssl_params
         @ssl_params = false
+        return
       end
       raise 'openssl library not installed' unless defined?(OpenSSL)
       ssl_params = ssl_params.to_hash
