@@ -198,7 +198,9 @@ module Nadoka
       if @clients.size == 0
         enter_away
       end
-      
+
+      invoke_event :invoke_bot, :server_connected
+
       # loop
       while q = recv_from_server
         

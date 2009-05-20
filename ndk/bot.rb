@@ -168,6 +168,11 @@ module Nadoka
       # do something
     end
 
+    # undocumented
+    def on_server_connected
+      # do something
+    end
+
     # on signal 'sigusr[12]' trapped
     def on_sigusr[12] # no arguments
       # do something
