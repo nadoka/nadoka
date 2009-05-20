@@ -3,6 +3,10 @@
 
 2009-05-20  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* plugins/identifynickserv.nb: added.
+
+2009-05-20  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* ndk/bot.rb, ndk/server.rb: add on_server_connected.
 
 2009-04-16  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
