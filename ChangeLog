@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-05-25  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* ndk/config.rb, ndk/server.rb: add Primitive_Filter
+	  to filter any commands. (apply patch from unak)
+
 2009-05-20  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/identifynickserv.nb: added.

@@ -148,6 +148,7 @@ module Nadoka
     # filters
     Privmsg_Filter = []
     Notice_Filter  = []
+    Primitive_Filters = {}
 
     # ...
     Privmsg_Filter_light = []

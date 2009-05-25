@@ -413,6 +413,10 @@ module Nadoka
         end
         
         # Server -> Nadoka message
+        if !@config.primitive_filters.nil? && !@config.primitive_filters[q.command].nil? && !@config.primitive_filters[q.command].empty?
+          next unless filter_message(@config.primitive_filters[q.command], q)
+        end
+
         case q.command
         when 'PING'
           @server << Cmd.pong(q.params[0])
