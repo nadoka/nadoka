@@ -362,8 +362,9 @@ module RICE
 =end
 
     def push(message)
-      if @conn[0]
-        @conn[0].synchronize do
+      conn = @conn[0]
+      if conn
+        conn.synchronize do
           cmd = message.command
           if cmd == 'PRIVMSG' || cmd == 'NOTICE'
             # flood control
@@ -373,7 +374,7 @@ module RICE
             end
             @prev_send_time = t
           end
-          @conn[0].print message.to_s unless @conn[0].closed?
+          conn.print message.to_s unless conn.closed?
         end
       else
         nil
