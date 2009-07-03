@@ -29,15 +29,17 @@ class DictBot < Nadoka::NDK_Bot
     't' => 2,
     'e' => 1,
     'j' => 0,
+    'w' => 3,
+    'r' => 5,
   }
   def yahoo_dict type, word
     "dict bot> " +
     if type = YAHOO_DICT_TYPE[type]
       word = URI.encode(word)
-      uri = "http://dic.yahoo.co.jp/bin/dsearch?p=#{word}&stype=0&dtype=#{type}"
+      uri = "http://dic.yahoo.co.jp/dsearch?p=#{word}&stype=0&dtype=#{type}"
       open(uri){|f|
         if /<meta name="description" content=\"(.+)\">/ =~ f.read
-          "#{$1.tojis} - #{uri}"
+          "#{$1.tosjis.tojis} - #{uri}"
         else
           uri
         end

@@ -1,7 +1,15 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
-	2009-07-01  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+2009-07-04  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/dictbot.nb: avoid nkf bug.
+	add waei as w, ruigo as r.
+	new yahoo dict URI. (apply patch from ko1_ndk)
+
+	* plugins/googlebot.nb: quote splited words. (apply patch from ko1_ndk)
+
+2009-07-01  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* rice/irc.rb: @conn[0] may be nil.
 
