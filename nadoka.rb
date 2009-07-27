@@ -30,7 +30,23 @@ require 'ndk/bot'
 $stdout.sync=true
 $NDK_Debug  = false
 
+unless defined? Process.daemon
+  def Process.daemon(nochdir = nil, noclose = nil)
+    exit!(0) if fork
+    Process.setsid
+    exit!(0) if fork
+    Dir.chdir('/') unless nochdir
+    File.umask(0)
+    unless noclose
+      STDIN.reopen('/dev/null')
+      STDOUT.reopen('/dev/null', 'w')
+      STDERR.reopen('/dev/null', 'w')
+    end
+  end
+end
+
 rcfile = nil
+daemon = false
 optparse = OptionParser.new{|opts|
   opts.banner = "Usage: ruby #{$0} [options]"
 
@@ -52,6 +68,9 @@ optparse = OptionParser.new{|opts|
     
     puts 'Enter Nadoka Debug mode'
   }
+  opts.on("--daemon", "run as daemon"){
+    daemon = true
+  }
 
   opts.separator ""
   opts.separator "Common options:"
@@ -71,6 +90,10 @@ unless rcfile
   puts Nadoka.version
   puts optparse
   exit
+end
+
+if daemon
+  Process.daemon
 end
 
 begin

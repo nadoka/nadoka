@@ -1,6 +1,10 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-07-27  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* nadoka.rb: add --daemon option. (apply patch from unak)
+
 2009-07-04  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/dictbot.nb: avoid nkf bug.
