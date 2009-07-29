@@ -184,7 +184,7 @@ if $0 == __FILE__
     http://jvn.doi.ics.keio.ac.jp/rss/jvnRSS.rdf
   )
   lirs_uri = [
-  'LIRS:http://rrr.jin.gr.jp/~znz/samidare/sites.lirs.gz'
+  'LIRS:http://www.rubyist.net/~kazu/samidare/sites.lirs.gz'
   ]
   
   rssc = RSS_Check.new(

@@ -3,6 +3,10 @@
 
 2009-07-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* lib/rss_check.rb: update lirs_uri.
+
+2009-07-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* 0.7.1 : released
 
 	* ndk/version.rb : 0.7.2
