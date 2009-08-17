@@ -78,7 +78,13 @@ class TenkiBot < Nadoka::NDK_Bot
     date = Date.parse(doc.elements['/lwws/forecastdate/'].text)
     datestr = date.strftime('%m/%d')
 
-    "#{title} (#{datestr}): #{telop} - #{max ? "(max: #{max}, min: #{min})" : ""} #{desc} - #{link}".tojis
+    celsius = []
+    celsius << "max: #{max}" if max
+    celsius << "min: #{min}" if min
+    unless celsius.empty?
+      celsius = "(#{celsius.join(', ')}) "
+    end
+    "#{title} (#{datestr}): #{telop} - #{celsius}#{desc} - #{link}".tojis
   end
 
   def on_privmsg prefix, ch, msg
