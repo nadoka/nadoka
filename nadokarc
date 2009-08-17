@@ -32,7 +32,7 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
 
   ###############################################
   # client server setting
-  Client_server_port = 6667
+  Client_server_port = 6667 # or nil (no listen)
   Client_server_host = nil # You can specify binding host(interface)
   Client_server_pass = 'NadokaPassWord'
   Client_server_acl  = nil

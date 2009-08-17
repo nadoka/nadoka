@@ -3,6 +3,11 @@
 
 2009-08-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* nadokarc, ndk/config.rb, ndk/server.rb: no listen when
+	Client_server_port is nil.
+
+2009-08-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* plugins/tenkibot.nb: omit empty min celsius.
 
 2009-07-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>

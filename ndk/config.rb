@@ -30,7 +30,7 @@ module Nadoka
     Setting_name = nil
     
     # client server
-    Client_server_port = 6667
+    Client_server_port = 6667 # or nil (no listen)
     Client_server_host = nil
     Client_server_pass = 'NadokaPassWord' # or nil
     Client_server_acl  = nil

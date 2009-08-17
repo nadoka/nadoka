@@ -26,8 +26,11 @@ module Nadoka
     
     def initialize rc
       @rc = rc
-      @clients= []
+      @clients = []
       @prev_timer = Time.now
+
+      @server_thread = nil
+      @clients_thread = nil
 
       @state  = nil
 
@@ -35,7 +38,8 @@ module Nadoka
       reload_config
       
       @server = nil
-      
+      @cserver = nil
+
       @connected = false
       @exitting  = false
 
@@ -302,6 +306,7 @@ module Nadoka
     end
     
     def start_clients_thread
+      return unless @config.client_server_port
       @clients_thread = Thread.new{
         begin
           @cserver = TCPServer.new(@config.client_server_host,
