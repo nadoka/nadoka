@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-08-18  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* nadoka.rb, ndk/config.rb, rice/irc.rb: ruby 1.9 support (not
+	completed yet). apply patch from unak.
+
 2009-08-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* nadokarc, ndk/config.rb, ndk/server.rb: no listen when
