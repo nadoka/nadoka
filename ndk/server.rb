@@ -618,7 +618,7 @@ module Nadoka
     end
     
     def ctcp_message? arg
-      arg[0] == 1
+      arg[0].ord == 1
     end
     
     def ctcp_message msg

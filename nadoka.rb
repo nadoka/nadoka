@@ -24,6 +24,14 @@ unless "".respond_to?(:force_encoding)
   end
 end
 
+unless 1.respond_to?(:ord)
+  class Integer
+    def ord
+      self
+    end
+  end
+end
+
 $LOAD_PATH.unshift File.dirname(__FILE__)
 require 'ndk/version'
 
