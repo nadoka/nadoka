@@ -3,6 +3,11 @@
 
 2009-08-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* nadoka.rb, ndk/server.rb: revert previous change, and use ?\x1
+	instead.
+
+2009-08-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* nadoka.rb, ndk/server.rb: handle ctcp on ruby 1.9.
 
 2009-08-18  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
