@@ -10,6 +10,36 @@
 # $Id$
 #
 
+class GoogleBot < Nadoka::NDK_Bot
+  NO_LONGER_AVAILABLE = "Google SOAP Search API (No Longer Available). see http://googlecode.blogspot.com/2009/08/well-earned-retirement-for-soap-search.html"
+
+  def bot_initialize
+    @available_channel   = @bot_config[:ch] || /.*/
+  end
+
+  def on_privmsg prefix, ch, msg
+    if @available_channel === ch
+      if response = dispatch_command(msg)
+        send_notice(ch, response)
+      end
+    end
+  end
+
+  def dispatch_command msg
+    begin
+      case msg
+      when /^goo(o*)gle(:.*)?>\s*(.+)/, /^gu(u*)guru(:.+)?>\s*(.+)/
+        "goo#{$1}gle bot#{$2}: #{NO_LONGER_AVAILABLE}"
+      when /^googlec(:.*)?>\s*(.+)/
+        "googlec bot: #{NO_LONGER_AVAILABLE}"
+      end
+    rescue Exception => e
+      "google bot: #{e.class}(#{e.message} @ #{e.backtrace[0]})"
+    end
+  end
+end
+
+__END__
 =begin
 
 == Usage with irc client
@@ -52,6 +82,7 @@ require 'iconv'
 require 'kconv'
 require 'shellwords'
 require 'cgi'
+
 
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize

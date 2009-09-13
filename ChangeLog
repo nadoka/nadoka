@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-09-14  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/googlebot.nb: Google SOAP Search API (No Longer Available).
+	see http://code.google.com/intl/ja/apis/soapsearch/ and
+	http://googlecode.blogspot.com/2009/08/well-earned-retirement-for-soap-search.html
+
 2009-08-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* nadoka.rb, ndk/server.rb: revert previous change, and use ?\x1
