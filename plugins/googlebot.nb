@@ -75,31 +75,38 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
+  SEARCHER = %w!web local video blogs news books images patent!.freeze
+  SEARCHER_RE = Regexp.new("(?:" + SEARCHER.join('|') + ")").freeze
+
   def dispatch_command msg
+    searcher = nil
     begin
       case msg
-      when /^goo(o*)gle(:.*)?>\s*(.+)/, /^gu(u*)guru(:.+)?>\s*(.+)/
-        "goo#{$1}gle bot#{$2}: #{search($1.length, $2, $3)}"
-      when /^googlec(:.*)?>\s*(.+)/
-        "googlec bot: #{googlec($1, $2)}"
+      when /^goo(o*)gle( #{SEARCHER_RE})?(:.*)?>\s*(.+)/o, /^gu(u*)guru(#{SEARCHER_RE})?(:.+)?>\s*(.+)/o
+        "goo#{$1}gle#{$2} bot#{$3}: #{search($1.length, $3, $4, $2)}"
+      when /^googlec( #{SEARCHER_RE})?(:.*)?>\s*(.+)/o
+        "googlec#{$2} bot#{$3}: #{googlec($1, $3, $2)}"
       end
     rescue Exception => e
       "google bot: #{e.class}(#{e.message} @ #{e.backtrace[0]})"
     end
   end
 
-  def do_search word, cnt, lang
+  def do_search word, cnt, lang, searcher='web'
     i = 0
     begin
-      uri = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q="
+      uri = "http://ajax.googleapis.com/ajax/services/search/"
+      uri << searcher
+      uri << "?v=1.0&q="
       uri << CGI.escape(word)
       if @api_key
         uri << "&key=#{CGI.escape(@api_key)}"
       end
-      if cnt
+      cnt = cnt.to_i
+      if cnt > 0
         uri << "&start=#{cnt.to_i}"
       end
-      if lang
+      if searcher == 'web' && lang
         uri << "&lr=#{CGI.escape(lang)}"
       end
       @logger.slog "GoogleBot: #{uri}"
@@ -116,11 +123,12 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
-  def search cnt, lang, word
+  def search cnt, lang, word, searcher=nil
     lang = lang_check(lang)
+    searcher = searcher_check(searcher)
     word = search_char_code(word)
 
-    result = do_search word, cnt, lang
+    result = do_search word, cnt, lang, searcher
 
     count = result.estimatedTotalResultsCount.to_i
 
@@ -129,7 +137,7 @@ class GoogleBot < Nadoka::NDK_Bot
       url = title = ''
 
       e = result["responseData"]["results"][0]
-      url   = e['unescapedUrl']
+      url   = e['unescapedUrl'] || e['url'] || e['postUrl']
       title = show_char_code_and_erace_tag(e['titleNoFormatting'])
       "#{title} - #{url} (and #{count} hit#{(count.to_i > 1) ? 's' : ''})"
     else
@@ -137,14 +145,15 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
-  def googlec lang, word
+  def googlec lang, word, searcher=nil
     lang = lang_check(lang, @count_default_lang)
+    searcher = searcher_check(searcher)
     words = Shellwords.shellwords(word).map{|e| "\"#{e}\""}
     return 'too many options' if words.size > @googlec_maxwords
 
     words.map{|rw|
       w = search_char_code(rw)
-      result = do_search "'#{w}'", 0, lang
+      result = do_search "'#{w}'", 0, lang, searcher
       "#{rw}(#{result.estimatedTotalResultsCount.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')})"
     }.join(', ')
   end
@@ -162,6 +171,19 @@ class GoogleBot < Nadoka::NDK_Bot
         lang
       else
         'lang_' + lang
+      end
+    end
+  end
+
+  def searcher_check searcher
+    if !searcher
+      'web'
+    else
+      searcher = searcher[1..-1]
+      if SEARCHER.include?(searcher)
+        searcher
+      else
+        'web'
       end
     end
   end
