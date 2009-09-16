@@ -3,6 +3,10 @@
 
 2009-09-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* plugins/googlebot.nb: use hl because lr used by web searcher only.
+
+2009-09-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* plugins/googlebot.nb: support more searcher of Google AJAX
 	Search API.
 

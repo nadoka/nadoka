@@ -42,7 +42,7 @@ BotConfig = [
   # and set your URL to :referer and your API key to :api_key if you want.
   :api_key             => nil,
   :googlec_maxwords    => 5,
-  :search_default_lang => 'lang_ja',
+  :search_default_lang => 'ja',
   :count_default_lang  => '',
 },
 ]
@@ -60,9 +60,9 @@ require 'json'
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize
     @available_channel   = @bot_config[:ch] || /.*/
-    @search_default_lang = @bot_config[:search_default_lang] || 'lang_ja'
-    @googlec_maxwords    = @bot_config[:googlec_maxwords]    || 5
-    @count_default_lang  = @bot_config[:count_default_lang]  || ''
+    @search_default_lang = (@bot_config[:search_default_lang] || 'ja').sub(/^lang_/, '')
+    @googlec_maxwords    = @bot_config[:googlec_maxwords] || 5
+    @count_default_lang  = (@bot_config[:count_default_lang] || '').sub(/^lang_/, '')
     @referer = @bot_config[:referer] || 'http://rubyforge.org/projects/nadoka/'
     @api_key = @bot_config[:api_key]
   end
@@ -106,8 +106,11 @@ class GoogleBot < Nadoka::NDK_Bot
       if cnt > 0
         uri << "&start=#{cnt.to_i}"
       end
-      if searcher == 'web' && lang
-        uri << "&lr=#{CGI.escape(lang)}"
+      if lang
+        uri << "&hl=#{CGI.escape(lang)}"
+        if searcher == 'web'
+          uri << "&lr=lang_#{CGI.escape(lang)}"
+        end
       end
       @logger.slog "GoogleBot: #{uri}"
       result = open(uri, "Referer" => @referer) do |f|
@@ -167,10 +170,12 @@ class GoogleBot < Nadoka::NDK_Bot
       @search_default_lang
     else
       lang = lang[1..-1]
-      if lang.empty? || /^lang_/ =~ lang
-        lang
+      if lang.empty?
+        nil
+      elsif /^lang_/ =~ lang
+        lang.sub(/^lang_/, '')
       else
-        'lang_' + lang
+        lang
       end
     end
   end
