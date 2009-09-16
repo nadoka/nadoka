@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-09-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/googlebot.nb: use Google AJAX Search API.
+	see http://code.google.com/intl/ja/apis/ajaxsearch/ for detail.
+
 2009-09-14  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/googlebot.nb: Google SOAP Search API (No Longer Available).
