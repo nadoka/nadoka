@@ -65,6 +65,7 @@ class GoogleBot < Nadoka::NDK_Bot
     @count_default_lang  = (@bot_config[:count_default_lang] || '').sub(/^lang_/, '')
     @referer = @bot_config[:referer] || 'http://rubyforge.org/projects/nadoka/'
     @api_key = @bot_config[:api_key]
+    @uri_slog = @bot_config.fetch(:uri_slog, false)
   end
 
   def on_privmsg prefix, ch, msg
@@ -112,7 +113,7 @@ class GoogleBot < Nadoka::NDK_Bot
           uri << "&lr=lang_#{CGI.escape(lang)}"
         end
       end
-      @logger.slog "GoogleBot: #{uri}"
+      @logger.slog "GoogleBot: #{uri}" if @uri_slog
       result = open(uri, "Referer" => @referer) do |f|
         JSON.parse(f.read)
       end
