@@ -114,7 +114,7 @@ class GoogleBot < Nadoka::NDK_Bot
       end
       @logger.slog "GoogleBot: #{uri}"
       result = open(uri, "Referer" => @referer) do |f|
-        JSON.load(f.read)
+        JSON.parse(f.read)
       end
       def result.estimatedTotalResultsCount
         self["responseData"]["cursor"]["estimatedResultCount"]
