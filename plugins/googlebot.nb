@@ -85,7 +85,7 @@ class GoogleBot < Nadoka::NDK_Bot
       when /^goo(o*)gle( #{SEARCHER_RE})?(:.*)?>\s*(.+)/o, /^gu(u*)guru(#{SEARCHER_RE})?(:.+)?>\s*(.+)/o
         "goo#{$1}gle#{$2} bot#{$3}: #{search($1.length, $3, $4, $2)}"
       when /^googlec( #{SEARCHER_RE})?(:.*)?>\s*(.+)/o
-        "googlec#{$2} bot#{$3}: #{googlec($1, $3, $2)}"
+        "googlec#{$1} bot#{$2}: #{googlec($1, $3, $2)}"
       end
     rescue Exception => e
       "google bot: #{e.class}(#{e.message} @ #{e.backtrace[0]})"
