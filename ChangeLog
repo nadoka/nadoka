@@ -1,6 +1,13 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-09-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* 0.7.2: released
+
+	* ndk/version.rb: bump up to version 0.7.5
+
+
 2009-09-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/googlebot.nb: use hl because lr used by web searcher only.
