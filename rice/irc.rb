@@ -1,4 +1,3 @@
-# coding: ASCII-8BIT
 =begin
 
 = rice - Ruby Irc interfaCE

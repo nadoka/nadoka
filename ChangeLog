@@ -3,6 +3,11 @@
 
 2009-09-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* rice/irc.rb: remove magic comment. ruby 1.9.2 works without it.
+
+
+2009-09-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* 0.7.2: released
 
 	* ndk/version.rb: bump up to version 0.7.5
