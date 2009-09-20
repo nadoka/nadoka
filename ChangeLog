@@ -10,7 +10,7 @@
 
 	* 0.7.2: released
 
-	* ndk/version.rb: bump up to version 0.7.5
+	* ndk/version.rb: bumped version to 0.7.5.
 
 
 2009-09-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
