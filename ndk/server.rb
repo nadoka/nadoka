@@ -169,7 +169,7 @@ module Nadoka
           @state.nick = nick
           send_to_server Cmd.nick(nick)
         when 'NOTICE'
-          # igonore
+          # ignore
         when 'ERROR'
           msg = "Server login fail!(#{q})"
           @server_thread.raise NDK_ReconnectToServer
