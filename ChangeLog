@@ -3,6 +3,11 @@
 
 2009-09-22  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* ndk/server.rb (Nadoka::NDK_Server#server_main_proc): support
+	RPL_ISUPPORT.
+
+2009-09-22  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* ndk/error.rb: add Nadoka::NDK_InvalidMessage.
 
 	* ndk/server.rb (Nadoka::NDK_Server#send_to_server): check [\r\n].

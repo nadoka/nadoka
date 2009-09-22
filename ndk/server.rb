@@ -46,10 +46,13 @@ module Nadoka
       @pong_recieved   = true
       @pong_fail_count = 0
 
+      @isupport = {}
+
       set_signal_trap
     end
     attr_reader :state, :connected, :rc
-    
+    attr_reader :isupport
+
     def client_count
       @clients.size
     end
@@ -197,6 +200,7 @@ module Nadoka
       end
 
       @connected = true
+      @isupport = {}
 
       ##
       if @clients.size == 0
@@ -245,7 +249,22 @@ module Nadoka
           nick = @state.nick_succ(q.params[1])
           send_to_server Cmd.nick(nick)
           @logger.slog("Retry nick setting: #{nick}")
-          
+
+        when '005' # RPL_ISUPPORT or RPL_BOUNCE
+          if /supported/i =~ q.params[-1]
+            q.params[1..-2].each do |param|
+              if /\A(-)?([A-Z0-9]+)(?:=(.*))?\z/ =~ param
+                negate, key, value = $~.captures
+                if negate
+                  @isupport.delete(key)
+                else
+                  @isupport[key] = value || true
+                end
+              end
+            end
+          end
+          @logger.dlog "isupport: #{@isupport.inspect}"
+
         else
           # 
         end
