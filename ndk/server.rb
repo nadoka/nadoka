@@ -404,8 +404,14 @@ module Nadoka
     end
     
     def send_to_server msg
-      @logger.dlog "[>S] #{msg}"
-      @server << msg
+      str = msg.to_s
+      if /[\r\n]/ =~ str.chomp
+        @logger.dlog "![>S] #{str}"
+        raise NDK_InvalidMessage, "Message must not include [\\r\\n]: #{str.inspect}"
+      else
+        @logger.dlog "[>S] #{str}"
+        @server << msg
+      end
     end
     
     def recv_from_server

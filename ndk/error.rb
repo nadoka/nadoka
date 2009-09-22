@@ -32,7 +32,9 @@ module Nadoka
 
   class NDK_ReconnectToServer < NDK_Error
   end
-  
+
+  class NDK_InvalidMessage < NDK_Error
+  end
 
   ####
   class NDK_FilterMessage_SendCancel < NDK_Error

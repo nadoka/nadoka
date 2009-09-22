@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-09-22  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* ndk/error.rb: add Nadoka::NDK_InvalidMessage.
+
+	* ndk/server.rb (Nadoka::NDK_Server#send_to_server): check [\r\n].
+
 2009-09-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* rice/irc.rb: remove magic comment. ruby 1.9.2 works without it.
