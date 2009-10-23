@@ -1,6 +1,10 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-10-23  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/googlebot.nb: fallback to json gem.
+
 2009-09-22  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* ndk/server.rb (Nadoka::NDK_Server#server_main_proc): support

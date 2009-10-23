@@ -55,7 +55,12 @@ require 'kconv'
 require 'shellwords'
 require 'cgi'
 require 'open-uri'
-require 'json'
+begin
+  require 'json'
+rescue LoadError
+  require 'rubygems'
+  require 'json'
+end
 
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize
