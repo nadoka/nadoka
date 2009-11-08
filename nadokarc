@@ -53,30 +53,26 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   ###############################################
   # server setting
 
-  # IRCnet servers from
-  #   http://irc.kyoto-u.ac.jp/list-of-servers.html
+  # IRCnet servers in Japan
   Servers = [
     { :host => 'irc.fujisawa.wide.ad.jp',
       :port => (6660 .. 6669),             # default: 6667
       :pass => nil,                        # default: nil
     },
-    { :host => 'irc.tokyo.wide.ad.jp',
-      :port => (6660 .. 6669),
-    },
     { :host => 'irc.media.kyoto-u.ac.jp',
-      :port => (6660 .. 6669),
-    },
-    { :host => 'irc.nara.wide.ad.jp',
       :port => (6660 .. 6669),
     },
     { :host => 'irc.huie.hokudai.ac.jp',
       # without :port, use 6667 as default port
     },
+  ]
 
+  #Servers = [
     # IPv6 Sample
-    # { :host => 'irc6.nara.wide.ad.jp',
+    # {
+    #   :host => 'irc6.example.jp',
     #   :port => 6667
-    # }
+    # },
     # SSL Sample
     # {
     #   :host => 'ircs.example.net',
@@ -84,8 +80,8 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     #   :ssl_params => { # with :ssl_params hash, use ssl
     #     # :ca_cert => "/etc/ssl/certs", # default: openssl's default certificates
     #  },
-    # }
-  ]
+    # },
+  #]
 
 
   ###############################################

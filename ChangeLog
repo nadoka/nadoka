@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-11-08  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* nadokarc: update Servers.
+	  see http://slashdot.jp/it/article.pl?sid=09/11/06/0747210
+
 2009-10-23  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/googlebot.nb: fallback to json gem.
