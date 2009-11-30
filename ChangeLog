@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2009-11-30  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* nadokarc: update Servers.
+	  see http://twitter.com/ircnet_fujisawa/status/6185537849 for irc6.fujisawa.wide.ad.jp,
+	  and http://en.wikipedia.org/wiki/IRCd says most often used port for SSL is 6697.
+
 2009-11-08  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* nadokarc: update Servers.

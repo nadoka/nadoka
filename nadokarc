@@ -65,18 +65,18 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     { :host => 'irc.huie.hokudai.ac.jp',
       # without :port, use 6667 as default port
     },
+    # IPv6 Sample
+    # {
+    #   :host => 'irc6.fujisawa.wide.ad.jp',
+    #   :port => (6660 .. 6669),
+    # },
   ]
 
   #Servers = [
-    # IPv6 Sample
-    # {
-    #   :host => 'irc6.example.jp',
-    #   :port => 6667
-    # },
     # SSL Sample
     # {
     #   :host => 'ircs.example.net',
-    #   :port => 994,
+    #   :port => 6697,
     #   :ssl_params => { # with :ssl_params hash, use ssl
     #     # :ca_cert => "/etc/ssl/certs", # default: openssl's default certificates
     #  },
