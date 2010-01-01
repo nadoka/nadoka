@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-01-01  Koichi Sasada <ko1@atdot.net>
+
+	* plugins/googlebot.nb: support new searcher calc and code.
+
+	* plugins/googlebot.nb: support abbreviated syntax (ex: g> ).
+
 2009-11-30  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* nadokarc: update Servers.
@@ -37,7 +43,6 @@
 	* 0.7.2: released
 
 	* ndk/version.rb: bumped version to 0.7.5.
-
 
 2009-09-17  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
