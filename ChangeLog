@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-01-25  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* nadokarc: update Servers.
+	  see http://www.wide.ad.jp/news/press/20100125-IRC-server-close-j.html
+	  and http://www.ircnet.ne.jp/ .
+
 2010-01-01  Koichi Sasada <ko1@atdot.net>
 
 	* plugins/googlebot.nb: support new searcher calc and code.
