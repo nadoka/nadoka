@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-01-28  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* ndk/server.rb (Nadoka::NDK_Server#set_signal_trap): merge patch
+	  from n0kada. http://www.atdot.net/sp/view/dswxwk
+
 2010-01-25  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* nadokarc: update Servers.

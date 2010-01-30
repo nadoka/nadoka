@@ -109,6 +109,8 @@ begin
 rescue Nadoka::NDK_QuitProgram
   #
 rescue Nadoka::NDK_RestartProgram
+  GC.start
+  ObjectSpace.each_object(Socket) {|sock| sock.close}
   retry
 rescue Exception => e
   open('nadoka_fatal_error', 'w'){|f|

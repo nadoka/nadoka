@@ -550,11 +550,11 @@ module Nadoka
     end
 
     def set_signal_trap
-      list = Signal.list.keys
+      list = Signal.list
       Signal.trap(:INT){
         # invoke_event :quit_program
         Thread.main.raise NDK_QuitProgram
-      } if list.any?{|e| e == 'INT'}
+      } if list['INT']
       Signal.trap(:TERM){
         # invoke_event :quit_program
         Thread.main.raise NDK_QuitProgram
@@ -563,15 +563,15 @@ module Nadoka
       Signal.trap(:HUP){
         # reload config
         invoke_event :reload_config
-      } if list.any?{|e| e == 'HUP'}
+      } if list['HUP']
       trap(:USR1){
         # SIGUSR1
         invoke_event :invoke_bot, :sigusr1
-      } if list.any?{|e| e == 'USR1' }
+      } if list['USR1']
       trap(:USR2){
         # SIGUSR2
         invoke_event :invoke_bot, :sigusr2
-      } if list.any?{|e| e == 'USR2' }
+      } if list['USR2']
     end
     
     def about_me? msg
