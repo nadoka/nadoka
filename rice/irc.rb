@@ -548,10 +548,10 @@ module RICE
           str << ' '
           if (param == @params[-1]) && (param.size == 0 || /(^:)|(\s)/ =~ param)
             str << ':'
-            str << param
+            str << param.to_s
             f = true
           else
-            str << param
+            str << param.to_s
           end
         end
       end

@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-02-15  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* rice/irc.rb (RICE::Message#to_s): add recursive #to_s to avoid
+	  "can't convert Array into String (TypeError)" in `<<'.
+
 2010-01-28  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* ndk/server.rb (Nadoka::NDK_Server#set_signal_trap): merge patch
