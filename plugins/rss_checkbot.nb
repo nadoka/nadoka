@@ -55,6 +55,18 @@ class RSS_CheckBot < Nadoka::NDK_Bot
     end
   end
   
+  def send_notice(ch, msg)
+    if ch.respond_to? :each
+      ch.each{|c|
+        super(c, msg)
+        sleep 5 # Flood Protection
+      }
+    else
+      super(ch, msg)
+      sleep 5 # Flood Protection
+    end
+  end
+
   def on_timer tm
     check
   end
@@ -78,7 +90,7 @@ class RSS_CheckBot < Nadoka::NDK_Bot
     end
     make_notice_thread items
   end
-  
+ 
   def make_notice_thread items
     Thread.new{
       begin
@@ -95,15 +107,7 @@ class RSS_CheckBot < Nadoka::NDK_Bot
             title = e[:title].tojis
           end
 
-          if @ch.respond_to? :each
-            @ch.each{|ch|
-              send_notice(ch, "rss bot: #{title} - #{e[:about]}")
-              sleep 5 # Flood Protection
-            }
-          else
-            send_notice(@ch, "rss bot: #{title} - #{e[:about]}")
-            sleep 5 # Flood Protection
-          end
+          send_notice(@ch, "rss bot: #{title} - #{e[:about]}")
         }
       rescue Exception => e
         send_notice(@ch, "rss bot error: #{e}")

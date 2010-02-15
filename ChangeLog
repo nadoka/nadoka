@@ -3,6 +3,9 @@
 
 2010-02-15  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* plugins/rss_checkbot.nb (RSS_CheckBot#send_notice): all
+	  #send_notice should support Array in @ch.
+
 	* rice/irc.rb (RICE::Message#to_s): add recursive #to_s to avoid
 	  "can't convert Array into String (TypeError)" in `<<'.
 
