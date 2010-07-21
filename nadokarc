@@ -71,7 +71,7 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     #   :port => 6667,
     # },
     # {
-    #   :host => 'irc6.fujisawa.wide.ad.jp',
+    #   :host => 'irc6.livedoor.ne.jp',
     #   :port => (6660 .. 6669),
     # },
   ]

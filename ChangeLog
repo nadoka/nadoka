@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-07-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* nadokarc: update IPv6 Sample in Servers.
+	  see http://www.ircnet.ne.jp/
+
 2010-02-15  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/rss_checkbot.nb (RSS_CheckBot#send_notice): all
