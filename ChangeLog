@@ -5,6 +5,8 @@
 
 	* plugins/twitterbot.nb: added.
 
+	* plugins/xibot.nb: added.
+
 2010-08-18  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* rice/irc.rb: applied nurse's patch.

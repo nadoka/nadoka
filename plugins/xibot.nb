@@ -1,0 +1,51 @@
+#
+# Xi Bot
+#
+# No rights reserved.
+#
+# Synopsis:
+#   xi> 2d10 (two dice of ten)
+#   [2d10] 13 = 7 + 6
+#   xi> 5d
+#   [5d6] 14 = 3 + 1 + 3 + 1 + 6
+#   xi>100
+#   [1d100] 26
+#
+
+class XiBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @available_channel = @bot_config[:ch] || /.*/
+  end
+
+  def on_privmsg prefix, ch, msg
+    return unless @available_channel === ch
+    return unless /\Axi\s*>\s*/ =~ msg
+    case $~.post_match
+    when /character/
+      %w/STR DEX CON INT WIS CHA/.each do |name|
+        values = (1..3).map{|i|rand(6)+1}
+        sum = values.inject(0){|s, i|s += i}
+        send_notice(ch, '%s: %2d = %s' % [name, sum, values.join(' + ')])
+      end
+    when /char/
+      values = %w/STR DEX CON INT WIS CHA/.map do |name|
+        '%s: %2d' % [name, (1..4).map{|i|rand(6)+1}.sort.last(3).inject(0){|s, i|s += i}]
+      end
+        send_notice(ch, "#{prefix.nick}: #{values.join(', ')}")
+    when /(?:(\d+)d)?(\d+)?(?:\*([1-9]))?/
+      count = $1.to_i
+      count = 1 unless (1..100).include? count
+      max = $2.to_i
+      max = 6 unless (1..1_000_000_000).include? max
+      ($3 ? $3.to_i : 1).times do
+        values = (1..count).map{|i|rand(max)+1}
+        sum = values.inject(0){|s, i|s += i}
+        if count == 1
+          send_notice(ch, '%s: [%dd%d] %d' % [prefix.nick,count, max, sum])
+        else
+          send_notice(ch, '%s: [%dd%d] %d = %s' % [prefix.nick,count, max, sum, values.join(' + ')])
+        end
+      end
+    end
+  end
+end
