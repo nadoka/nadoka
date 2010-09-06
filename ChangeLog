@@ -1,6 +1,10 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-09-06  NARUSE, Yui  <naruse@ruby-lang.org>
+
+	* plugins/twitterbot.nb: added.
+
 2010-08-18  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* rice/irc.rb: applied nurse's patch.

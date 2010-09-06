@@ -1,0 +1,133 @@
+# -*-ruby-*-
+# nadoka-twit
+#
+# = Usage
+#
+# == Get consumer key
+#
+# 1. access https://twitter.com/apps/new
+# 2. register it
+# 3. memo 'Consumer key' and 'Consumer secret'
+#
+# == Get access token
+#
+# 1. run this script with consumer key and consumer secret like:
+#      ruby twitterbot.nb <consumer_key> <consumer_secret>
+# 2. memo access_token and access_token_secret
+#
+# == Setting nadokarc
+#
+# 1. set :consumer_key, :consumer_secret, :access_token,
+#    and :acccess_token_secret
+#
+# = Configuration
+#
+# == :ch
+#
+# target channel
+#
+# == :pattern
+#
+# pattern for messages to send twitter
+#
+# == :nkf_encoding
+#
+# the encoding of messages
+#
+# == :consumer_key, :consumer_secret
+#
+# Consumer key and consumer secret
+#
+# == :access_token, :acccess_token_secret
+#
+# Access token and access token secret
+#
+require 'time'
+require 'rubygems'
+require 'rubytter'
+
+if __FILE__ == $0
+  key = ARGV.shift
+  secret = ARGV.shift
+  unless key && secret
+    puts "Usage: #$0 <consumer_key> <consumer_secret>"
+  end
+
+  oauth = Rubytter::OAuth.new(key, secret)
+  request_token = oauth.get_request_token
+  system('open', request_token.authorize_url) || puts("Access here: #{request_token.authorize_url}\nand...")
+
+  print "Enter PIN: "
+  pin = gets.strip
+
+  access_token = request_token.get_access_token(
+    :oauth_token => request_token.token,
+    :oauth_verifier => pin
+  )
+  puts ":access_token => '#{access_token.token}',"
+  puts ":access_token_secret => '#{access_token.secret}',"
+  exit
+end
+
+class TwitterBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @ch      = @bot_config.fetch(:ch,      nil)
+    @pattern = @bot_config.fetch(:pattern, />tw$/)
+    @nkf_encoding = @bot_config.fetch(:nkf_encoding, nil)
+
+    consumer = OAuth::Consumer.new(
+      @bot_config.fetch(:consumer_key,  nil),
+      @bot_config.fetch(:consumer_secret,  nil),
+      :site => 'http://twitter.com')
+    access_token = OAuth::AccessToken.new(consumer,
+      @bot_config.fetch(:access_token,  nil),
+      @bot_config.fetch(:access_token_secret,  nil))
+    @rt = OAuthRubytter.new(access_token)
+    @current_id = -1
+  end
+
+  def on_timer(t)
+    @rt.friends_timeline.each do |status|
+      id = status.id.to_i
+      next unless @current_id < id
+      @current_id = id
+      time = Time.parse(status.created_at)
+      next if time + 5 * 60 < Time.now
+      text = status.text.tr("\r\n", ' ')
+      text = NKF.nkf('--ic=UTF-8 --oc=' + @nkf_encoding, text) if @nkf_encoding
+      send_notice @ch, "#{time.strftime('%H:%M')} #{status.user.screen_name}: #{text}"
+    end
+  rescue Exception => err
+    puts_error_message(err)
+  end
+
+  def on_client_privmsg(client, ch, message)
+    return unless @ch.nil? or @ch.upcase == ch.upcase
+    unless @pattern =~ message
+      slog 'pattern unmatch, ignored'
+      return
+    end
+    text = message.sub(@pattern, '')
+    text = NKF.nkf('--oc=UTF-8 --ic=' + @nkf_encoding, text) if @nkf_encoding
+    slog((@rt.update(text) ? 'sent to twitter: ' : 'twitter send faild: ') + message)
+  rescue Exception => err
+    puts_error_message(err)
+  end
+
+  def slog(msg, nostamp = false)
+    current_method = caller.first[/:in \`(.*?)\'/, 1].to_s
+    msg.each do |line|
+      @logger.slog "#{self.class.to_s}##{current_method} #{line}", nostamp
+    end
+  end
+
+  private
+  def puts_error_message(err)
+    if err.is_a?(Rubytter::APIError)
+      @logger.slog "%s: %s (%s) %s" % [err.backtrace[0], err.message, err.class, err.response]
+    else
+      @logger.slog "%s: %s (%s)" % [err.backtrace[0], err.message, err.class]
+    end
+    @logger.slog err.backtrace.select{|l|/\A\/home/=~l}
+  end
+end
