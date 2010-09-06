@@ -47,6 +47,7 @@ class BackLogBot < Nadoka::NDK_Bot
     @sepr   = @bot_config.fetch(:separate, true)
     @tmfmt  = @bot_config.fetch(:time_format, '%m/%d-%H:%M')
     @msgfmts= @bot_config.fetch(:message_format, @config.default_log[:message_format])
+    @pattern= @bot_config.fetch(:pattern, nil)
   end
 
   def channel_message? ch
@@ -72,6 +73,7 @@ class BackLogBot < Nadoka::NDK_Bot
           else
             msg  = @config.log_format_message(@config.system_log[:message_format], msgobj)
           end
+          next unless @pattern.nil? || @pattern =~ msg
           
           rch  = msgobj[:ch]
           time = msgobj[:time]
@@ -84,6 +86,3 @@ class BackLogBot < Nadoka::NDK_Bot
     @stores.clear if @clear
   end
 end
-
-
-

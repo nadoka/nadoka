@@ -7,6 +7,8 @@
 
 	* plugins/xibot.nb: added.
 
+	* plugins/backlogbot.nb: send message which matches pattern.
+
 2010-08-18  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* rice/irc.rb: applied nurse's patch.
