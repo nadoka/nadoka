@@ -38,7 +38,7 @@ class DictBot < Nadoka::NDK_Bot
       word = URI.encode(word)
       uri = "http://dic.yahoo.co.jp/dsearch?p=#{word}&stype=0&dtype=#{type}"
       open(uri){|f|
-        if /<meta name="description" content=\"(.+)\">/ =~ f.read
+        if /<meta name="description" content=\"(.+?)\">/ =~ f.read
           "#{$1.tosjis.tojis} - #{uri}"
         else
           uri
