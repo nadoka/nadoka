@@ -155,7 +155,7 @@ class GoogleBot < Nadoka::NDK_Bot
 
       e = result["responseData"]["results"][0]
       url   = e['unescapedUrl'] || e['url'] || e['postUrl']
-      title = show_char_code_and_erace_tag(e['titleNoFormatting'])
+      title = show_char_code_and_erase_tag(e['titleNoFormatting'])
       "#{title} - #{url} (and #{count} hit#{(count.to_i > 1) ? 's' : ''})"
     else
       "no match"
@@ -230,7 +230,7 @@ class GoogleBot < Nadoka::NDK_Bot
         candidates[0]
       end.join('')
     end
-    show_char_code_and_erace_tag(result)
+    show_char_code_and_erase_tag(result)
   rescue Exception
     $!.to_s[/.+/] # first line
   end
@@ -267,7 +267,7 @@ class GoogleBot < Nadoka::NDK_Bot
     }.join(', ')
   end
 
-  def erace_tag str
+  def erase_tag str
     CGI.unescapeHTML(str.gsub(/\<.+?\>/, ''))
   end
 
@@ -299,8 +299,8 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
-  def show_char_code_and_erace_tag str
-    return CGI.unescapeHTML(erace_tag(str.toeuc)).tojis
+  def show_char_code_and_erase_tag str
+    return CGI.unescapeHTML(erase_tag(str.toeuc)).tojis
 
     case $KCODE
     when 'EUC', 'SJIS'
