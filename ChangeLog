@@ -1,6 +1,10 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-09-28  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/googlebot.nb: use shortest match.
+
 2010-09-13  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/dictbot.nb: use shortest match.

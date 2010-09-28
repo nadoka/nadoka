@@ -1,7 +1,7 @@
 # -*-ruby-*-
 #
 # Copyright (c) 2004-2005 SASADA Koichi <ko1 at atdot.net>
-# Copyright (c) 2009 Kazuhiro NISHIYAMA
+# Copyright (c) 2009, 2010 Kazuhiro NISHIYAMA
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
 # You can re-distribute and/or modify this program under
@@ -95,11 +95,11 @@ class GoogleBot < Nadoka::NDK_Bot
   def dispatch_command msg
     begin
       case msg
-      when /^goo(o*)gle( #{SEARCHER_RE})?(:.*)?>\s*(.+)/o, /^gu(u*)guru(#{SEARCHER_RE})?(:.+)?>\s*(.+)/o
+      when /^goo(o*)gle( #{SEARCHER_RE})?(:.*?)?>\s*(.+)/o, /^gu(u*)guru(#{SEARCHER_RE})?(:.+)?>\s*(.+)/o
         "goo#{$1}gle#{$2} bot#{$3}: #{search($1.length, $3, $4, $2)}"
-      when /^googlec( #{SEARCHER_RE})?(:.*)?>\s*(.+)/o
+      when /^googlec( #{SEARCHER_RE})?(:.*?)?>\s*(.+)/o
         "googlec#{$1} bot#{$2}: #{googlec($1, $3, $2)}"
-      when /^g(\w+)?(:.*)?>\s*(.+)/
+      when /^g(\w+)?(:.*?)?>\s*(.+)/
         searcher = $1 ? search_searcher($1) : 'web'
         "google #{searcher} bot#{$2}: #{search(0, $2, $3, searcher)}" if searcher
       end
