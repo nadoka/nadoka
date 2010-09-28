@@ -3,6 +3,8 @@
 
 2010-09-28  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* plugins/googlebot.nb: add gime and gimed.
+
 	* plugins/googlebot.nb: use shortest match.
 
 2010-09-13  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>

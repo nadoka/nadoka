@@ -81,7 +81,7 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
-  SEARCHER = %w!web calc code local video blogs news books images patent!.freeze
+  SEARCHER = %w!web calc code local video blogs news books images ime imed patent!.freeze
   SEARCHER_RE = Regexp.new("(?:" + SEARCHER.join('|') + ")").freeze
 
   def search_searcher key 
@@ -200,6 +200,41 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
+  if defined?(URI.encode_www_form)
+    def encode_www_form(enum)
+      URI.encode_www_form(enum)
+    end
+  else
+    def encode_www_form(enum)
+      enum.map do |k, v|
+        "#{URI.encode(k)}=#{URI.encode(v)}"
+      end.join('&')
+    end
+  end
+
+  # see http://www.google.com/intl/ja/ime/cgiapi.html
+  def google_ime text, d=false
+    url = 'http://www.google.com/transliterate?'
+    url << encode_www_form('langpair' => 'ja-Hira|ja', 'text' => text)
+    data = open(url){|f|
+      # TODO: gsub fix invalid JSON, should remove after fix response
+      # see http://www.google.com/support/forum/p/ime/thread?tid=06501c8b7a16add3&hl=ja
+      JSON.parse(f.read.gsub(/,(?=\n\])/,''))
+    }
+    if d
+      result = data.map do |org, candidates|
+        "#{org}=#{candidates.join('/')}"
+      end.join(' ')
+    else
+      result = data.map do |org, candidates|
+        candidates[0]
+      end.join('')
+    end
+    show_char_code_and_erace_tag(result)
+  rescue Exception
+    $!.to_s[/.+/] # first line
+  end
+
   def search cnt, lang, word, searcher=nil
     lang = lang_check(lang)
     searcher = searcher_check(searcher)
@@ -210,6 +245,10 @@ class GoogleBot < Nadoka::NDK_Bot
       google_code word
     when 'calc'
       google_calc word
+    when 'ime'
+      google_ime word
+    when 'imed'
+      google_ime word, true
     else
       api_search word, cnt, lang, searcher
     end
