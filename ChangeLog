@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-09-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* 0.7.5: released
+
+	* ndk/version.rb: 0.7.6
+
 2010-09-28  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/googlebot.nb: add gime and gimed.
