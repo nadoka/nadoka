@@ -303,7 +303,7 @@ class GoogleBot < Nadoka::NDK_Bot
       CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).send(@ch_kcode)
     when 'NONE', 'UTF-8'
       begin
-        str = Iconv.iconv("EUC-JP", "UTF-8", str).join
+        str = Iconv.conv("EUC-JP", "UTF-8", str)
         CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).send(@ch_kcode)
       rescue => e
         "(char code problem: #{e.class}[#{e.message.dump}])"
@@ -319,7 +319,7 @@ class GoogleBot < Nadoka::NDK_Bot
       str.toeuc
     when 'NONE'
       begin
-        Iconv.iconv("UTF-8", "EUC-JP", str.toeuc).join
+        Iconv.conv("UTF-8", "EUC-JP", str.toeuc)
       rescue => e
         raise "(char code problem: #{e.class})"
       end
