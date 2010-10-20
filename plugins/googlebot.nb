@@ -44,6 +44,7 @@ BotConfig = [
   :googlec_maxwords    => 5,
   :search_default_lang => 'ja',
   :count_default_lang  => '',
+  :ch_kcode            => :tojis,
 },
 ]
 
@@ -71,6 +72,7 @@ class GoogleBot < Nadoka::NDK_Bot
     @referer = @bot_config[:referer] || 'http://rubyforge.org/projects/nadoka/'
     @api_key = @bot_config[:api_key]
     @uri_slog = @bot_config.fetch(:uri_slog, false)
+    @ch_kcode = @bot_config.fetch(:ch_kcode, :tojis)
   end
 
   def on_privmsg prefix, ch, msg
@@ -174,7 +176,7 @@ class GoogleBot < Nadoka::NDK_Bot
       result.gsub!(/<sup>(.+?)<\/sup>/u) { "^(#{$1})" }
       result.gsub!(/<.+?>/u, '')
       result.gsub!(/&\#215;/u, "\303\227")
-      NKF.nkf('-j', result)
+      result.send(@ch_kcode) # NKF.nkf('-j', result)
     elsif /<p class=g>.*?<a href="(.+?)">(.+?)<\/a>/u =~ html
       href, text = $1, $2
       # @logger.slog("google_calc fallback>#{href.dump} #{text.dump}")
@@ -300,15 +302,15 @@ class GoogleBot < Nadoka::NDK_Bot
   end
 
   def show_char_code_and_erase_tag str
-    return CGI.unescapeHTML(erase_tag(str.toeuc)).tojis
+    return CGI.unescapeHTML(erase_tag(str.toeuc)).send(@ch_kcode)
 
     case $KCODE
     when 'EUC', 'SJIS'
-      CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).tojis
+      CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).send(@ch_kcode)
     when 'NONE', 'UTF-8'
       begin
         str = Iconv.iconv("EUC-JP", "UTF-8", str).join
-        CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).tojis
+        CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).send(@ch_kcode)
       rescue => e
         "(char code problem: #{e.class}[#{e.message.dump}])"
       end

@@ -3,6 +3,10 @@
 
 2010-10-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* plugins/googlebot.nb: add ch_kcode. merge patch from ko1_ndk.
+
+2010-10-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* ndk/server.rb (Nadoka::NDK_Server#server_main_proc): do not use
 	  nick_succ when channel and retry join.
 
