@@ -246,9 +246,18 @@ module Nadoka
         when '433', '436', '437'
           # ERR_NICKNAMEINUSE, ERR_NICKCOLLISION, ERR_UNAVAILRESOURCE
           # change try nick
-          nick = @state.nick_succ(q.params[1])
-          send_to_server Cmd.nick(nick)
-          @logger.slog("Retry nick setting: #{nick}")
+          case q.params[1]
+          when /\A[\#&!+]/
+            # retry join after 1 minute
+            Thread.start(q.params[1]) do |ch|
+              sleep 60
+              join_to_channel ch
+            end
+          else
+            nick = @state.nick_succ(q.params[1])
+            send_to_server Cmd.nick(nick)
+            @logger.slog("Retry nick setting: #{nick}")
+          end
 
         when '005' # RPL_ISUPPORT or RPL_BOUNCE
           if /supported/i =~ q.params[-1]

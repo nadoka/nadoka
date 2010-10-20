@@ -3,6 +3,11 @@
 
 2010-10-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* ndk/server.rb (Nadoka::NDK_Server#server_main_proc): do not use
+	  nick_succ when channel and retry join.
+
+2010-10-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* plugins/translatebot.nb: added (contributed from SASADA Koichi)
 
 2010-09-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
