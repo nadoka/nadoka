@@ -51,7 +51,7 @@ class TenkiBot < Nadoka::NDK_Bot
   CityIDs = {}
 
   def bot_initialize
-    @available_channel = @bot_config[:ch] || /.*/
+    bot_init_utils
 
     open('http://weather.livedoor.com/forecast/rss/forecastmap.xml'){|f|
       f.each{|line|
@@ -77,6 +77,8 @@ class TenkiBot < Nadoka::NDK_Bot
     min = doc.elements['/lwws/temperature/min/celsius/'].text
     date = Date.parse(doc.elements['/lwws/forecastdate/'].text)
     datestr = date.strftime('%m/%d')
+
+    desc.sub!(/\.\.\..*/m, '...')
 
     celsius = []
     celsius << "max: #{max}" if max
