@@ -1,6 +1,12 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2010-12-14  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* ndk/bot.rb (Nadoka::NDK_Bot#bot_init_utils): add new methods.
+
+	* plugins/googlebot.nb (GoogleBot#bot_initialize): use bot_init_utils.
+
 2010-10-21  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/googlebot.nb: add ch_kcode. merge patch from ko1_ndk.

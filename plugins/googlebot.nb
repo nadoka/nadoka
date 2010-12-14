@@ -65,7 +65,8 @@ end
 
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize
-    @available_channel   = @bot_config[:ch] || /.*/
+    bot_init_utils
+
     @search_default_lang = (@bot_config[:search_default_lang] || 'ja').sub(/^lang_/, '')
     @googlec_maxwords    = @bot_config[:googlec_maxwords] || 5
     @count_default_lang  = (@bot_config[:count_default_lang] || '').sub(/^lang_/, '')
@@ -76,10 +77,10 @@ class GoogleBot < Nadoka::NDK_Bot
   end
 
   def on_privmsg prefix, ch, msg
-    if @available_channel === ch
-      if response = dispatch_command(msg)
-        send_notice(ch, response)
-      end
+    return unless @available_channel === ch
+    return if same_bot?(ch)
+    if response = dispatch_command(msg)
+      send_notice(ch, response)
     end
   end
 

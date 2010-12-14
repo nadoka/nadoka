@@ -52,6 +52,34 @@ module Nadoka
     # You can access above setting via @bot_config
     #
 
+    def bot_init_utils
+      bot_init_available_channel
+      bot_init_same_bot
+    end
+
+    def bot_init_available_channel
+      if @bot_config.key?(:channels)
+        channels = '\A(?:' + @bot_config[:channels].collect{|ch|
+          Regexp.quote(ch)
+        }.join('|') + ')\z'
+        @available_channel = Regexp.compile(channels)
+      else
+        @available_channel = @bot_config[:ch] || //
+      end
+    end
+
+    def bot_init_same_bot
+      @same_bot = @bot_config[:same_bot] || /(?!)/
+    end
+
+    def same_bot?(ch)
+      if @state.channel_users(ccn(ch)).find{|x| @same_bot =~ x }
+        true
+      else
+        false
+      end
+    end
+
     def ccn2rcn ccn
       chs = @manager.state.current_channels[ccn]
       chs ? chs.name : ccn
