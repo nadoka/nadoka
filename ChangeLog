@@ -3,6 +3,10 @@
 
 2010-12-14  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* plugins/tenkibot.nb: use same_bot? and clean up trailing spaces.
+
+2010-12-14  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
 	* plugins/tenkibot.nb (TenkiBot#tenki): cut after "...".
 	(TenkiBot#bot_initialize): use bot_init_utils.
 

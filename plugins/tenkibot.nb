@@ -68,7 +68,7 @@ class TenkiBot < Nadoka::NDK_Bot
       "city=#{CityIDs.fetch(city)}&day=#{timing}"){|f|
       REXML::Document.new f.read
     }
-    
+
     title = doc.elements['/lwws/title/'].text.toeuc
     telop = doc.elements['/lwws/telop/'].text.toeuc
     link = doc.elements['/lwws/link/'].text.toeuc
@@ -90,19 +90,20 @@ class TenkiBot < Nadoka::NDK_Bot
   end
 
   def on_privmsg prefix, ch, msg
-    if @available_channel === ch
-      if /\Atenki(|:(today|tomorrow|dayaftertomorrow))>(.+)/ =~ msg
-        city = $3.strip.toeuc
-        timing = ($2 || 'today').strip
-        begin
-          result = tenki(city, timing).gsub(/\n/, ' ')
-        rescue IndexError
-          result = "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/forecastmap.xml" 
-        rescue => e
-          result = "#{e}"
-        end
-        send_notice ch, "tenki bot: #{result}" 
+    return unless @available_channel === ch
+    return if same_bot?(ch)
+
+    if /\Atenki(|:(today|tomorrow|dayaftertomorrow))>(.+)/ =~ msg
+      city = $3.strip.toeuc
+      timing = ($2 || 'today').strip
+      begin
+        result = tenki(city, timing).gsub(/\n/, ' ')
+      rescue IndexError
+        result = "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/forecastmap.xml"
+      rescue => e
+        result = "#{e}"
       end
+      send_notice ch, "tenki bot: #{result}"
     end
   end
 end
