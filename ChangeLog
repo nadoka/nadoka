@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2011-06-02  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* rice/irc.rb (RICE::Message::PATTERN::NICKNAME): nickname starts
+	  with DIGIT may occur in split mode.
+
 2010-12-14  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/tenkibot.nb: use same_bot? and clean up trailing spaces.
