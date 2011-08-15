@@ -186,15 +186,7 @@ class GoogleBot < Nadoka::NDK_Bot
   end
 
   def google_code key
-    url = URI.encode("http://www.google.com/codesearch?q=#{key}")
-    data = open(url){|f|
-      f.read
-    }
-    if /of (?:about )?<b>([\d,]+)<\/b>/m =~ data
-      "#{url} - #{$1} matches."
-    else
-      "did not match any documents."
-    end
+    return "http://google.com/codesearch#search/&q=#{CGI.escape(key)}&ct=os"
   end
 
   if defined?(URI.encode_www_form)

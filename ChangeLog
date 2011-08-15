@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2011-08-16  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/googlebot.nb: bot return uri only, because cannot fetch
+	results from Google code search.
+
 2011-08-15  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/opensearchbot.nb: add new bot.
