@@ -25,6 +25,7 @@ BotConfig = [
   :referer => 'http://rubyforge.org/projects/nadoka/',
   :ch_kcode => :jis,
   # http://www.koders.com/search/KodersDescriptionOS1_1.xml
+  :html => 'http://www.koders.com/?s={searchTerms}',
   :rss => 'http://www.koders.com/?s={searchTerms}&results=code&output=rss&OSversion=1.1',
 },
 ]
@@ -33,6 +34,7 @@ BotConfig = [
 
 require 'open-uri'
 require 'uri'
+require 'cgi'
 
 class OpenSearchBot < Nadoka::NDK_Bot
   def bot_initialize
@@ -46,6 +48,7 @@ class OpenSearchBot < Nadoka::NDK_Bot
     end
 
     @bot_name = @bot_config[:bot_name] || 'OpenSearchBot'
+    @html = @bot_config[:html]
     @rss = @bot_config[:rss]
     @referer = @bot_config[:referer] || 'http://rubyforge.org/projects/nadoka/'
     @pattern = @bot_config[:pattern] || /\A#{Regexp.quote(@bot_name)}\s*[<:>]\s*(.+)/
@@ -66,12 +69,11 @@ class OpenSearchBot < Nadoka::NDK_Bot
     if @ch_kcode == :jis
       key = key.toutf8
     end
-    uri = @rss.sub(/\{searchTerms\}/) { URI.encode(key) }
+    escaped_key = CGI.escape(key)
+    uri = @rss.sub(/\{searchTerms\}/) { escaped_key }
+    link = @html.sub(/\{searchTerms\}/) { escaped_key }
     open(uri, "Referer" => @referer) do |f|
       result = f.read
-      if /<link>([^<>]+)<\/link>/ =~ result
-        link = $1
-      end
       if /<openSearch:totalResults>(\d+)<\/openSearch:totalResults>/ =~ result
         total = $1.to_i
         "#{total} result#{total > 1 ? 's' : ''} in #{link}"
