@@ -1,0 +1,84 @@
+# -*-ruby-*-
+#
+# Copyright (C) 2011 Kazuhiro NISHIYAMA
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's license.
+#
+
+=begin
+
+== Usage with irc client
+
+  koders> keyword
+    -> search keyword by koders
+
+
+== Configuration:
+
+BotConfig = [
+{
+  :name => :OpenSearchBot,
+  :bot_name => 'koders',
+  :ch => //,
+  :referer => 'http://rubyforge.org/projects/nadoka/',
+  :ch_kcode => :jis,
+  # http://www.koders.com/search/KodersDescriptionOS1_1.xml
+  :rss => 'http://www.koders.com/?s={searchTerms}&results=code&output=rss&OSversion=1.1',
+},
+]
+
+=end
+
+require 'open-uri'
+require 'uri'
+
+class OpenSearchBot < Nadoka::NDK_Bot
+  def bot_initialize
+    if @bot_config.key?(:channels)
+      channels = '\A(?:' + @bot_config[:channels].collect{|ch|
+        Regexp.quote(ch)
+      }.join('|') + ')\z'
+      @available_channel = Regexp.compile(channels)
+    else
+      @available_channel = @bot_config[:ch] || //
+    end
+
+    @bot_name = @bot_config[:bot_name] || 'OpenSearchBot'
+    @rss = @bot_config[:rss]
+    @referer = @bot_config[:referer] || 'http://rubyforge.org/projects/nadoka/'
+    @pattern = @bot_config[:pattern] || /\A#{Regexp.quote(@bot_name)}\s*[<:>]\s*(.+)/
+    @ch_kcode = @bot_config[:ch_kcode]
+  end
+
+  def on_privmsg prefix, ch, msg
+    if @pattern =~ msg
+      ret = open_search_result($1)
+      if @ch_kcode == :jis
+        ret = ret.tojis
+      end
+      send_notice ch, "#{@bot_name} bot: #{ret}"
+    end
+  end
+
+  def open_search_result key
+    if @ch_kcode == :jis
+      key = key.toutf8
+    end
+    uri = @rss.sub(/\{searchTerms\}/) { URI.encode(key) }
+    open(uri, "Referer" => @referer) do |f|
+      result = f.read
+      if /<link>([^<>]+)<\/link>/ =~ result
+        link = $1
+      end
+      if /<openSearch:totalResults>(\d+)<\/openSearch:totalResults>/ =~ result
+        total = $1.to_i
+        "#{total} result#{total > 1 ? 's' : ''} in #{link}"
+      else
+        "#{key} - not found in #{link}"
+      end
+    end
+  end
+end
+

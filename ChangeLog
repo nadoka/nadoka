@@ -1,6 +1,10 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2011-08-15  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/opensearchbot.nb: add new bot.
+
 2011-06-02  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* rice/irc.rb (RICE::Message::PATTERN::NICKNAME): nickname starts
