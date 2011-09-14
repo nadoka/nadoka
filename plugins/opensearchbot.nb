@@ -27,7 +27,7 @@
     :ch => //,
     :referer => 'http://rubyforge.org/projects/nadoka/',
     :ch_kcode => :jis,
-    :html => 'http://search.live.com/results.aspx?q={searchTerms}',
+    :html => 'http://www.bing.com/search?q={searchTerms}',
     :rss => 'http://api.search.live.com/rss.aspx?source=web&query={searchTerms}'
 ,
   }
@@ -90,7 +90,7 @@ if __FILE__ == $0
   h = {
     'bing' => {
       :referer => 'http://rubyforge.org/projects/nadoka/',
-      :html => 'http://search.live.com/results.aspx?q={searchTerms}',
+      :html => 'http://www.bing.com/search?q={searchTerms}',
       :rss => 'http://api.search.live.com/rss.aspx?source=web&query={searchTerms}',
     },
     'googlecode' => {
