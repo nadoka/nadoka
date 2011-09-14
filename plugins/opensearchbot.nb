@@ -1,5 +1,4 @@
-# -*-ruby-*-
-#
+# -*-ruby-*- #
 # Copyright (C) 2011 Kazuhiro NISHIYAMA
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
@@ -11,30 +10,120 @@
 
 == Usage with irc client
 
+  bing> keyword
+    -> search keyword by bing
+
+  googlecode> keyword
+    -> search keyword by Google Code Search Data API (Deprecated)
+
   koders> keyword
     -> search keyword by koders
 
-
 == Configuration:
 
-BotConfig = [
-{
-  :name => :OpenSearchBot,
-  :bot_name => 'koders',
-  :ch => //,
-  :referer => 'http://rubyforge.org/projects/nadoka/',
-  :ch_kcode => :jis,
-  # http://www.koders.com/search/KodersDescriptionOS1_1.xml
-  :html => 'http://www.koders.com/?s={searchTerms}',
-  :rss => 'http://www.koders.com/?s={searchTerms}&results=code&output=rss&OSversion=1.1',
-},
-]
+  BotConfig << {
+    :name => :OpenSearchBot,
+    :bot_name => 'bing',
+    :ch => //,
+    :referer => 'http://rubyforge.org/projects/nadoka/',
+    :ch_kcode => :jis,
+    :html => 'http://search.live.com/results.aspx?q={searchTerms}',
+    :rss => 'http://api.search.live.com/rss.aspx?source=web&query={searchTerms}'
+,
+  }
+
+  BotConfig << {
+    :name => :OpenSearchBot,
+    :bot_name => 'googlecode',
+    :ch => //,
+    :ch_kcode => :jis,
+    :referer => 'http://rubyforge.org/projects/nadoka/',
+    # Google Code Search Data API (Deprecated)
+    # http://code.google.com/intl/ja/apis/codesearch/docs/2.0/developers_guide.h
+tml
+    :html => 'http://www.google.com/codesearch?q={searchTerms}',
+    :rss => 'http://www.google.com/codesearch/feeds/search?q={searchTerms}',
+  }
+
+  BotConfig << {
+    :name => :OpenSearchBot,
+    :bot_name => 'koders',
+    :ch => //,
+    :referer => 'http://rubyforge.org/projects/nadoka/',
+    :ch_kcode => :jis,
+    # http://www.koders.com/search/KodersDescriptionOS1_1.xml
+    :html => 'http://www.koders.com/?s={searchTerms}',
+    :rss => 'http://www.koders.com/?s={searchTerms}&results=code&output=rss&OSve
+rsion=1.1',
+  }
 
 =end
 
 require 'open-uri'
 require 'uri'
 require 'cgi'
+
+class OpenSearch
+  def initialize(options)
+    @html = options[:html]
+    @rss = options[:rss]
+    @referer = options[:referer] || 'http://rubyforge.org/projects/nadoka/'
+  end
+
+  def result(key)
+    escaped_key = CGI.escape(key)
+    link = @html.sub(/\{searchTerms\}/) { escaped_key }
+    uri = @rss.sub(/\{searchTerms\}/) { escaped_key }
+    open(uri, "Referer" => @referer) do |f|
+      result = f.read
+      if /<([A-Za-z]+):totalResults>(\d+)<\/\1:totalResults>/ =~ result
+        total = $2.to_i
+        return "#{total} result#{total > 1 ? 's' : ''} in #{link}"
+      else
+        return "#{key} - not found in #{link}"
+      end
+    end
+  end
+end
+
+if __FILE__ == $0
+  h = {
+    'bing' => {
+      :referer => 'http://rubyforge.org/projects/nadoka/',
+      :html => 'http://search.live.com/results.aspx?q={searchTerms}',
+      :rss => 'http://api.search.live.com/rss.aspx?source=web&query={searchTerms}',
+    },
+    'googlecode' => {
+      :referer => 'http://rubyforge.org/projects/nadoka/',
+      # Google Code Search Data API (Deprecated)
+      # http://code.google.com/intl/ja/apis/codesearch/docs/2.0/developers_guide.html
+      :html => 'http://www.google.com/codesearch?q={searchTerms}',
+      :rss => 'http://www.google.com/codesearch/feeds/search?q={searchTerms}',
+    },
+    'koders' => {
+      :referer => 'http://rubyforge.org/projects/nadoka/',
+      # http://www.koders.com/search/KodersDescriptionOS1_1.xml
+      :html => 'http://www.koders.com/?s={searchTerms}',
+      :rss => 'http://www.koders.com/?s={searchTerms}&results=code&output=rss&OSversion=1.1',
+    },
+    'youtube' => {
+      :referer => 'http://rubyforge.org/projects/nadoka/',
+      :html => 'http://www.youtube.com/results?search_query={searchTerms}',
+      :rss => 'http://gdata.youtube.com/feeds/api/videos?q={searchTerms}',
+    },
+  }
+  engine = ARGV.shift
+  if h.key?(engine)
+    open_search = OpenSearch.new(h[engine])
+    ARGV.each do |key|
+      result = open_search.result(key)
+      puts result
+    end
+  else
+    STDERR.puts "usage: #{$0} {#{h.keys.sort.join('|')}} key ..."
+  end
+  exit
+end
 
 class OpenSearchBot < Nadoka::NDK_Bot
   def bot_initialize
@@ -48,39 +137,20 @@ class OpenSearchBot < Nadoka::NDK_Bot
     end
 
     @bot_name = @bot_config[:bot_name] || 'OpenSearchBot'
-    @html = @bot_config[:html]
-    @rss = @bot_config[:rss]
-    @referer = @bot_config[:referer] || 'http://rubyforge.org/projects/nadoka/'
+    @open_search = OpenSearch.new(@bot_config)
     @pattern = @bot_config[:pattern] || /\A#{Regexp.quote(@bot_name)}\s*[<:>]\s*(.+)/
     @ch_kcode = @bot_config[:ch_kcode]
   end
 
   def on_privmsg prefix, ch, msg
     if @pattern =~ msg
-      ret = open_search_result($1)
+      key = $1
       if @ch_kcode == :jis
-        ret = ret.tojis
+        ret = @open_search.result(key.toutf8).tojis
+      else
+        ret = @open_search.result(key)
       end
       send_notice ch, "#{@bot_name} bot: #{ret}"
     end
   end
-
-  def open_search_result key
-    if @ch_kcode == :jis
-      key = key.toutf8
-    end
-    escaped_key = CGI.escape(key)
-    uri = @rss.sub(/\{searchTerms\}/) { escaped_key }
-    link = @html.sub(/\{searchTerms\}/) { escaped_key }
-    open(uri, "Referer" => @referer) do |f|
-      result = f.read
-      if /<openSearch:totalResults>(\d+)<\/openSearch:totalResults>/ =~ result
-        total = $1.to_i
-        "#{total} result#{total > 1 ? 's' : ''} in #{link}"
-      else
-        "#{key} - not found in #{link}"
-      end
-    end
-  end
 end
-
