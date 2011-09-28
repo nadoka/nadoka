@@ -1,6 +1,11 @@
 # ChangeLog of Nadoka($Rev$)
 # $Id$ 
 
+2011-09-28  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* plugins/translatebot.nb: merge patch from ko1_ndk.
+	support Bing Translator.
+
 2011-09-15  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
 	* plugins/opensearchbot.nb: split class and enabled to run on
