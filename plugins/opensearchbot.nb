@@ -78,7 +78,7 @@ class OpenSearch
       result = f.read
       if /<([A-Za-z]+):totalResults>(\d+)<\/\1:totalResults>/ =~ result
         total = $2.to_i
-        return "#{total} result#{total > 1 ? 's' : ''} in #{link}"
+        return "#{total.to_s.gsub(/\d(?=\d{3}+\z)/,'\&,')} result#{total > 1 ? 's' : ''} in #{link}"
       else
         return "#{key} - not found in #{link}"
       end
