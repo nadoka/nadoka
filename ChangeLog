@@ -1,5 +1,6 @@
-# ChangeLog of Nadoka($Rev$)
-# $Id$ 
+2011-10-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* ChangeLog: remove svn keywords.
 
 2011-09-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
