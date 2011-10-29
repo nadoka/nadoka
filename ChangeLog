@@ -1,5 +1,7 @@
 2011-10-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
+	* rice/irc.rb: add RPL_REOPLIST and RPL_ENDOFREOPLIST.
+
 	* ChangeLog: remove svn keywords.
 
 2011-09-29  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
