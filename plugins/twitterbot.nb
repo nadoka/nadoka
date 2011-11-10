@@ -45,6 +45,7 @@
 require 'time'
 require 'rubygems'
 require 'rubytter'
+require 'json'
 
 if __FILE__ == $0
   key = ARGV.shift
@@ -78,7 +79,7 @@ class TwitterBot < Nadoka::NDK_Bot
     consumer = OAuth::Consumer.new(
       @bot_config.fetch(:consumer_key,  nil),
       @bot_config.fetch(:consumer_secret,  nil),
-      :site => 'http://twitter.com')
+      :site => 'https://api.twitter.com')
     access_token = OAuth::AccessToken.new(consumer,
       @bot_config.fetch(:access_token,  nil),
       @bot_config.fetch(:access_token_secret,  nil))
@@ -97,6 +98,7 @@ class TwitterBot < Nadoka::NDK_Bot
       text = NKF.nkf('--ic=UTF-8 --oc=' + @nkf_encoding, text) if @nkf_encoding
       send_notice @ch, "#{time.strftime('%H:%M')} #{status.user.screen_name}: #{text}"
     end
+  rescue Errno::ETIMEDOUT, Timeout::Error, SocketError
   rescue Exception => err
     puts_error_message(err)
   end
@@ -125,6 +127,9 @@ class TwitterBot < Nadoka::NDK_Bot
   def puts_error_message(err)
     if err.is_a?(Rubytter::APIError)
       @logger.slog "%s: %s (%s) %s" % [err.backtrace[0], err.message, err.class, err.response]
+    elsif err.is_a?(JSON::ParserError)
+      sleep 180
+      return
     else
       @logger.slog "%s: %s (%s)" % [err.backtrace[0], err.message, err.class]
     end
