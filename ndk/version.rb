@@ -14,6 +14,9 @@ module Nadoka
   NDK_Version  = '0.7.8'
   NDK_Created  = Time.now
 
+  if File.directory?(File.expand_path('../../.git', __FILE__))
+    NDK_Version.concat("+git")
+  end
   if /trunk/ =~ '$HeadURL$'
     NDK_Version.concat('-trunk')
     rev = '-'
@@ -35,3 +38,6 @@ module Nadoka
   end
 end
 
+if __FILE__ == $0
+  puts Nadoka::NDK_Version
+end
