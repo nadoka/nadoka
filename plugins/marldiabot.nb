@@ -1,0 +1,99 @@
+# -*-ruby-*-
+require 'cgi'
+require 'net/http'
+require 'rexml/document'
+require 'uri'
+require 'time'
+require 'json'
+
+class MarldiaBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @chats      = @bot_config.fetch(:chats,      nil)
+    @proxy_addr = @bot_config.fetch(:proxy_addr, nil)
+    @proxy_port = @bot_config.fetch(:proxy_port, 80)
+
+    @chs = @chats.keys
+    @chats.each_value do |chat|
+      chat[:uri] = URI(chat[:url])
+      chat[:query] = 'type=xml&' + chat[:data].
+        map{|k,v|"#{CGI.escape k.to_s}=#{CGI.escape v.to_s}"}.join('&')
+      req = Net::HTTP::Get.new(chat[:uri].path+ '?' + chat[:query])
+      chat[:req] = req
+    end
+  end
+
+  def bot_state
+    "<#{self.class.to_s}>"
+  end
+
+  def slog(msg, nostamp = false)
+    current_method = caller.first[/:in \`(.*?)\'/, 1].to_s
+    msg.each_line do |line|
+      @logger.slog "#{self.class.to_s}##{current_method} #{line}", nostamp
+    end
+  end
+
+  def on_timer(t)
+    @chats.each_pair do |ch, chat|
+      uri = chat[:uri]
+      current_id = chat[:current_id]
+      body = nil
+      messages = []
+      Net::HTTP::Proxy(@proxy_addr, @proxy_port).start(uri.host, uri.port) do |http|
+        body = http.request(chat[:req]).body
+      end
+      doc = REXML::Document.new(body)
+      doc.each_element('feed/entry/log/article') do |art|
+        id = art.text('id')
+        break if current_id == id
+        time = Time.parse(art.text('updated'))
+        next if time + 10 * 60 < Time.now
+        user = art.text('author/name')
+        text = CGI.unescapeHTML(art.text('body')).gsub(/\n|<.*?>/," ")
+        text = text[/^[\w\W]{0,100}/u]
+        text.gsub!(/([\w\W])/u){|c|c == "\xA0" ? " " : c}
+        messages << "#{time.strftime('%H:%M')} #{user}: #{text}"
+      end
+      messages.reverse_each do |message|
+        send_notice ch, message
+        sleep 0.5
+      end
+      chat[:current_id] = doc.text('/feed/entry/log/article/id')
+    end
+  rescue Errno::ETIMEDOUT, Timeout::Error, SocketError
+  rescue Errno::ECONNRESET => err
+    slog "%s: %s (%s)" % [err.backtrace[0], err.message, err.class]
+  rescue Exception => err
+    detail = ("%s: %s (%s)\n" % [err.backtrace[0], err.message, err.class]) + err.backtrace[1..-1].join("\n")
+    slog "Exception\n#{detail}"
+  end
+
+  def send_marldia(ch, message)
+    chat = @chats[ch]
+    uri = chat[:uri]
+    req = Net::HTTP::Post.new(uri.path)
+    req.body = chat[:query] + '&type=xml&body=' + CGI.escape(message)
+
+    Net::HTTP::Proxy(@proxy_addr, @proxy_port).start(uri.host, uri.port) {|http|
+      http.read_timeout = @timeout
+      res = http.request(req)
+      @logger.dlog res.code
+    }
+    return true
+  rescue Errno::ECONNRESET => err
+    slog "%s: %s (%s)" % [err.backtrace[0], err.message, err.class]
+  rescue Exception => err
+    detail = ("%s: %s (%s)\n" % [err.backtrace[0], err.message, err.class]) +
+      err.backtrace[1..-1].join("\n")
+    slog "Exception\n#{detail}"
+    return false
+  end
+
+  def on_client_privmsg(client, ch, message)
+    ch.downcase!
+    return unless @chs.include?(ch)
+    msg = send_marldia(ch, message) ? 'sent to marldia: ' : 'marldia send faild: '
+    msg << message
+    slog msg
+  end
+end
