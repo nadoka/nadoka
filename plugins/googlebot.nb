@@ -37,7 +37,10 @@ BotConfig = [
 {
   :name                => :GoogleBot,
   :ch                  => /.*/,
-  :referer             => 'http://rubyforge.org/projects/nadoka/',
+  :headers             => {
+    #"User-Agent" => "Ruby/#{RUBY_VERSION}",
+    'Referer' => 'https://github.com/nadoka/nadoka',
+  },
   # Register URL at http://code.google.com/intl/ja/apis/ajaxsearch/signup.html
   # and set your URL to :referer and your API key to :api_key if you want.
   :api_key             => nil,
@@ -70,7 +73,7 @@ class GoogleBot < Nadoka::NDK_Bot
     @search_default_lang = (@bot_config[:search_default_lang] || 'ja').sub(/^lang_/, '')
     @googlec_maxwords    = @bot_config[:googlec_maxwords] || 5
     @count_default_lang  = (@bot_config[:count_default_lang] || '').sub(/^lang_/, '')
-    @referer = @bot_config[:referer] || 'http://rubyforge.org/projects/nadoka/'
+    @headers = @bot_config.fetch(:headers, {})
     @api_key = @bot_config[:api_key]
     @uri_slog = @bot_config.fetch(:uri_slog, false)
     @ch_kcode = @bot_config.fetch(:ch_kcode, :tojis)
@@ -134,7 +137,7 @@ class GoogleBot < Nadoka::NDK_Bot
       end
       @logger.slog "GoogleBot: #{uri}" if @uri_slog
 
-      result = open(uri, "Referer" => @referer) do |f|
+      result = open(uri, @headers) do |f|
         JSON.parse(f.read)
       end
       def result.estimatedTotalResultsCount
@@ -168,7 +171,7 @@ class GoogleBot < Nadoka::NDK_Bot
   def google_calc exp
     @logger.slog("google_calc<#{exp.dump}")
     uri = "http://www.google.co.jp/search?ie=UTF8&oe=UTF-8&q=#{CGI.escape(exp)}"
-    html = open(uri) do |f|
+    html = open(uri, @headers) do |f|
       f.read
     end
     if /class=r [^<>]+><b>(.+?)<\/b>/u =~ html
@@ -205,7 +208,7 @@ class GoogleBot < Nadoka::NDK_Bot
   def google_ime text, d=false
     url = 'http://www.google.com/transliterate?'
     url << encode_www_form('langpair' => 'ja-Hira|ja', 'text' => text)
-    data = open(url){|f|
+    data = open(url,@headers){|f|
       # TODO: gsub fix invalid JSON, should remove after fix response
       # see http://www.google.com/support/forum/p/ime/thread?tid=06501c8b7a16add3&hl=ja
       JSON.parse(f.read.gsub(/,(?=\n\])/,''))
