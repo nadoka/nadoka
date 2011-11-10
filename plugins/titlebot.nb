@@ -1,0 +1,223 @@
+# -*-ruby-*-
+#
+# Copyright (c) 2009 Kazuhiro NISHIYAMA
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's license.
+#
+# http://www.fprog.org/svn/nadoka-plugins/trunk/titlebot.nb
+#
+
+=begin
+
+== Abstract
+
+Reply title of URL.
+
+== Configuration
+
+  BotConfig << {
+    :name => :TitleBot,
+    :ch => //,
+    :timeout => 10,
+  }
+
+=end
+
+require 'nkf'
+require 'open-uri'
+require 'timeout'
+require 'tmpdir'
+require 'rubygems'
+require 'nokogiri'
+
+module URL2Title
+  module_function
+
+  def get_title(url)
+    uri = URI(url)
+    info = { :uri => uri }
+    info[:errors] = []
+    case uri.host
+    when /localhost/, /\A127\./, /\A192\.168\./, /\A10\./
+      info[:title] = "(ignored)"
+      return info
+    end
+    uri.open(:content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576}) do |f|
+      info[:uri] = f.base_uri
+      body = f.read
+
+      if /\.blog\d+\.fc2\.com\z/ =~ uri.host
+        # set last content-type only
+        f.meta_add_field("content-type", f.meta["content-type"].split(/, /)[-1])
+      end
+
+      case f.content_type
+      when /\Atext\//
+        charset = f.charset{} # without block, returns "iso-8859-1"
+
+        # Content-Encoding
+        case
+        when f.content_encoding.empty?
+          # ignore
+        when f.content_encoding.any?{|c_e| /deflate/ =~ c_e }
+          require "zlib"
+          body = Zlib::Inflate.inflate(body)
+        when f.content_encoding.any?{|c_e| /gzip/ =~ c_e }
+          require "zlib"
+          body = Zlib::GzipReader.new(StringIO.new(body)).read || ''
+        end
+
+        # encoding
+        if NKF.guess(body) == NKF::BINARY
+          info[:title] = "(binary)"
+          return info
+        end
+        body = NKF.nkf("-wm0x --numchar-input", body)
+
+        title = nil
+        case uri.host
+        when /\A(?:www\.so-net\.ne\.jp)\z/
+          if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
+            title = $1
+          end
+          if %r!<dt id="ttl">(.*?)</dt>!miu =~ body
+            title = $1
+          end
+        when /\A(?:www\.zakzak\.co\.jp)\z/
+          if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
+            title = $1
+          end
+          if %r"<h3>(.*?)</h3>"miu =~ body
+            title = "#{title} #{$1.gsub(/<!--.*?-->/, '')}"
+          end
+        else
+          if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
+            title = $1
+          end
+          if uri.fragment && defined?(::Nokogiri)
+            begin
+              doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
+              xpath = "//*[@id='#{uri.fragment}' or @name='#{uri.fragment}']"
+              fragment_element = doc.xpath(xpath)
+              # tDiary style
+              unless fragment_element.xpath("span[@class='sanchor']").empty?
+                fragment_element = fragment_element.xpath("..")
+              end
+              info[:fragment_text] = fragment_element.text.gsub(/<.*?>/,'')[/.{1,100}/]
+            rescue Exception => e
+              info[:errors] << e
+            end
+          end
+        end
+        info[:title] = title.strip || body
+        return info
+      when /\Aimage\//
+        if f.respond_to?(:path) && f.path
+          info[:title] = `identify '#{f.path}'`.sub(/\A#{Regexp.quote(f.path)}/, '').strip
+          return info
+        else
+          info[:title] = "(unknown image format)"
+          return info
+        end
+      else
+        info[:title] = "#{f.content_type} #{f.size} bytes"
+        return info
+      end
+    end
+  rescue Errno::EFBIG
+    info[:title] = "(too big)"
+    return info
+  end
+
+  def truncate s
+    if /\A(?>(.{197})....)/mu =~ s
+      return $1+'...'
+    else
+      return s
+    end
+  end
+
+  def url2title(url)
+    info = get_title(url)
+    info[:title] = truncate(info[:title])
+    info
+  end
+end
+
+if __FILE__ == $0
+  def u2t(url)
+    URL2Title.url2title(url)
+  rescue
+    $!.inspect
+  end
+  if ARGV.empty?
+    # TODO: test
+  else
+    ARGV.each do |url|
+      info = u2t(url)
+      p info
+      puts url
+      puts info[:title]
+    end
+  end
+  exit
+end
+
+class TitleBot < Nadoka::NDK_Bot
+  include URL2Title
+
+  def bot_initialize
+    if @bot_config.key?(:channels)
+      channels = '\A(?:' + @bot_config[:channels].collect{|ch|
+        Regexp.quote(ch)
+      }.join('|') + ')\z'
+      @available_channel = Regexp.compile(channels)
+    else
+      @available_channel = @bot_config.fetch(:ch, //)
+    end
+
+    @same_bot = @bot_config.fetch(:same_bot, /(?!)/)
+    @nkf_options = @bot_config.fetch(:nkf, "-j")
+    @timeout = @bot_config.fetch(:timeout, 10)
+  end
+
+  def send_notice(ch, msg)
+    msg = msg.tr("\r\n", "  ")
+    if @nkf_options
+      msg = NKF.nkf(@nkf_options, msg)
+    end
+    super(ch, msg)
+  end
+
+  def on_privmsg prefix, ch, msg
+    return unless @available_channel === ch
+
+    if /https?:/ === msg
+      return if @state.channel_users(ccn(ch)).find{|x| @same_bot =~ x }
+
+      url, = URI.extract(msg, ["http", "https"])
+      #return if url != msg
+      info = Timeout.timeout(@timeout) do
+        url2title(url)
+      end
+      return unless info[:title]
+      if url != info[:uri].to_s
+        send_notice(ch, "title bot: #{info[:title]} - #{info[:uri]}")
+      else
+        send_notice(ch, "title bot: #{info[:title]}")
+      end
+      if info[:fragment_text]
+        send_notice(ch, "title bot:: #{info[:fragment_text]}")
+      end
+      info[:errors].each do |e|
+        @manager.ndk_error e
+        send_notice(ch, "title bot error: #{info[:uri]}}\n#{e}")
+      end
+    end
+  rescue Object => e
+    send_notice(ch, "title bot error! #{e}")
+    @manager.ndk_error e
+  end
+end
