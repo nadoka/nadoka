@@ -1,6 +1,6 @@
 # -*-ruby-*-
 #
-# Copyright (c) 2009 Kazuhiro NISHIYAMA
+# Copyright (c) 2009, 2011 Kazuhiro NISHIYAMA
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
 # You can re-distribute and/or modify this program under
@@ -23,7 +23,6 @@ Reply title of URL.
 
 =end
 
-require 'iconv'
 require 'nkf'
 require 'open-uri'
 require 'timeout'
@@ -39,7 +38,7 @@ module URL2Title
   module_function
 
   def get_title(url)
-    uri = URI.parse(url)
+    uri = URI(url)
     info = { :uri => uri }
     info[:errors] = []
     case uri.host
@@ -47,7 +46,7 @@ module URL2Title
       info[:title] = "(ignored)"
       return info
     end
-    uri.open do |f|
+    uri.open(:content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576}) do |f|
       info[:uri] = f.base_uri
       body = f.read
 
@@ -73,27 +72,11 @@ module URL2Title
         end
 
         # encoding
-        begin
-          if charset
-            # ok
-          elsif /charset=([^;\">]+)/ni =~ body
-            charset = $1
-          end
-          case charset
-          when /shift_jis/i
-            charset = "cp932"
-          when /euc-jp/i # euc-jp, x-euc-jp
-            charset = "eucjp-ms"
-          end
-          if charset
-            body = Iconv.conv("utf-8", charset, body)
-          end
-        rescue Iconv::IllegalSequence => e
-          info[:errors] << e
-        rescue Iconv::InvalidEncoding => e
-          info[:errors] << e
+        if NKF.guess(body) == NKF::BINARY
+          info[:title] = "(binary)"
+          return info
         end
-        body = NKF.nkf("-wm0 --numchar-input", body)
+        body = NKF.nkf("-wm0x --numchar-input", body)
 
         title = nil
         case uri.host
@@ -138,6 +121,9 @@ module URL2Title
         return info
       end
     end
+  rescue Errno::EFBIG
+    info[:title] = "(too big)"
+    return info
   end
 
   def truncate s
