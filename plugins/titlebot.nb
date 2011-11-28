@@ -6,8 +6,6 @@
 # You can re-distribute and/or modify this program under
 # the same terms of the Ruby's license.
 #
-# http://www.fprog.org/svn/nadoka-plugins/trunk/titlebot.nb
-#
 
 =begin
 
@@ -25,18 +23,23 @@ Reply title of URL.
 
 =end
 
+require 'iconv'
 require 'nkf'
 require 'open-uri'
 require 'timeout'
 require 'tmpdir'
-require 'rubygems'
-require 'nokogiri'
+
+begin
+  require 'rubygems'
+  require 'nokogiri'
+rescue LoadError
+end
 
 module URL2Title
   module_function
 
   def get_title(url)
-    uri = URI(url)
+    uri = URI.parse(url)
     info = { :uri => uri }
     info[:errors] = []
     case uri.host
@@ -44,7 +47,7 @@ module URL2Title
       info[:title] = "(ignored)"
       return info
     end
-    uri.open(:content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576}) do |f|
+    uri.open do |f|
       info[:uri] = f.base_uri
       body = f.read
 
@@ -70,11 +73,27 @@ module URL2Title
         end
 
         # encoding
-        if NKF.guess(body) == NKF::BINARY
-          info[:title] = "(binary)"
-          return info
+        begin
+          if charset
+            # ok
+          elsif /charset=([^;\">]+)/ni =~ body
+            charset = $1
+          end
+          case charset
+          when /shift_jis/i
+            charset = "cp932"
+          when /euc-jp/i # euc-jp, x-euc-jp
+            charset = "eucjp-ms"
+          end
+          if charset
+            body = Iconv.conv("utf-8", charset, body)
+          end
+        rescue Iconv::IllegalSequence => e
+          info[:errors] << e
+        rescue Iconv::InvalidEncoding => e
+          info[:errors] << e
         end
-        body = NKF.nkf("-wm0x --numchar-input", body)
+        body = NKF.nkf("-wm0 --numchar-input", body)
 
         title = nil
         case uri.host
@@ -84,13 +103,6 @@ module URL2Title
           end
           if %r!<dt id="ttl">(.*?)</dt>!miu =~ body
             title = $1
-          end
-        when /\A(?:www\.zakzak\.co\.jp)\z/
-          if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
-            title = $1
-          end
-          if %r"<h3>(.*?)</h3>"miu =~ body
-            title = "#{title} #{$1.gsub(/<!--.*?-->/, '')}"
           end
         else
           if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
@@ -105,13 +117,13 @@ module URL2Title
               unless fragment_element.xpath("span[@class='sanchor']").empty?
                 fragment_element = fragment_element.xpath("..")
               end
-              info[:fragment_text] = fragment_element.text.gsub(/<.*?>/,'')[/.{1,100}/]
+              info[:fragment_text] = truncate(fragment_element.text)
             rescue Exception => e
               info[:errors] << e
             end
           end
         end
-        info[:title] = title.strip || body
+        info[:title] = title || body
         return info
       when /\Aimage\//
         if f.respond_to?(:path) && f.path
@@ -126,9 +138,6 @@ module URL2Title
         return info
       end
     end
-  rescue Errno::EFBIG
-    info[:title] = "(too big)"
-    return info
   end
 
   def truncate s
@@ -139,7 +148,12 @@ module URL2Title
     end
   end
 
+  def prepare_url(url)
+    url.sub(/\/\#!\//, '/')
+  end
+
   def url2title(url)
+    url = prepare_url(url)
     info = get_title(url)
     info[:title] = truncate(info[:title])
     info
@@ -179,7 +193,7 @@ class TitleBot < Nadoka::NDK_Bot
     end
 
     @same_bot = @bot_config.fetch(:same_bot, /(?!)/)
-    @nkf_options = @bot_config.fetch(:nkf, "-j")
+    @nkf_options = @bot_config.fetch(:nkf, "--oc=CP50221 --numchar-input --fb-xml")
     @timeout = @bot_config.fetch(:timeout, 10)
   end
 
@@ -198,7 +212,6 @@ class TitleBot < Nadoka::NDK_Bot
       return if @state.channel_users(ccn(ch)).find{|x| @same_bot =~ x }
 
       url, = URI.extract(msg, ["http", "https"])
-      #return if url != msg
       info = Timeout.timeout(@timeout) do
         url2title(url)
       end
@@ -213,10 +226,10 @@ class TitleBot < Nadoka::NDK_Bot
       end
       info[:errors].each do |e|
         @manager.ndk_error e
-        send_notice(ch, "title bot error: #{info[:uri]}}\n#{e}")
+        send_notice(ch, "title bot error: #{e}")
       end
     end
-  rescue Object => e
+  rescue Exception => e
     send_notice(ch, "title bot error! #{e}")
     @manager.ndk_error e
   end
