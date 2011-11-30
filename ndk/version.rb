@@ -11,7 +11,7 @@
 #
 
 module Nadoka
-  NDK_Version  = '0.7.8'
+  NDK_Version  = '0.7.9'
   NDK_Created  = Time.now
 
   if File.directory?(File.expand_path('../../.git', __FILE__))
