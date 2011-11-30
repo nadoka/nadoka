@@ -26,7 +26,6 @@ See Web pages:
 - https://github.com/nadoka/nadoka
 
 
-Thank you,
---
-SASADA Koichi at atdot dot net
-
+: Thank you,
+: --
+: SASADA Koichi at atdot dot net
