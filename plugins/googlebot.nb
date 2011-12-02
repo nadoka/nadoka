@@ -87,7 +87,7 @@ class GoogleBot < Nadoka::NDK_Bot
     end
   end
 
-  SEARCHER = %w!web calc code local video blogs news books images ime imed patent!.freeze
+  SEARCHER = %w!web calc code local video blogs news books images ime imed patent suggest!.freeze
   SEARCHER_RE = Regexp.new("(?:" + SEARCHER.join('|') + ")").freeze
 
   def search_searcher key 
@@ -188,6 +188,21 @@ class GoogleBot < Nadoka::NDK_Bot
     $!.to_s
   end
 
+  def google_suggest(word, lang)
+    uri = "http://suggestqueries.google.com/complete/search?output=firefox"
+    uri << "&q="
+    uri << CGI.escape(word)
+    if lang
+      uri << "&hl=#{CGI.escape(lang)}"
+    end
+    @logger.slog "GoogleBot: #{uri}" if @uri_slog
+
+    result = open(uri, @headers) do |f|
+      JSON.parse(f.read)
+    end
+    result[1].join(", ").send(@ch_kcode)
+  end
+
   def google_code key
     return "http://google.com/codesearch#search/&q=#{CGI.escape(key)}&ct=os"
   end
@@ -241,6 +256,8 @@ class GoogleBot < Nadoka::NDK_Bot
       google_ime word
     when 'imed'
       google_ime word, true
+    when 'suggest'
+      google_suggest word, lang
     else
       api_search word, cnt, lang, searcher
     end
