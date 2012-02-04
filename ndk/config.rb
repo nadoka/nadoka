@@ -139,6 +139,7 @@ module Nadoka
       end
     
     # dirs
+    Default_Plugins_dir = File.expand_path('../../plugins', __FILE__)
     Plugins_dir = './plugins'
     Log_dir     = './log'
     

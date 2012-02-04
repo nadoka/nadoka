@@ -232,7 +232,8 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   # Directory
   Log_dir     = './log'
 
-  Plugins_dir = './plugins'
+  #Plugins_dir = './plugins'
+  Plugins_dir = Default_Plugins_dir
   # You can set Plugins_dir as Enumerable object.
   # ex: ['./dir1', './dir2', ...]
 
