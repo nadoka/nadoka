@@ -1,15 +1,20 @@
 # -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-require "nadoka/version"
+$LOAD_PATH.unshift File.dirname(__FILE__)
+require 'ndk/version'
 
 Gem::Specification.new do |s|
   s.name        = "nadoka"
   s.version     = Nadoka::VERSION
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TODO: Write your email address"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.authors     = ["Kazuhiro NISHIYAMA", "SASADA Koichi"]
+  s.email       = ["kzhr.nsym\@gmail.com"]
+  s.homepage    = "https://github.com/nadoka/nadoka"
+  s.summary     = %q{IRC logger, monitor and proxy program ("bot")}
+  s.description = %q{
+ Nadoka is a tool for monitoring and logging IRC conversations and
+ responding to specially formatted requests. You define and customize
+ these responses in Ruby. Nadoka is conceptually similar to Madoka, an
+ older proxy written in Perl.
+}.tr_s(" \n", " ").strip
 
   s.rubyforge_project = "nadoka"
 
