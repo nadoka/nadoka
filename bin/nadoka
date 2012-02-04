@@ -1,0 +1,13 @@
+#!/usr/bin/ruby
+require 'rbconfig'
+ruby = nil
+begin
+  ruby = RbConfig.ruby
+rescue
+  ruby = File.join(
+      Config::CONFIG["bindir"],
+      Config::CONFIG["ruby_install_name"] + Config::CONFIG["EXEEXT"]
+    )
+end
+top_dir = File.expand_path('../..', __FILE__)
+exec(ruby, "-I#{top_dir}", File.join(top_dir, 'nadoka.rb'), *ARGV)
