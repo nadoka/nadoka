@@ -313,7 +313,9 @@ module Nadoka
     # ex) :NadokaProgram 403 simm !hoge :No such channel
     def on_403 ch
       if safe_channel?(ch) && ch[1] != ?!
-        @manager.join_to_channel( "!" + ch)
+        if @config.channel_info[ch] && @config.channel_info[ch][:auto_create]
+          @manager.join_to_channel( "!" + ch)
+        end
       end
     end
     
