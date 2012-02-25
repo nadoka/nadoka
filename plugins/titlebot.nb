@@ -181,6 +181,7 @@ class TitleBot < Nadoka::NDK_Bot
     @same_bot = @bot_config.fetch(:same_bot, /(?!)/)
     @nkf_options = @bot_config.fetch(:nkf, "--oc=CP50221 --numchar-input --fb-xml")
     @timeout = @bot_config.fetch(:timeout, 10)
+    @too_long_threshold = @bot_config.fetch(:too_long_threshold, 250)
   end
 
   def send_notice(ch, msg)
@@ -208,7 +209,10 @@ class TitleBot < Nadoka::NDK_Bot
         send_notice(ch, "title bot: #{info[:title]}")
       end
       if info[:fragment_text]
-        send_notice(ch, "title bot:: #{info[:fragment_text]}")
+        # ignore when fragment_text is too long
+        if info[:fragment_text].size < @too_long_threshold
+          send_notice(ch, "title bot:: #{info[:fragment_text]}")
+        end
       end
       info[:errors].each do |e|
         @manager.ndk_error e
