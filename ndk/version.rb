@@ -11,7 +11,7 @@
 #
 
 module Nadoka
-  VERSION  = '0.7.10'
+  VERSION  = '0.8.0'
   NDK_Version  = VERSION.dup
   NDK_Created  = Time.now
 
