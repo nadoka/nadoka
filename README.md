@@ -1,6 +1,6 @@
 # Nadoka: IRC Client server program.
 
-# Written by SASADA Koichi <ko1 at atdot.net>
+Written by SASADA Koichi <ko1 at atdot.net>
 
 ## What's this?
 
@@ -16,11 +16,7 @@ You can do with this software:
 ## more about
 
 See Web pages:
+
 - https://github.com/nadoka/nadoka
 - http://rubyforge.org/projects/nadoka/
 - http://www.atdot.net/nadoka/
-
-
-> Thank you,
-> --
-> SASADA Koichi at atdot dot net
