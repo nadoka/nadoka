@@ -24,6 +24,7 @@ Reply title of URL.
 
 =end
 
+require 'iconv'
 require 'nkf'
 require 'open-uri'
 require 'timeout'
@@ -72,10 +73,27 @@ module URL2Title
           body = Zlib::GzipReader.new(StringIO.new(body)).read || ''
         end
 
+
         # encoding
-        if NKF.guess(body) == NKF::BINARY
-          info[:title] = "(binary)"
-          return info
+        begin
+          if charset
+            # ok
+          elsif /charset=[\'\"]?([^;\'\">]+)/ni =~ body
+            charset = $1
+          end
+          case charset
+          when /shift_jis/i
+            charset = "cp932"
+          when /euc-jp/i # euc-jp, x-euc-jp
+            charset = "eucjp-ms"
+          end
+          if charset
+            body = Iconv.conv("utf-8", charset, body)
+          end
+        rescue Iconv::IllegalSequence => e
+          info[:errors] << e
+        rescue Iconv::InvalidEncoding => e
+          info[:errors] << e
         end
         body = NKF.nkf("-wm0x --numchar-input", body)
 
