@@ -58,7 +58,7 @@ module Nadoka
     Away_Message = 'away'
     Away_Nick    = nil
 
-    Quit_Message = "Quit Nadoka #{::Nadoka::NDK_Version} - http://www.atdot.net/nadoka/"
+    Quit_Message = "Quit Nadoka #{::Nadoka::NDK_Version}"
     
     #
     Channel_info = {}
