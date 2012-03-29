@@ -88,6 +88,7 @@ module URL2Title
             charset = "eucjp-ms"
           end
           if charset
+            charset.sub!(/\Ax-?/i, '')
             body = Iconv.conv("utf-8", charset, body)
           else
             body = NKF.nkf("-wm0x", body)
