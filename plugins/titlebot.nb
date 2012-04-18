@@ -216,7 +216,10 @@ class TitleBot < Nadoka::NDK_Bot
   def on_privmsg prefix, ch, msg
     return unless @available_channel === ch
 
-    if /https?:/ === msg
+    case msg
+    when /^\S+>/
+      # ignore messages to other bots
+    when /https?:/
       return if @state.channel_users(ccn(ch)).find{|x| @same_bot =~ x }
 
       url, = URI.extract(msg, ["http", "https"])
