@@ -346,8 +346,8 @@ class GoogleBot < Nadoka::NDK_Bot
 
   def shorten_url(url)
     case url
-    when %r!\A(http://www\.amazon\.co\.jp)/.*(/dp/.+)\z!
-      "#{$1}#{$2}"
+    when %r!\Ahttp://www\.amazon\.co\.jp/.*(/dp/.+)\z!
+      "http://amazon.jp#{$1}"
     else
       # default: do nothing
       url
