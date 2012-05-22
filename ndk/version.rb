@@ -16,7 +16,16 @@ module Nadoka
   NDK_Created  = Time.now
 
   if File.directory?(File.expand_path('../../.git', __FILE__))
-    NDK_Version.concat("+git")
+    git_describe = nil
+    Dir.chdir(File.expand_path('../..', __FILE__)) do
+      git_describe = `git describe --tags --long --dirty=-dt`
+      if $?.success?
+        git_describe = "(#{git_describe.strip})"
+      else
+        git_describe = nil
+      end
+    end
+    NDK_Version.concat("+git#{git_describe}")
   end
   if /trunk/ =~ '$HeadURL$'
     NDK_Version.concat('-trunk')
