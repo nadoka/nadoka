@@ -1,7 +1,7 @@
 # -*-ruby-*-
 # vim:set ft=ruby:
 #
-# Copyright (c) 2009, 2011 Kazuhiro NISHIYAMA
+# Copyright (c) 2009, 2011, 2012 Kazuhiro NISHIYAMA
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
 # You can re-distribute and/or modify this program under
@@ -20,6 +20,9 @@ Reply title of URL.
     :name => :TitleBot,
     :ch => //,
     :timeout => 10,
+    :headers             => {
+      #"User-Agent" => "Ruby/#{RUBY_VERSION}",
+    }
   }
 
 =end
@@ -39,7 +42,7 @@ end
 module URL2Title
   module_function
 
-  def get_title(url)
+  def get_title(url, headers)
     uri = URI(url)
     info = { :uri => uri }
     info[:errors] = []
@@ -48,7 +51,10 @@ module URL2Title
       info[:title] = "(ignored)"
       return info
     end
-    uri.open(:content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576}) do |f|
+    headers = {
+      :content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576},
+    }.merge!(headers)
+    uri.open(headers) do |f|
       info[:uri] = f.base_uri
       body = f.read
 
@@ -159,9 +165,9 @@ module URL2Title
     url.sub(/\/\#!\//, '/')
   end
 
-  def url2title(url)
+  def url2title(url, headers)
     url = prepare_url(url)
-    info = get_title(url)
+    info = get_title(url, headers)
     info[:title] = truncate(info[:title])
     info
   end
@@ -169,7 +175,10 @@ end
 
 if __FILE__ == $0
   def u2t(url)
-    URL2Title.url2title(url)
+    headers = {
+      "User-Agent" => "Ruby/#{RUBY_VERSION}",
+    }
+    URL2Title.url2title(url, headers)
   rescue
     $!.inspect
   end
@@ -203,6 +212,7 @@ class TitleBot < Nadoka::NDK_Bot
     @nkf_options = @bot_config.fetch(:nkf, "--oc=CP50221 --ic=UTF-8 --numchar-input --fb-xml")
     @timeout = @bot_config.fetch(:timeout, 10)
     @fragment_size_range = @bot_config.fetch(:fragment_size_range, 5..100)
+    @headers = @bot_config.fetch(:headers, {})
   end
 
   def send_notice(ch, msg)
@@ -224,7 +234,7 @@ class TitleBot < Nadoka::NDK_Bot
 
       url, = URI.extract(msg, ["http", "https"])
       info = Timeout.timeout(@timeout) do
-        url2title(url)
+        url2title(url, @headers)
       end
       return unless info[:title]
       if url != info[:uri].to_s
