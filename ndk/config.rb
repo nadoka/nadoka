@@ -418,7 +418,11 @@ module Nadoka
 
     def identical_channel_name ch
       # use 4 gsub() because of the compatibility of RFC2813(3.2)
-      ch.toeuc.downcase.tr('[]\\~', '{}|^').tojis.force_encoding('ASCII-8BIT')
+      ch = ch.toeuc.downcase.tr('[]\\~', '{}|^').tojis
+      if ch.respond_to?(:force_encoding)
+        ch.force_encoding('ASCII-8BIT')
+      end
+      ch
     end
 
     RName = {        # ('&','#','+','!')
