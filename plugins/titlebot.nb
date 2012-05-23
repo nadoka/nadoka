@@ -20,7 +20,7 @@ Reply title of URL.
     :name => :TitleBot,
     :ch => //,
     :timeout => 10,
-    :headers             => {
+    :headers => {
       #"User-Agent" => "Ruby/#{RUBY_VERSION}",
     }
   }
@@ -107,6 +107,20 @@ module URL2Title
 
         title = nil
         case uri.host
+        when /\A(?:twitter\.com)\z/
+          if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
+            title = $1
+          end
+          if defined?(::Nokogiri)
+            doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
+            tweet = doc.css('.tweet-text')
+            unless tweet.empty?
+              tweet = tweet.inner_html
+              tweet.gsub!(/<.*?>/, '')
+              tweet.strip!
+              title = tweet unless tweet.empty?
+            end
+          end
         when /\A(?:www\.so-net\.ne\.jp)\z/
           if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
             title = $1
@@ -174,9 +188,12 @@ module URL2Title
 end
 
 if __FILE__ == $0
+  require File.expand_path('../../ndk/version', __FILE__)
   def u2t(url)
+    firefox = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
+    ua = "NadokaTitleBot/#{Nadoka::VERSION}"
     headers = {
-      "User-Agent" => "Ruby/#{RUBY_VERSION}",
+      "User-Agent" => "#{firefox} Ruby/#{RUBY_VERSION} #{ua}",
     }
     URL2Title.url2title(url, headers)
   rescue
