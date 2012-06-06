@@ -18,7 +18,7 @@ class DictBot < Nadoka::NDK_Bot
   def on_privmsg prefix, ch, msg
     if @available_channel === ch
       if /\Adic(.)>\s*(.+)\s*/ =~ msg
-        res = yahoo_dict $1, $2.toeuc
+        res = yahoo_dict $1, $2.toutf8
         send_notice(ch, res)
       end
     end
@@ -36,7 +36,7 @@ class DictBot < Nadoka::NDK_Bot
     "dict bot> " +
     if type = YAHOO_DICT_TYPE[type]
       word = URI.encode(word)
-      uri = "http://dic.yahoo.co.jp/dsearch?p=#{word}&stype=0&dtype=#{type}"
+      uri = "http://dic.yahoo.co.jp/dsearch?ei=UTF-8&p=#{word}&stype=0&dtype=#{type}"
       open(uri){|f|
         if /<meta name="description" content=\"(.+?)\">/ =~ f.read
           "#{$1.tosjis.tojis} - #{uri}"
