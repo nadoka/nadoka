@@ -173,6 +173,8 @@ module Nadoka
         when 'ERROR'
           msg = "Server login fail!(#{q})"
           @server_thread.raise NDK_ReconnectToServer
+        when '020'
+          # ignore
         else
           msg = "Server login fail!(#{q})"
           @logger.slog msg
