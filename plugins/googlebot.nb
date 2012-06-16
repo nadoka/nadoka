@@ -1,4 +1,4 @@
-# -*-ruby-*-
+# -*-ruby; coding: utf-8 -*- vim:set ft=ruby:
 #
 # Copyright (c) 2004-2005 SASADA Koichi <ko1 at atdot.net>
 # Copyright (c) 2009, 2010 Kazuhiro NISHIYAMA
@@ -82,8 +82,9 @@ class GoogleBot < Nadoka::NDK_Bot
   def on_privmsg prefix, ch, msg
     return unless @available_channel === ch
     return if same_bot?(ch)
+    msg = NKF.nkf('-w', msg)
     if response = dispatch_command(msg)
-      send_notice(ch, response)
+      send_notice(ch, response.send(@ch_kcode))
     end
   end
 
@@ -181,7 +182,7 @@ class GoogleBot < Nadoka::NDK_Bot
       result.gsub!(/<sup>(.+?)<\/sup>/u) { "^(#{$1})" }
       result.gsub!(/<.+?>/u, '')
       result.gsub!(/&\#215;/u, "\303\227")
-      result.send(@ch_kcode) # NKF.nkf('-j', result)
+      result
     else
       "response error"
     end
@@ -201,7 +202,7 @@ class GoogleBot < Nadoka::NDK_Bot
     result = open(uri, @headers) do |f|
       JSON.parse(f.read)
     end
-    result[1].join(", ").send(@ch_kcode)
+    result[1].join(", ")
   end
 
   def google_code key
@@ -310,15 +311,18 @@ class GoogleBot < Nadoka::NDK_Bot
   end
 
   def show_char_code_and_erase_tag str
-    return CGI.unescapeHTML(erase_tag(str.toeuc)).send(@ch_kcode)
+    if str.respond_to?(:encode)
+      return CGI.unescapeHTML(erase_tag(str.toutf8))
+    end
+    return CGI.unescapeHTML(erase_tag(str.toeuc))
 
     case $KCODE
     when 'EUC', 'SJIS'
-      CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).send(@ch_kcode)
+      CGI.unescapeHTML(str.gsub(/\<.+?\>/, ''))
     when 'NONE', 'UTF-8'
       begin
         str = Iconv.conv("EUC-JP", "UTF-8", str)
-        CGI.unescapeHTML(str.gsub(/\<.+?\>/, '')).send(@ch_kcode)
+        CGI.unescapeHTML(str.gsub(/\<.+?\>/, ''))
       rescue => e
         "(char code problem: #{e.class}[#{e.message.dump}])"
       end
@@ -328,6 +332,9 @@ class GoogleBot < Nadoka::NDK_Bot
   end
 
   def search_char_code str
+    if str.respond_to?(:encode)
+      return str.toutf8
+    end
     case $KCODE
     when 'EUC', 'SJIS'
       str.toeuc

@@ -1,4 +1,4 @@
-# -*-ruby-*-
+# -*-ruby; coding: utf-8 -*- vim:set ft=ruby:
 #
 # Copyright (c) 2004-2006 SASADA Koichi <ko1 at atdot.net>
 #
@@ -45,18 +45,14 @@ require 'kconv'
 require 'rexml/document'
 require 'date'
 
-
-class TenkiBot < Nadoka::NDK_Bot
-
+module Tenki
   CityIDs = {}
 
-  def bot_initialize
-    bot_init_utils
-
+  def init_tenki
     open('http://weather.livedoor.com/forecast/rss/forecastmap.xml'){|f|
       f.each{|line|
         if /city title="(.+?)" id="(\d+)"/ =~ line
-          CityIDs[$1.toeuc] = $2.to_i
+          CityIDs[$1.toutf8] = $2.to_i
         end
       }
     }
@@ -69,10 +65,10 @@ class TenkiBot < Nadoka::NDK_Bot
       REXML::Document.new f.read
     }
 
-    title = doc.elements['/lwws/title/'].text.toeuc
-    telop = doc.elements['/lwws/telop/'].text.toeuc
-    link = doc.elements['/lwws/link/'].text.toeuc
-    desc = doc.elements['/lwws/description/'].text.toeuc
+    title = doc.elements['/lwws/title/'].text.toutf8
+    telop = doc.elements['/lwws/telop/'].text.toutf8
+    link = doc.elements['/lwws/link/'].text.toutf8
+    desc = doc.elements['/lwws/description/'].text.toutf8
     max = doc.elements['/lwws/temperature/max/celsius/'].text
     min = doc.elements['/lwws/temperature/min/celsius/'].text
     date = Date.parse(doc.elements['/lwws/forecastdate/'].text)
@@ -86,15 +82,42 @@ class TenkiBot < Nadoka::NDK_Bot
     unless celsius.empty?
       celsius = "(#{celsius.join(', ')}) "
     end
-    "#{title} (#{datestr}): #{telop} - #{celsius}#{desc} - #{link}".tojis
+    "#{title} (#{datestr}): #{telop} - #{celsius}#{desc} - #{link}"
+  end
+end
+
+if __FILE__ == $0
+  include Tenki
+  city = ARGV.shift
+  timing = ARGV.shift || 'today'
+  if city.nil?
+    puts "#$0 city [today|tomorrow|dayaftertomorrow]"
+  else
+    init_tenki
+    begin
+      puts tenki(city, timing)
+    rescue IndexError
+      puts "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/forecastmap.xml"
+    end
+  end
+  exit
+end
+
+class TenkiBot < Nadoka::NDK_Bot
+  include Tenki
+
+  def bot_initialize
+    bot_init_utils
+    init_tenki
+    @nkf = @bot_config[:nkf] || "-Wj"
   end
 
   def on_privmsg prefix, ch, msg
     return unless @available_channel === ch
     return if same_bot?(ch)
-
+    msg = NKF.nkf('-w', msg)
     if /\Atenki(|:(today|tomorrow|dayaftertomorrow))>(.+)/ =~ msg
-      city = $3.strip.toeuc
+      city = $3.strip.toutf8
       timing = ($2 || 'today').strip
       begin
         result = tenki(city, timing).gsub(/\n/, ' ')
@@ -103,9 +126,7 @@ class TenkiBot < Nadoka::NDK_Bot
       rescue => e
         result = "#{e}"
       end
-      send_notice ch, "tenki bot: #{result}"
+      send_notice ch, NKF.nkf(@nkf, "tenki bot: #{result}")
     end
   end
 end
-
-

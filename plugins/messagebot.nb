@@ -1,4 +1,4 @@
-# -*-ruby-*-
+# -*-ruby; coding: utf-8 -*- vim:set ft=ruby:
 #
 # Copyright (C) 2004 Kazuhiro NISHIYAMA
 #     All rights reserved.
@@ -14,6 +14,7 @@ BotConfig = [
   :message_file => 'message.yaml',
   :root_key     => Setting_name,
   :channels     => %w[#nadoka #Ruby:*.jp],
+  :nkf => "-Ww",
 },
 ]
 =end
@@ -29,6 +30,7 @@ class MessageBot < Nadoka::NDK_Bot
     @store = YAML::Store.new(@bot_config[:message_file])
     @root_key = @bot_config[:root_key]
     @channels = @bot_config[:channels].collect{|ch| ch.downcase }
+    @nkf = @bot_config[:nkf] || "-WjXm0"
     load_message
   end
 
@@ -56,7 +58,7 @@ class MessageBot < Nadoka::NDK_Bot
 
   def on_privmsg prefix, ch, msg
     user = prefix.nick
-    c = NKF.nkf('-e', ch.to_s).downcase
+    c = NKF.nkf('-w', ch.to_s).downcase
     return unless @channels.include?(c)
     u = user.downcase
     now = Time.now
@@ -67,14 +69,14 @@ class MessageBot < Nadoka::NDK_Bot
       message_id_list.each do |message_id|
         h = @message[message_id]
         next if h.key?('delivered')
-        message = "#{h['from']}¤µ¤ó¤«¤é#{h['to']}¤µ¤ó¤ØÅÁ¸À¡Ö#{h['body']}¡×"
-        send_notice(ch, NKF.nkf('-Ej -m0', message))
+        message = "#{h['from']}ã•ã‚“ã‹ã‚‰#{h['to']}ã•ã‚“ã¸ä¼è¨€ã€Œ#{h['body']}ã€"
+        send_notice(ch, NKF.nkf(@nkf, message))
         @message[message_id]['delivered'] = now
       end
       @list.delete(key)
       save_message
     end
-    if /^ÅÁ¸À (\S+) (.+)$/e =~ NKF.nkf('-e -m0', msg.to_s)
+    if /^ä¼è¨€ (\S+) (.+)$/ =~ NKF.nkf('-w', msg.to_s)
       to_nick, body = $1, $2
       @message[message_id] = {
         'from' => user,
@@ -87,10 +89,8 @@ class MessageBot < Nadoka::NDK_Bot
       @list[key] ||= []
       @list[key].push(message_id)
       save_message
-      send_notice(ch, NKF.nkf('-Ej -m0', "#{$1}¤µ¤ó¤Ø¤ÎÅÁ¸À¤ò¾µ¤ê¤Ş¤·¤¿ > #{u}¤µ¤ó"))
+      send_notice(ch, NKF.nkf(@nkf, "#{$1}ã•ã‚“ã¸ã®ä¼è¨€ã‚’æ‰¿ã‚Šã¾ã—ãŸ > #{u}ã•ã‚“"))
     end
   end
   
 end
-
-

@@ -1,3 +1,4 @@
+# -*- ruby; coding: utf-8 -*- vim:set ft=ruby:
 =begin
 
 This plugin is test version.
@@ -11,15 +12,16 @@ require 'kconv'
 class DictBot < Nadoka::NDK_Bot
   def bot_initialize
     @available_channel = @bot_config[:ch] || /.*/
-    
+    @nkf = @bot_config[:nkf] || "-Wj"
   end
   
   
   def on_privmsg prefix, ch, msg
     if @available_channel === ch
+      msg = msg.toutf8
       if /\Adic(.)>\s*(.+)\s*/ =~ msg
-        res = yahoo_dict $1, $2.toutf8
-        send_notice(ch, res)
+        res = yahoo_dict $1, $2
+        send_notice(ch, NKF.nkf(@nkf, res))
       end
     end
   end
@@ -39,7 +41,7 @@ class DictBot < Nadoka::NDK_Bot
       uri = "http://dic.yahoo.co.jp/dsearch?ei=UTF-8&p=#{word}&stype=0&dtype=#{type}"
       open(uri){|f|
         if /<meta name="description" content=\"(.+?)\">/ =~ f.read
-          "#{$1.tosjis.tojis} - #{uri}"
+          "#{$1} - #{uri}"
         else
           uri
         end
@@ -49,5 +51,3 @@ class DictBot < Nadoka::NDK_Bot
     end
   end
 end
-
-
