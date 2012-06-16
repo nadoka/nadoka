@@ -555,15 +555,17 @@ module RICE
       str << @command
 
       if @params
-        f = false
         @params.each do |param|
           str << ' '
-          if (param == @params[-1]) && (param.size == 0 || /(^:)|(\s)/ =~ param)
+          param_s = param.to_s
+          if param_s.respond_to?(:force_encoding)
+            param_s.force_encoding(Encoding::ASCII_8BIT)
+          end
+          if (param == @params[-1]) && (param_s.size == 0 || /\A:|\s/ =~ param_s)
             str << ':'
-            str << param.to_s
-            f = true
+            str << param_s
           else
-            str << param.to_s
+            str << param_s
           end
         end
       end
@@ -658,7 +660,13 @@ E
         str << @params[0]
 
         str << ' :'
-        str << @params[1..-1].join(' ')
+        if "".respond_to?(:force_encoding)
+          str << @params[1..-1].map{|param|
+            param.force_encoding(Encoding::ASCII_8BIT)
+          }.join(' ')
+        else
+          str << @params[1..-1].join(' ')
+        end
 
         str << "\x0D\x0A"
         str
