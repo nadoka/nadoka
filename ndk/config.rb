@@ -420,7 +420,7 @@ module Nadoka
       # use 4 gsub() because of the compatibility of RFC2813(3.2)
       ch = ch.toeuc.downcase.tr('[]\\~', '{}|^').tojis
       if ch.respond_to?(:force_encoding)
-        ch.force_encoding('ASCII-8BIT')
+        ch.force_encoding(Encoding::ASCII_8BIT)
       end
       ch
     end
@@ -478,11 +478,18 @@ module Nadoka
       if format.kind_of? Proc
         text = format.call(params)
       elsif format
+        if format.respond_to?(:force_encoding)
+          format.force_encoding(Encoding::ASCII_8BIT)
+        end
         text = format.gsub(/\{([a-z]+)\}|\{prefix\:([a-z]+)\}/){|key|
           if $2
             method = $2.intern
             if msgobj[:orig].respond_to?(:prefix)
-              (msgobj[:orig].prefix || '') =~ /^(.+?)\!(.+?)@(.+)/
+              prefix = msgobj[:orig].prefix || ''
+              if prefix.respond_to?(:force_encoding)
+                prefix.force_encoding(Encoding::ASCII_8BIT)
+              end
+              /^(.+?)\!(.+?)@(.+)/ =~ prefix
               case method
               when :nick
                 $1
@@ -496,6 +503,9 @@ module Nadoka
             end
           else
             if m = msgobj[$1.intern]
+              if m.respond_to?(:force_encoding)
+                m.force_encoding(Encoding::ASCII_8BIT)
+              end
               m
             else
               "!!unknown attribute: #{$1}!!"
