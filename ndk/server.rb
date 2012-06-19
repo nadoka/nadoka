@@ -93,7 +93,7 @@ module Nadoka
           @logger.slog "Connection closed by server. Trying to reconnect."
           
           sleep @config.reconnect_delay
-          retry
+          retry unless @exitting
           
         rescue NDK_ReconnectToServer
           @connected = false
@@ -107,7 +107,7 @@ module Nadoka
           @logger.slog "Reconnect request (no server response, or client request)."
           
           sleep @config.reconnect_delay
-          retry
+          retry unless @exitting
           
         rescue Exception => e
           ndk_error e
