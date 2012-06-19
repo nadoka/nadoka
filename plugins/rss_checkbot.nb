@@ -1,4 +1,4 @@
-# -*-ruby-*-
+# -*-ruby; coding: utf-8 -*- vim:set ft=ruby:
 #
 # Copyright (c) 2004-2005 SASADA Koichi <ko1 at atdot.net>
 #
@@ -58,11 +58,11 @@ class RSS_CheckBot < Nadoka::NDK_Bot
   def send_notice(ch, msg)
     if ch.respond_to? :each
       ch.each{|c|
-        super(c, msg)
+        super(c, msg.tojis)
         sleep 5 # Flood Protection
       }
     else
-      super(ch, msg)
+      super(ch, msg.tojis)
       sleep 5 # Flood Protection
     end
   end
@@ -97,14 +97,15 @@ class RSS_CheckBot < Nadoka::NDK_Bot
         items.each{|e|
           if e[:ccode] == 'UTF-8'
             begin
+              # convert from U+FF5E FULLWIDTH TILDE to U+301C WAVE DASH
               title = e[:title].gsub(/\357\275\236/u, "\343\200\234")
-              title = @ic.iconv(title).tojis
+              title = @ic.iconv(title)
             rescue Exception
               # maybe, char code translation error
               next
             end
           else
-            title = e[:title].tojis
+            title = e[:title]
           end
 
           send_notice(@ch, "rss bot: #{title} - #{e[:about]}")
@@ -118,4 +119,3 @@ class RSS_CheckBot < Nadoka::NDK_Bot
   end
   
 end
-
