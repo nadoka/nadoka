@@ -421,9 +421,12 @@ module Nadoka
       }
       
       begin
-        @server_thread.join
+        sleep
       rescue Interrupt
         @exitting = true
+      rescue Nadoka::NDK_Error
+        @exitting = true
+        raise
       ensure
         @server_thread.kill  if @server_thread  && @server_thread.alive?
         @clients_thread.kill if @clients_thread && @clients_thread.alive?
