@@ -559,7 +559,7 @@ module RICE
           str << ' '
           param_s = param.to_s
           if param_s.respond_to?(:force_encoding)
-            param_s.force_encoding(Encoding::ASCII_8BIT)
+            param_s = param_s.dup.force_encoding(Encoding::ASCII_8BIT)
           end
           if (param == @params[-1]) && (param_s.size == 0 || /\A:|\s/ =~ param_s)
             str << ':'
