@@ -412,7 +412,7 @@ module Nadoka
     end
     
     def canonical_channel_name ch
-      ch = ch.sub(/^\!.{5}/, '!')
+      ch = ch.toeuc.sub(/^\!.{5}/, '!')
       identical_channel_name ch
     end
 
