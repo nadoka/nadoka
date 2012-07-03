@@ -148,20 +148,30 @@ class RSS_Check
   end
 
   def save
+    debug = $DEBUG
+    $DEBUG = false
     @db.transaction{
       @paths.each_with_index{|path, i|
         @db[path] = @rss_files[i]
       }
     } if @db
+  ensure
+    $DEBUG = debug
   end
 
   def load_file file
+    debug = $DEBUG
+    $DEBUG = false
     @db.transaction{
       @db[file]
     } if @db
+  ensure
+    $DEBUG = debug
   end
 
   def clear
+    debug = $DEBUG
+    $DEBUG = false
     if @db
       @db.transaction{
         @db.keys.each{|k|
@@ -169,6 +179,8 @@ class RSS_Check
         }
       }
     end
+  ensure
+    $DEBUG = debug
   end
 end
 
