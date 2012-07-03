@@ -33,7 +33,7 @@ module Nadoka
     $LOAD_PATH.each{|path|
       path = path + '/ChangeLog'
       if FileTest.exist?(path)
-        if /^\# ChangeLog of Nadoka\(\$Rev: (\d+) \$\)$/ =~ open(path){|f| s = f.gets}
+        if /^\# ChangeLog of Nadoka\(\$Rev: (\d+) \$\)$/ =~ open(path){|f| f.gets}
           rev = "rev: #{$1}"
           break
         end
