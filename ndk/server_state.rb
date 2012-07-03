@@ -195,7 +195,7 @@ module Nadoka
     def on_join user, rch
       ch = canonical_channel_name(rch)
       if user == nick
-        chs = @current_channels[ch] = ChannelState.new(rch)
+        @current_channels[ch] = ChannelState.new(rch)
       else
         if @current_channels.has_key? ch
           @current_channels[ch].on_join(user)
