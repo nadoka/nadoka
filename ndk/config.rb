@@ -179,13 +179,13 @@ module Nadoka
 
     def remove_previous_setting
       # remove setting class
-      klass = ConfigClass.shift
-      while k = ConfigClass.shift
+      base_klass = ConfigClass.shift
+      while klass = ConfigClass.shift
         Object.module_eval{
-          remove_const(k.name)
+          remove_const(klass.name)
         }
       end
-      ConfigClass.push(klass)
+      ConfigClass.push(base_klass)
 
 
       # clear required files
