@@ -241,7 +241,7 @@ module Nadoka
     def logging msg
       user = @manager.nick_of(msg)
       rch = msg.params[0]
-      ch_ = ch = @config.canonical_channel_name(rch)
+      ch = @config.canonical_channel_name(rch)
 
       msgobj = make_msgobj(msg)
       msgobj[:ch]   = rch  # should be raw
