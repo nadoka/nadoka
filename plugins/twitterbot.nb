@@ -88,7 +88,7 @@ class TwitterBot < Nadoka::NDK_Bot
   end
 
   def on_timer(t)
-    @rt.friends_timeline.each do |status|
+    @rt.home_timeline.each do |status|
       id = status.id.to_i
       next unless @current_id < id
       @current_id = id
