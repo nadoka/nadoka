@@ -81,32 +81,34 @@ module URL2Title
 
 
         # encoding
-        begin
-          if charset
-            # ok
-          elsif /charset=[\'\"]?([^;\'\">]+)/ni =~ body
-            charset = $1
-          end
-          case charset
-          when /shift_jis/i
-            charset = "cp932"
-          when /euc-jp/i # euc-jp, x-euc-jp
-            charset = "eucjp-ms"
-          end
-          if /\Autf-8\z/i =~ charset
-            # avoid #<ArgumentError: invalid byte sequence in UTF-8>
-            # or Iconv::IllegalSequence
-            body = NKF.nkf("-Wwm0x", body)
-          elsif charset
-            charset.sub!(/\Ax-?/i, '')
+        if charset
+          # ok
+        elsif /charset=[\'\"]?([^;\'\">]+)/ni =~ body
+          charset = $1
+        end
+        case charset
+        when /shift_jis/i
+          charset = "cp932"
+        when /euc-jp/i # euc-jp, x-euc-jp
+          charset = "eucjp-ms"
+        end
+        if /\Autf-8\z/i =~ charset
+          # avoid #<ArgumentError: invalid byte sequence in UTF-8>
+          # or Iconv::IllegalSequence
+          body = NKF.nkf("-Wwm0x", body)
+        elsif charset
+          charset.sub!(/\Ax-?/i, '')
+          begin
             body = Iconv.conv("utf-8", charset, body)
-          else
+          rescue Iconv::IllegalSequence => e
+            info[:errors] << e
+            body = NKF.nkf("-wm0x", body)
+          rescue Iconv::InvalidEncoding => e
+            info[:errors] << e
             body = NKF.nkf("-wm0x", body)
           end
-        rescue Iconv::IllegalSequence => e
-          info[:errors] << e
-        rescue Iconv::InvalidEncoding => e
-          info[:errors] << e
+        else
+          body = NKF.nkf("-wm0x", body)
         end
 
         title = nil
