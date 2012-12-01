@@ -200,9 +200,11 @@ module RICE
         end
         sleep retry_wait
         retry
-      ensure
+      rescue Exception
+        @main_th.kill
+        raise
+      else
         @main_th.join
-        nil
       end
 
     end
