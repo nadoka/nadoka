@@ -163,8 +163,9 @@ module Nadoka
         case q.command
         when '001'
           break
-        when '433'
+        when '433', '437'
           # Nickname is already in use.
+          # 437 Nick/channel is temporarily unavailable
           nick = @state.nick_succ(q.params[1])
           @state.nick = nick
           send_to_server Cmd.nick(nick)
