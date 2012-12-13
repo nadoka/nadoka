@@ -62,6 +62,7 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   # server setting
 
   # IRCnet servers in Japan
+  # see http://www.ircnet.ne.jp/servers.html
   Servers = [
     { :host => 'irc.ircnet.ne.jp',
       :port => 6667,                       # default: 6667
