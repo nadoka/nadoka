@@ -36,6 +36,8 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   Client_server_host = nil # You can specify binding host(interface)
   Client_server_pass = 'NadokaPassWord'
   Client_server_acl  = nil
+  Client_server_ssl_cert_file = nil
+  Client_server_ssl_key_file  = nil
 
   # ACL(Access Control List) example:
   # Client_server_acl = %q{
@@ -47,7 +49,13 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   # or you can set acl directly like follows:
   #
   # ACL_Object = ::ACL.new(...)
+
+  # Create a self-signed SSL certificate:
+  # $ openssl req -new -days 365 -x509 -nodes -out cert.pem -keyout key.pem
   #
+  # And specify cert files:
+  # Client_server_ssl_cert_file = 'cert.pem'
+  # Client_server_ssl_key_file  = 'key.pem'
 
 
   ###############################################
