@@ -15,6 +15,10 @@ require 'ndk/error'
 require 'ndk/config'
 require 'ndk/server_state'
 require 'ndk/client'
+begin
+  require 'openssl'
+rescue LoadError
+end
 
 module Nadoka
   Cmd = ::RICE::Command
@@ -343,6 +347,13 @@ module Nadoka
           @cserver = TCPServer.new(@config.client_server_host,
                                    @config.client_server_port)
           @logger.slog "Open Client Server Port: #{@cserver.addr.join(' ')}"
+          
+          if @config.client_server_ssl_cert_file && @config.client_server_ssl_key_file
+            context = OpenSSL::SSL::SSLContext.new
+            context.cert = OpenSSL::X509::Certificate.new(File.read(@config.client_server_ssl_cert_file))
+            context.key = OpenSSL::PKey::RSA.new(File.read(@config.client_server_ssl_key_file))
+            @cserver = OpenSSL::SSL::SSLServer.new(@cserver, context)
+          end
           
           while true
             # wait for client connections
