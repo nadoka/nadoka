@@ -34,6 +34,8 @@ module Nadoka
     Client_server_host = nil
     Client_server_pass = 'NadokaPassWord' # or nil
     Client_server_acl  = nil
+    Client_server_ssl_cert_file = nil
+    Client_server_ssl_key_file  = nil
     ACL_Object = nil
     
     # 
