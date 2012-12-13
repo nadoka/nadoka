@@ -36,6 +36,8 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
   Client_server_host = nil # You can specify binding host(interface)
   Client_server_pass = 'NadokaPassWord'
   Client_server_acl  = nil
+  Client_server_ssl_cert_file = nil
+  Client_server_ssl_key_file  = nil
 
   # ACL(Access Control List) example:
   # Client_server_acl = %q{
