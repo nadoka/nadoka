@@ -92,7 +92,7 @@ module URL2Title
         when /euc-jp/i # euc-jp, x-euc-jp
           charset = "eucjp-ms"
         end
-        if /\Autf-8\z/i =~ charset
+        if /\A(?:utf-8|eucjp-ms)\z/i =~ charset
           # avoid #<ArgumentError: invalid byte sequence in UTF-8>
           # or Iconv::IllegalSequence
           body = NKF.nkf("-Wwm0x", body)
