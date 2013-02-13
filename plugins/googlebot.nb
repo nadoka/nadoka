@@ -186,6 +186,7 @@ class GoogleBot < Nadoka::NDK_Bot
       #result.gsub!(/<.+?>/u, '')
       #result.gsub!(/&\#215;/u, "\303\227")
       result.gsub!(/&nbsp;/u, " ")
+      result.gsub!(/\s+/, " ")
       result
     else
       "response error"
