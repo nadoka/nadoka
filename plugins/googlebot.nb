@@ -176,18 +176,22 @@ class GoogleBot < Nadoka::NDK_Bot
     html = open(uri, @headers) do |f|
       f.read
     end
+    if /class=r [^<>]+><b>(.+?)<\/b>/u =~ html
+      result = $1
+      # @logger.slog("google_calc>#{result.dump}")
+      result.gsub!(/<sup>(.+?)<\/sup>/u) { "^(#{$1})" }
+      result.gsub!(/<.+?>/u, '')
+      result.gsub!(/&\#215;/u, "\303\227")
+      return result
     if /<[^<>]+ id="cwos"[^<>]*>([^<>]+)</u =~ html
       result = $1
       if /<[^<>]+ id="cwles"[^<>]*>([^<>]+)</u =~ html
         result = "#{$1}#{result}"
       end
       #@logger.slog("google_calc>#{result.dump}")
-      #result.gsub!(/<sup>(.+?)<\/sup>/u) { "^(#{$1})" }
-      #result.gsub!(/<.+?>/u, '')
-      #result.gsub!(/&\#215;/u, "\303\227")
       result.gsub!(/&nbsp;/u, " ")
       result.gsub!(/\s+/, " ")
-      result
+      return result
     else
       "response error"
     end
