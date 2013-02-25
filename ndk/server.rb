@@ -353,11 +353,13 @@ module Nadoka
             context.cert = OpenSSL::X509::Certificate.new(File.read(@config.client_server_ssl_cert_file))
             context.key = OpenSSL::PKey::RSA.new(File.read(@config.client_server_ssl_key_file))
             @cserver = OpenSSL::SSL::SSLServer.new(@cserver, context)
+            @cserver.start_immediately = false
           end
           
           while true
             # wait for client connections
             Thread.start(@cserver.accept){|cc|
+              cc.accept if OpenSSL::SSL::SSLSocket === cc rescue NameError
               client = nil
               begin
                 if !@config.acl_object || @config.acl_object.allow_socket?(cc)
