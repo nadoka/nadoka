@@ -95,39 +95,50 @@ class TwitterBot < Nadoka::NDK_Bot
     end
 
     @streamer = Thread.new do
-      UserStream.client.user do |status|
-        case # https://dev.twitter.com/docs/streaming-apis/messages
-        when status[:delete]
-        when status[:scrub_geo]
-        when status[:limit]
-        when status[:status_withheld]
-        when status[:user_withheld]
-        when status[:friends]
-        when status[:event]
-        when status[:for_user]
-        when status[:control]
-        when status[:warning]
-          screen_name = status[:code]
-          time = Time.parse(status[:created_at])
-          send_notice @ch, "#{time.strftime('%H:%M')} #{screen_name}: #{status.text}"
-        else
+      loop do
+        UserStream.client.user do |status|
           begin
-            screen_name = status[:user][:screen_name]
-            if status[:retweeted_status]
-              status = status[:retweeted_status]
-              screen_name << ":"
-              screen_name << status[:user][:screen_name]
+            case # https://dev.twitter.com/docs/streaming-apis/messages
+              #when status[:delete]
+              #when status[:scrub_geo]
+            when status[:limit]
+            when status[:status_withheld]
+            when status[:user_withheld]
+            when status[:friends]
+            when status[:event]
+            when status[:for_user]
+            when status[:control]
+            when status[:warning]
+              screen_name = status[:code]
+              time = Time.parse(status[:created_at])
+              send_notice @ch, "#{time.strftime('%H:%M')} #{screen_name}: #{status.text}"
+            when status[:user]
+              screen_name = status[:user][:screen_name]
+              if status[:retweeted_status]
+                status = status[:retweeted_status]
+                screen_name << ":"
+                screen_name << status[:user][:screen_name]
+              end
+              time = Time.parse(status[:created_at])
+              text = status.text
+              text.tr!("\r\n", ' ')
+              text.gsub!(/&lt;/, '<')
+              text.gsub!(/&gt;/, '>')
+              text.gsub!(/&quot;/, '"')
+              text = NKF.nkf('--numchar-input --ic=UTF-8 --oc=' + @nkf_encoding, text) if @nkf_encoding
+              text.gsub!(/&amp;/, '&')
+              send_notice @ch, "#{time.strftime('%H:%M')} #{screen_name}: #{text}"
+            else
+              send_notice @ch, status.inspect
             end
-            time = Time.parse(status[:created_at])
-            text = status.text.tr("\r\n", ' ')
-            text = NKF.nkf('--ic=UTF-8 --oc=' + @nkf_encoding, text) if @nkf_encoding
-            send_notice @ch, "#{time.strftime('%H:%M')} #{screen_name}: #{text}"
           rescue => e
+            @logger.slog e.inspect
             slog e.backtrace
             slog e.inspect
             slog status.inspect
           end
         end
+        @logger.slog "user stream finished...and restart"
       end
     end
   end
