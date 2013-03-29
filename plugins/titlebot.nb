@@ -1,4 +1,4 @@
-# -*-ruby-*-
+# -*-ruby; coding: utf-8 -*-
 # vim:set ft=ruby:
 #
 # Copyright (c) 2009, 2011, 2012 Kazuhiro NISHIYAMA
