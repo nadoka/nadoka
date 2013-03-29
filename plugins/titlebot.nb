@@ -95,7 +95,7 @@ module URL2Title
         if /\A(?:utf-8|eucjp-ms)\z/i =~ charset
           # avoid #<ArgumentError: invalid byte sequence in UTF-8>
           # or Iconv::IllegalSequence
-          body = NKF.nkf("-Wwm0x", body)
+          body = NKF.nkf("-wm0x --ic=#{charset}", body)
         elsif charset
           charset.sub!(/\Ax-?/i, '')
           begin
