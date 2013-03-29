@@ -153,6 +153,12 @@ module URL2Title
             end
           end
         end
+        if title
+          title.gsub!(/&#(x)?([0-9a-fA-F]+);/) do
+            [$2.to_i($1 ? 16 : 10)].pack("U") rescue '?'
+          end
+          title.gsub!(/\xE3\x80\x9C/u, "\xEF\xBD\x9E") # WAVE DASH -> FULLWIDTH TILDE
+        end
         info[:title] = title || body
         return info
       when /\Aimage\//
