@@ -34,6 +34,12 @@ require 'timeout'
 require 'tmpdir'
 
 begin
+  require 'cgi/util'
+rescue LoadError
+  require 'cgi'
+end
+
+begin
   require 'rubygems'
   require 'nokogiri'
 rescue LoadError
@@ -154,9 +160,7 @@ module URL2Title
           end
         end
         if title
-          title.gsub!(/&#(x)?([0-9a-fA-F]+);/) do
-            [$2.to_i($1 ? 16 : 10)].pack("U") rescue '?'
-          end
+          title = CGI.unescapeHTML(title)
           title.gsub!(/\xE3\x80\x9C/u, "\xEF\xBD\x9E") # WAVE DASH -> FULLWIDTH TILDE
         end
         info[:title] = title || body
@@ -238,7 +242,7 @@ class TitleBot < Nadoka::NDK_Bot
     end
 
     @same_bot = @bot_config.fetch(:same_bot, /(?!)/)
-    @nkf_options = @bot_config.fetch(:nkf, "--oc=CP50221 --ic=UTF-8 --numchar-input --fb-xml")
+    @nkf_options = @bot_config.fetch(:nkf, "--oc=CP50221 --ic=UTF-8 --fb-xml")
     @timeout = @bot_config.fetch(:timeout, 10)
     @fragment_size_range = @bot_config.fetch(:fragment_size_range, 5..100)
     @headers = @bot_config.fetch(:headers, {})
