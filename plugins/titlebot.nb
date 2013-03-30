@@ -133,13 +133,6 @@ module URL2Title
               title = tweet unless tweet.empty?
             end
           end
-        when /\A(?:www\.so-net\.ne\.jp)\z/
-          if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
-            title = $1
-          end
-          if %r!<dt id="ttl">(.*?)</dt>!miu =~ body
-            title = $1
-          end
         else
           if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
             title = $1
