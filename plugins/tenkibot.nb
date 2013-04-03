@@ -13,18 +13,15 @@
 
 Answer weather information using "Livedoor Weather Web Service / LWWS".
 
-LWWS: http://weather.livedoor.com/weather_hacks/webservice.html
+LWWS: http://weather.livedoor.com/weather_hacks/webservice
 
 
 == Usage
 
   tenki> [CITY] 
-  tenki:[today|tomorrow|dayaftertomorrow]> [CITY]
 
   [CITY] should be city name in Kanji listed on following table.
-  http://weather.livedoor.com/forecast/rss/forecastmap.xml
-
-  If timing is not specified, show today's information.
+  http://weather.livedoor.com/forecast/rss/primary_area.xml
 
 
 == Configuration
@@ -32,7 +29,7 @@ LWWS: http://weather.livedoor.com/weather_hacks/webservice.html
 BotConfig = [
 {
   :name => :TenkiBot,
-  :ch   => /nadoka/,  # default: /.*/
+  :ch   => /nadoka/,  # default: //
 }
 ]
 
@@ -42,62 +39,65 @@ BotConfig = [
 require 'open-uri'
 require 'pp'
 require 'kconv'
-require 'rexml/document'
 require 'date'
+begin
+  require 'json'
+rescue LoadError
+  require 'rubygems'
+  require 'json'
+end
 
 module Tenki
   CityIDs = {}
 
   def init_tenki
-    open('http://weather.livedoor.com/forecast/rss/forecastmap.xml'){|f|
-      f.each{|line|
+    open('http://weather.livedoor.com/forecast/rss/primary_area.xml') do |f|
+      f.each_line do |line|
         if /city title="(.+?)" id="(\d+)"/ =~ line
-          CityIDs[$1.toutf8] = $2.to_i
+          CityIDs[$1.toutf8] = $2
         end
-      }
-    }
+      end
+    end
   end
 
-  def tenki city, timing
-    doc = open(
-      "http://weather.livedoor.com/forecast/webservice/rest/v1?" \
-      "city=#{CityIDs.fetch(city)}&day=#{timing}"){|f|
-      REXML::Document.new f.read
-    }
-
-    title = doc.elements['/lwws/title/'].text.toutf8
-    telop = doc.elements['/lwws/telop/'].text.toutf8
-    link = doc.elements['/lwws/link/'].text.toutf8
-    desc = doc.elements['/lwws/description/'].text.toutf8
-    max = doc.elements['/lwws/temperature/max/celsius/'].text
-    min = doc.elements['/lwws/temperature/min/celsius/'].text
-    date = Date.parse(doc.elements['/lwws/forecastdate/'].text)
-    datestr = date.strftime('%m/%d')
-
-    desc.sub!(/\.\.\..*/m, '...')
-
-    celsius = []
-    celsius << "max: #{max}" if max
-    celsius << "min: #{min}" if min
-    unless celsius.empty?
-      celsius = "(#{celsius.join(', ')}) "
+  def tenki(city)
+    unless city_id = CityIDs[city]
+      return "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/primary_area.xml"
     end
-    "#{title} (#{datestr}): #{telop} - #{celsius}#{desc} - #{link}"
+    json = open("http://weather.livedoor.com/forecast/webservice/json/v1?city=#{city_id}") do |f|
+      JSON.parse f.read
+    end
+
+    tenki = "#{json['title']}: "
+    tenki << json['forecasts'].map do |forecast|
+      max = forecast['temperature']['max']
+      min = forecast['temperature']['min']
+      celsius = []
+      celsius << "min:#{min['celsius']}" if min
+      celsius << "max:#{max['celsius']}" if max
+      unless celsius.empty?
+        temperature = "(#{celsius.join(',')})"
+      end
+      "#{forecast['dateLabel']}:#{forecast['telop']}#{temperature}"
+    end.join(', ')
+    desc = json['description']
+    text, = desc['text'].split(/\n\n/, 2)
+    text.gsub!(/\n/, '')
+    tenki << " - #{text}(#{desc['publicTime']})"
+    tenki << " - #{json['link']}"
+
+    tenki
   end
 end
 
 if __FILE__ == $0
   include Tenki
-  city = ARGV.shift
-  timing = ARGV.shift || 'today'
-  if city.nil?
-    puts "#$0 city [today|tomorrow|dayaftertomorrow]"
+  if ARGV.empty?
+    puts "#$0 city"
   else
     init_tenki
-    begin
-      puts tenki(city, timing)
-    rescue IndexError
-      puts "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/forecastmap.xml"
+    ARGV.each do |city|
+      puts tenki(city)
     end
   end
   exit
@@ -116,17 +116,14 @@ class TenkiBot < Nadoka::NDK_Bot
     return unless @available_channel === ch
     return if same_bot?(ch)
     msg = NKF.nkf('-w', msg)
-    if /\Atenki(|:(today|tomorrow|dayaftertomorrow))>(.+)/ =~ msg
-      city = $3.strip.toutf8
-      timing = ($2 || 'today').strip
+    if /\Atenki>/ =~ msg
+      city = $'.strip.toutf8
       begin
-        result = tenki(city, timing).gsub(/\n/, ' ')
-      rescue IndexError
-        result = "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/forecastmap.xml"
+        result = tenki(city)
       rescue => e
         result = "#{e}"
       end
-      send_notice ch, NKF.nkf(@nkf, "tenki bot: #{result}")
+      send_notice ch, NKF.nkf(@nkf, "tenki bot: #{result}".gsub(/\s+/, ' '))
     end
   end
 end
