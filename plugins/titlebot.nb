@@ -139,7 +139,7 @@ module URL2Title
           end
           if defined?(::Nokogiri)
             doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
-            og_title = doc.xpath("//meta[@property='og:title']/@content")
+            og_title = doc.xpath("//meta[@property='og:title'][1]/@content")
             unless og_title.empty?
               # title is escaped string when get by regexp
               title = CGI.escapeHTML(og_title.text)
@@ -174,7 +174,7 @@ module URL2Title
         end
         if defined?(::Nokogiri)
           doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
-          canonical_uri = doc.xpath("//link[@rel='canonical']/@href")
+          canonical_uri = doc.xpath("//link[@rel='canonical'][1]/@href")
           if canonical_uri
             info[:uri] = canonical_uri.text
           end
