@@ -13,8 +13,8 @@
   BotConfig << {
     :name => :GithubIssuesBot,
     :bot_name => 'gh',
-    :ch => '#nadoka:*.jp',
-    :tm => 30, # 30 min
+    :ch => '#nadoka_check',
+    :tm => 30, # min
     #:nkf => "--oc=CP50221 --ic=UTF-8 --fb-xml",
     :owner => "nadoka",
     :repo => "nadoka",
