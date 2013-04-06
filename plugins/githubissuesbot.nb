@@ -1,0 +1,141 @@
+# -*-ruby; coding: utf-8 -*- vim:set ft=ruby:
+# Copyright (C) 2013 Kazuhiro NISHIYAMA
+#
+# This program is free software with ABSOLUTELY NO WARRANTY.
+# You can re-distribute and/or modify this program under
+# the same terms of the Ruby's license.
+#
+
+=begin
+
+== Configuration:
+
+  BotConfig << {
+    :name => :GithubIssuesBot,
+    :bot_name => 'gh',
+    :ch => '#nadoka:*.jp',
+    :tm => 30, # 30 min
+    #:nkf => "--oc=CP50221 --ic=UTF-8 --fb-xml",
+    :owner => "nadoka",
+    :repo => "nadoka",
+  }
+
+=end
+require 'open-uri'
+require 'time'
+begin
+  require 'json'
+rescue LoadError
+  require 'rubygems'
+  require 'json'
+end
+
+module GithubIssues
+  module_function
+
+  def issues(owner, repo, since=nil, state='open')
+    since = since.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    uri = URI("https://api.github.com/repos/#{owner}/#{repo}/issues?since=#{since}&state=#{state}")
+    issues = JSON.parse(uri.read)
+    issues.each do |issue|
+      comments_uri = URI("#{issue['comments_url']}?since=#{since}")
+      comments = JSON.parse(comments_uri.read)
+      if comments.empty?
+        yield [:issue, issue, issue_to_s(issue)]
+      else
+        comments.each do |comment|
+          yield [:comment, comment, comment_to_s(comment, issue)]
+        end
+      end
+    end
+  end
+
+  def user_to_s(user)
+    return unless user
+    "@#{user['login']} "
+  end
+
+  def time_to_s(time)
+    return unless time
+    time = Time.parse(time)
+    time.localtime.strftime("%H:%M ")
+  end
+
+  def issue_to_s(issue)
+    return unless issue
+    "#{issue['html_url']} [#{issue['state']}] #{time_to_s(issue['updated_at'])}#{user_to_s(issue['user'])}#{issue['title']}"
+  end
+
+  def comment_to_s(comment, issue=nil)
+    return unless comment
+    if issue
+      info = "[#{issue['state']}] "
+    else
+    end
+    "#{comment['html_url']} #{info}#{time_to_s(comment['updated_at'])}#{user_to_s(comment['user'])}#{comment['body']}"
+  end
+end
+
+if __FILE__ == $0
+  owner = "rubima"
+  repo = "rubima"
+  since = Time.now - 60*60*3
+  GithubIssues.issues(owner, repo, since) do |_, _, s|
+    puts s.gsub(/\s+/, ' ')
+  end
+  GithubIssues.issues(owner, repo, since, 'close') do |_, _, s|
+    puts s.gsub(/\s+/, ' ')
+  end
+  exit
+end
+
+require 'nkf'
+
+class GithubIssuesBot < Nadoka::NDK_Bot
+  def bot_initialize
+    @ch = @bot_config.fetch(:ch, '#nadoka_check')
+    @tm = @bot_config.fetch(:tm, 30) # min
+    @prevtm = Time.now
+    @nkf_options = @bot_config.fetch(:nkf, "--oc=CP50221 --ic=UTF-8 --fb-xml")
+    @owner = @bot_config.fetch(:owner, "nadoka")
+    @repo = @bot_config.fetch(:repo, "nadoka")
+  end
+
+  def bot_state
+    nt = Time.at(@prevtm.to_i + @tm * 60)
+    "<#{self.class}: next check at #{nt.asctime}@#{@ch}>" 
+  end
+
+  def send_notice(ch, msg)
+    msg = msg.gsub(/\s+/, ' ')
+    if @nkf_options
+      msg = NKF.nkf(@nkf_options, msg)
+    end
+    super(ch, msg)
+  end
+
+  def on_timer tm
+    check
+  end
+
+  def check
+    tm = Time.now
+    if tm.to_i - @tm * 60 > @prevtm.to_i
+      make_notice tm
+    end
+  end
+
+  def make_notice tm
+    since = @prevtm
+    @prevtm = tm
+    GithubIssues.issues(@owner, @repo, since) do |_, _, s|
+      send_notice @ch, s
+    end
+    GithubIssues.issues(@owner, @repo, since, 'close') do |_, _, s|
+      send_notice @ch, s
+    end
+  rescue Exception => e
+    send_notice(@ch, "rss bot error: #{e}")
+    @manager.ndk_error e
+  end
+end
