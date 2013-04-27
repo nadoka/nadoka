@@ -300,7 +300,7 @@ module RICE
         
       rescue Closed
         begin
-          @main_th.run if @main_th.alive?
+          @main_th.run if alive?
         rescue Closed
         end
         retry
@@ -317,7 +317,7 @@ module RICE
     def close(restart = false)
       begin
         unless restart
-          @main_th.exit if @main_th.alive?
+          @main_th.exit if alive?
           @read_th.exit if @read_th.alive?
         end
         
