@@ -176,10 +176,10 @@ module URL2Title
           doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
           canonical_uri = doc.xpath("//link[@rel='canonical'][1]/@href")
           unless canonical_uri.empty?
-            info[:uri] = URI(canonical_uri.text)
+            info[:uri] = URI(shorten_url(canonical_uri.text))
           end
         elsif /<link rel="canonical" href="(.+?)"/i =~ body
-          info[:uri] = URI(CGI.unescapeHTML($1))
+          info[:uri] = URI(shorten_url(CGI.unescapeHTML($1)))
         end
         if title
           title = CGI.unescapeHTML(title)
@@ -215,6 +215,16 @@ module URL2Title
 
   def prepare_url(url)
     url.sub(/\/\#!\//, '/')
+  end
+
+  def shorten_url(url)
+    case url
+    when %r!\Ahttp://www\.amazon\.co\.jp/.*(/dp/.+)\z!
+      "http://amazon.jp#{$1}"
+    else
+      # default: do nothing
+      url
+    end
   end
 
   def url2title(url, headers)
