@@ -125,8 +125,8 @@ module URL2Title
           end
           if defined?(::Nokogiri)
             doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
-            tweet = doc.css('.tweet-text')
-            unless tweet.empty?
+            tweet, = doc.css('.tweet-text')
+            if tweet
               tweet = tweet.inner_html
               tweet.gsub!(/<.*?>/, '')
               tweet.strip!
