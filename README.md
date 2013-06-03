@@ -2,6 +2,8 @@
 
 Written by SASADA Koichi <ko1 at atdot.net>
 
+[![Code Climate](https://codeclimate.com/github/nadoka/nadoka.png)](https://codeclimate.com/github/nadoka/nadoka)
+
 ## What's this?
 
 Nadoka is IRC Client Server program.
