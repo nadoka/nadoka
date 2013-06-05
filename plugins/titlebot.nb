@@ -128,7 +128,8 @@ module URL2Title
         if %r"<title\b(?>[^<>]*)>(.*?)</title(?>[^<>]*)>"miu =~ body
           title = $1
         end
-        case uri.host
+
+        case f.base_uri.host
         when /\A(?:twitter\.com)\z/
           if defined?(::Nokogiri)
             doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
