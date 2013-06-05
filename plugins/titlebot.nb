@@ -45,6 +45,13 @@ begin
 rescue LoadError
 end
 
+unless OpenURI.redirectable?(URI("http://example.com"), URI("https://example.com"))
+  def OpenURI.redirectable?(uri1, uri2) # :nodoc:
+    uri1.scheme.downcase == uri2.scheme.downcase ||
+    (/\A(?:http|ftp)\z/i =~ uri1.scheme && /\A(?:https?|ftp)\z/i =~ uri2.scheme)
+  end
+end
+
 module URL2Title
   module_function
 
