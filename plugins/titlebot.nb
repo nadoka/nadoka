@@ -27,7 +27,10 @@ Reply title of URL.
 
 =end
 
-require 'iconv'
+begin
+  require 'iconv'
+rescue LoadError
+end
 require 'nkf'
 require 'open-uri'
 require 'timeout'
@@ -111,14 +114,18 @@ module URL2Title
           body = NKF.nkf("-wm0x --ic=#{charset}", body)
         elsif charset
           charset.sub!(/\Ax-?/i, '')
-          begin
-            body = Iconv.conv("utf-8", charset, body)
-          rescue Iconv::IllegalSequence => e
-            info[:errors] << e
-            body = NKF.nkf("-wm0x", body)
-          rescue Iconv::InvalidEncoding => e
-            info[:errors] << e
-            body = NKF.nkf("-wm0x", body)
+          if defined?(Iconv)
+            begin
+              body = Iconv.conv("utf-8", charset, body)
+            rescue Iconv::IllegalSequence => e
+              info[:errors] << e
+              body = NKF.nkf("-wm0x", body)
+            rescue Iconv::InvalidEncoding => e
+              info[:errors] << e
+              body = NKF.nkf("-wm0x", body)
+            end
+          else
+            body = body.encode("utf-8", charset, invalid: :replace, undef: :replace)
           end
         else
           body = NKF.nkf("-wm0x", body)
