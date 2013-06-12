@@ -231,6 +231,8 @@ module URL2Title
     case url
     when %r!\Ahttp://www\.amazon\.co\.jp/.*(/dp/.+)\z!
       "http://amazon.jp#{$1}"
+    when %r!\A(http://(?:[a-z]+\.)?slashdot\.jp/story/\d+/\d+/\d+/\d+)(?:/.*)?\z!
+      $1
     else
       # default: do nothing
       url
