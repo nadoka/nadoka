@@ -125,7 +125,7 @@ module URL2Title
               body = NKF.nkf("-wm0x", body)
             end
           else
-            body = body.encode("utf-8", charset, invalid: :replace, undef: :replace)
+            body = body.encode("utf-8", charset, :invalid => :replace, :undef => :replace)
           end
         else
           body = NKF.nkf("-wm0x", body)
@@ -151,7 +151,7 @@ module URL2Title
         when /\A(?:github\.com)\z/
           # ignore og:title
           if title
-            title = title.gsub(/\u{B7}/, "-")
+            title = title.gsub(/\xC2\xB8/u, "-")
           end
         else
           if defined?(::Nokogiri)
