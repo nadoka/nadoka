@@ -192,6 +192,10 @@ class GoogleBot < Nadoka::NDK_Bot
       result.gsub!(/&nbsp;/u, " ")
       result.gsub!(/\s+/, " ")
       return result
+    elsif /<div class="leg_calc [^<>]*><div[^<>]*>([^<>]*)<\/div><div[^<>]*>([^<>]*)</u =~ html
+      result = "#{$1} #{$2}"
+      #@logger.slog("google_calc>#{result.dump}")
+      return result
     else
       "response error"
     end
