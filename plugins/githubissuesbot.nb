@@ -33,13 +33,34 @@ end
 module GithubIssues
   module_function
 
-  def issues(owner, repo, since=nil, state='open')
+  DEFAULT_HEADER = {
+    'User-Agent' => "Nadoka-GithubIssuesBot/0.1",
+  }
+
+  def uri_read(uri, header)
+    debug = $GITHUB_ISSUES_DEBUG
+    p uri if debug
+    uri.open("r", header) do |f|
+      p f.meta if debug
+      return f.read
+    end
+  rescue OpenURI::HTTPError => e
+    p e.io.meta if debug
+    if e.io.meta["x-ratelimit-remaining"] == "0"
+      raise "#{e}: because x-ratelimit-remaining=0"
+    end
+    raise "#{e}: #{uri}"
+  end
+
+  def issues(owner, repo, since, state='open', header=DEFAULT_HEADER)
     since = since.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
     uri = URI("https://api.github.com/repos/#{owner}/#{repo}/issues?since=#{since}&state=#{state}")
-    issues = JSON.parse(uri.read)
+    json = uri_read(uri, header)
+    issues = JSON.parse(json)
     issues.each do |issue|
       comments_uri = URI("#{issue['comments_url']}?since=#{since}")
-      comments = JSON.parse(comments_uri.read)
+      json = uri_read(comments_uri, header)
+      comments = JSON.parse(json)
       if comments.empty?
         yield [:issue, issue, issue_to_s(issue)]
       else
@@ -77,9 +98,10 @@ module GithubIssues
 end
 
 if __FILE__ == $0
+  $GITHUB_ISSUES_DEBUG = $DEBUG
   owner = "rubima"
   repo = "rubima"
-  since = Time.now - 60*60*3
+  since = Time.now - 60*60*3*7
   GithubIssues.issues(owner, repo, since) do |_, _, s|
     puts s.gsub(/\s+/, ' ')
   end
@@ -135,7 +157,7 @@ class GithubIssuesBot < Nadoka::NDK_Bot
       send_notice @ch, s
     end
   rescue Exception => e
-    send_notice(@ch, "rss bot error: #{e}")
+    send_notice(@ch, "github issues bot error for #{@owner}/#{@repo}: #{e}")
     @manager.ndk_error e
   end
 end
