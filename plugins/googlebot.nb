@@ -54,7 +54,9 @@ BotConfig = [
 =end
 
 
-require 'iconv'
+unless "".respond_to?(:encode)
+  require 'iconv'
+end
 require 'kconv'
 require 'shellwords'
 require 'cgi'
