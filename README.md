@@ -2,6 +2,7 @@
 
 Written by SASADA Koichi <ko1 at atdot.net>
 
+[![Build Status](https://travis-ci.org/nadoka/nadoka.png?branch=master)](https://travis-ci.org/nadoka/nadoka)
 [![Code Climate](https://codeclimate.com/github/nadoka/nadoka.png)](https://codeclimate.com/github/nadoka/nadoka)
 
 ## What's this?
