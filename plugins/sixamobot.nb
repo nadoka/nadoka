@@ -1,4 +1,4 @@
-#-*-ruby-*-
+#-*-ruby; coding: euc-jp -*-
 #
 # Copyright (c) 2004-2005 SASADA Koichi <ko1 at atdot.net>
 #
