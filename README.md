@@ -2,6 +2,7 @@
 
 Written by SASADA Koichi <ko1 at atdot.net>
 
+[![Gem Version](https://badge.fury.io/rb/nadoka.png)](http://badge.fury.io/rb/nadoka)
 [![Build Status](https://travis-ci.org/nadoka/nadoka.png?branch=master)](https://travis-ci.org/nadoka/nadoka)
 [![Code Climate](https://codeclimate.com/github/nadoka/nadoka.png)](https://codeclimate.com/github/nadoka/nadoka)
 
