@@ -246,10 +246,14 @@ module URL2Title
     end
   end
 
+  def cleanup(title)
+    title.gsub(/&nbsp;|&#xA0;|&#160;|\u{A0}/i, ' ')
+  end
+
   def url2title(url, headers)
     url = prepare_url(url)
     info = get_title(url, headers)
-    info[:title] = truncate(info[:title])
+    info[:title] = truncate(cleanup(info[:title]))
     info
   end
 end
