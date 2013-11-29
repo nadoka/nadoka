@@ -257,7 +257,7 @@ end
 if __FILE__ == $0
   require File.expand_path('../../ndk/version', __FILE__)
   def u2t(url)
-    firefox = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
+    firefox = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:25.0) Gecko/20100101 Firefox/25.0"
     ua = "NadokaTitleBot/#{Nadoka::VERSION}"
     headers = {
       "User-Agent" => "#{firefox} Ruby/#{RUBY_VERSION} #{ua}",
