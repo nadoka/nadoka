@@ -164,16 +164,6 @@ module URL2Title
           elsif /<meta property="og:title" content="(.+?)">/ =~ body
             title = $1
           end
-          if defined?(::Nokogiri)
-            doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
-            og_title = doc.xpath("//meta[@property='og:title']/@content")
-            unless og_title.empty?
-              # title is escaped string when get by regexp
-              title = CGI.escapeHTML(og_title.text)
-            end
-          elsif /<meta property="og:title" content="(.+?)">/ =~ body
-            title = $1
-          end
           if uri.fragment && defined?(::Nokogiri)
             begin
               doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
