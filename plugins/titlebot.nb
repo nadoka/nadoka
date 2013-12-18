@@ -289,6 +289,7 @@ class TitleBot < Nadoka::NDK_Bot
     @same_bot = @bot_config.fetch(:same_bot, /(?!)/)
     @nkf_options = @bot_config.fetch(:nkf, "--oc=CP50221 --ic=UTF-8 --fb-xml")
     @timeout = @bot_config.fetch(:timeout, 10)
+    @skip_nkf_msg = @bot_config.fetch(:skip_nkf_msg, false)
     @fragment_size_range = @bot_config.fetch(:fragment_size_range, 5..100)
     @headers = @bot_config.fetch(:headers, {})
   end
@@ -304,6 +305,7 @@ class TitleBot < Nadoka::NDK_Bot
   def on_privmsg prefix, ch, msg
     return unless @available_channel === ch
 
+    msg = NKF.nkf('-w', msg) unless @skip_nkf_msg
     case msg
     when /^\S+>/
       # ignore messages to other bots
