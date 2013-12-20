@@ -25,7 +25,7 @@
     :name => :OpenSearchBot,
     :bot_name => 'bing',
     :ch => //,
-    :referer => 'http://rubyforge.org/projects/nadoka/',
+    :referer => 'https://github.com/nadoka/nadoka',
     :ch_kcode => :jis,
     :html => 'http://www.bing.com/search?q={searchTerms}',
     :rss => 'http://api.search.live.com/rss.aspx?source=web&query={searchTerms}'
@@ -37,7 +37,7 @@
     :bot_name => 'googlecode',
     :ch => //,
     :ch_kcode => :jis,
-    :referer => 'http://rubyforge.org/projects/nadoka/',
+    :referer => 'https://github.com/nadoka/nadoka',
     # Google Code Search Data API (Deprecated)
     # http://code.google.com/intl/ja/apis/codesearch/docs/2.0/developers_guide.h
 tml
@@ -49,7 +49,7 @@ tml
     :name => :OpenSearchBot,
     :bot_name => 'koders',
     :ch => //,
-    :referer => 'http://rubyforge.org/projects/nadoka/',
+    :referer => 'https://github.com/nadoka/nadoka',
     :ch_kcode => :jis,
     # http://www.koders.com/search/KodersDescriptionOS1_1.xml
     :html => 'http://www.koders.com/?s={searchTerms}',
@@ -67,7 +67,7 @@ class OpenSearch
   def initialize(options)
     @html = options[:html]
     @rss = options[:rss]
-    @referer = options[:referer] || 'http://rubyforge.org/projects/nadoka/'
+    @referer = options[:referer] || 'https://github.com/nadoka/nadoka'
   end
 
   def result(key)
@@ -89,25 +89,25 @@ end
 if __FILE__ == $0
   h = {
     'bing' => {
-      :referer => 'http://rubyforge.org/projects/nadoka/',
+      :referer => 'https://github.com/nadoka/nadoka',
       :html => 'http://www.bing.com/search?q={searchTerms}',
       :rss => 'http://api.search.live.com/rss.aspx?source=web&query={searchTerms}',
     },
     'googlecode' => {
-      :referer => 'http://rubyforge.org/projects/nadoka/',
+      :referer => 'https://github.com/nadoka/nadoka',
       # Google Code Search Data API (Deprecated)
       # http://code.google.com/intl/ja/apis/codesearch/docs/2.0/developers_guide.html
       :html => 'http://www.google.com/codesearch?q={searchTerms}',
       :rss => 'http://www.google.com/codesearch/feeds/search?q={searchTerms}',
     },
     'koders' => {
-      :referer => 'http://rubyforge.org/projects/nadoka/',
+      :referer => 'https://github.com/nadoka/nadoka',
       # http://www.koders.com/search/KodersDescriptionOS1_1.xml
       :html => 'http://www.koders.com/?s={searchTerms}',
       :rss => 'http://www.koders.com/?s={searchTerms}&results=code&output=rss&OSversion=1.1',
     },
     'youtube' => {
-      :referer => 'http://rubyforge.org/projects/nadoka/',
+      :referer => 'https://github.com/nadoka/nadoka',
       :html => 'http://www.youtube.com/results?search_query={searchTerms}',
       :rss => 'http://gdata.youtube.com/feeds/api/videos?q={searchTerms}',
     },

@@ -16,8 +16,6 @@ Gem::Specification.new do |s|
  older proxy written in Perl.
 }.tr_s(" \n", " ").strip
 
-  s.rubyforge_project = "nadoka"
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }

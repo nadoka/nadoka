@@ -22,5 +22,4 @@ You can do with this software:
 See Web pages:
 
 - https://github.com/nadoka/nadoka
-- http://rubyforge.org/projects/nadoka/
 - http://www.atdot.net/nadoka/
