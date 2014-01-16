@@ -506,9 +506,10 @@ module Nadoka
           else
             if m = msgobj[$1.intern]
               if m.respond_to?(:force_encoding)
-                m.force_encoding(Encoding::ASCII_8BIT)
+                m.dup.force_encoding(Encoding::ASCII_8BIT)
+              else
+                m
               end
-              m
             else
               "!!unknown attribute: #{$1}!!"
             end
