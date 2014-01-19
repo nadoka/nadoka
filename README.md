@@ -23,3 +23,7 @@ See Web pages:
 
 - https://github.com/nadoka/nadoka
 - http://www.atdot.net/nadoka/
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/nadoka/nadoka/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
