@@ -68,6 +68,23 @@ rescue LoadError
   require 'json'
 end
 
+if __FILE__ == $0
+  # for test
+  module Nadoka
+    class NDK_Bot
+      def bot_init_utils
+      end
+      def initialize
+        @bot_config = Hash.new
+        @bot_config[:headers] = {
+          "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:27.0) Gecko/20100101 Firefox/27.0",
+        }
+        bot_initialize
+      end
+    end
+  end
+end
+
 class GoogleBot < Nadoka::NDK_Bot
   def bot_initialize
     bot_init_utils
@@ -178,6 +195,7 @@ class GoogleBot < Nadoka::NDK_Bot
     html = open(uri, @headers) do |f|
       f.read
     end
+    open("g.html", "wb") { |f| f.write html } if $DEBUG
     if /class=r [^<>]+><b>(.+?)<\/b>/u =~ html
       result = $1
       # @logger.slog("google_calc>#{result.dump}")
@@ -374,5 +392,20 @@ class GoogleBot < Nadoka::NDK_Bot
       # default: do nothing
       url
     end
+  end
+end
+
+if __FILE__ == $0
+  require 'logger'
+  google_bot = GoogleBot.new
+  google_bot.instance_eval do
+    @logger = Object.new
+    def @logger.slog(log)
+      STDERR.puts "slog>#{log}"
+    end
+  end
+  ARGV.each do |arg|
+    puts arg
+    puts google_bot.dispatch_command(arg)
   end
 end
