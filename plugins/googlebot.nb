@@ -191,7 +191,7 @@ class GoogleBot < Nadoka::NDK_Bot
 
   def google_calc exp
     @logger.slog("google_calc<#{exp.dump}")
-    uri = "http://www.google.co.jp/search?ie=UTF8&oe=UTF-8&q=#{CGI.escape(exp)}"
+    uri = "https://www.google.co.jp/search?ie=UTF8&oe=UTF-8&q=#{CGI.escape(exp)}"
     html = open(uri, @headers) do |f|
       f.read
     end
@@ -212,7 +212,7 @@ class GoogleBot < Nadoka::NDK_Bot
       result.gsub!(/&nbsp;/u, " ")
       result.gsub!(/\s+/, " ")
       return result
-    elsif /<div class="leg_calc [^<>]*><div[^<>]*>([^<>]*)<\/div><div[^<>]*>([^<>]*)</u =~ html
+    elsif /<div class="leg_calc[^<>]*>(?:<div[^<>]*>)+([^<>]+)<\/div><div[^<>]*>([^<>]+)</u =~ html
       result = "#{$1} #{$2}"
       #@logger.slog("google_calc>#{result.dump}")
       return result
