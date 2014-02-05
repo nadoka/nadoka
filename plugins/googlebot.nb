@@ -396,6 +396,11 @@ class GoogleBot < Nadoka::NDK_Bot
 end
 
 if __FILE__ == $0
+  if ARGV.empty?
+    puts "ad hoc test usage:"
+    puts " ruby -vd plugins/googlebot.nb 'gc>1+1'"
+    puts " ruby -vd plugins/googlebot.nb 'gc>1ドルを円で'"
+  end
   require 'logger'
   google_bot = GoogleBot.new
   google_bot.instance_eval do
