@@ -45,6 +45,7 @@ unless defined? Process.daemon
 end
 
 rcfile = nil
+pidfile = nil
 daemon = false
 optparse = OptionParser.new{|opts|
   opts.banner = "Usage: ruby #{$0} [options]"
@@ -69,6 +70,9 @@ optparse = OptionParser.new{|opts|
   }
   opts.on("--daemon", "run as daemon"){
     daemon = true
+  }
+  opts.on("--pid [PIDFILE]", "Put process pid into PIDFILE"){|f|
+    pidfile = f
   }
 
   opts.separator ""
@@ -95,6 +99,10 @@ if daemon
   Process.daemon
 end
 
+if pidfile
+  open(pidfile, "w") {|f| f.puts Process.pid }
+end
+
 begin
   GC.start
   Nadoka::NDK_Server.new(rcfile).start
@@ -109,6 +117,10 @@ rescue Exception => e
     f.puts e
     f.puts e.backtrace.join("\n")
   } 
+end
+
+if pidfile
+  File.unlink(pidfile)
 end
 
 end
