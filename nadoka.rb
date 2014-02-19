@@ -100,7 +100,7 @@ if daemon
 end
 
 if pidfile
-  open(pidfile, "w") {|f| f.puts Process.pid.to_s }
+  open(pidfile, "w") {|f| f.puts Process.pid }
 end
 
 begin
