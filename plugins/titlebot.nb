@@ -33,6 +33,7 @@ rescue LoadError
 end
 require 'nkf'
 require 'open-uri'
+require 'tempfile'
 require 'timeout'
 require 'tmpdir'
 
@@ -200,6 +201,14 @@ module URL2Title
           return info
         else
           info[:title] = "(unknown image format)"
+          temp = Tempfile.new("titlebot", :encoding => 'ascii-8bit')
+          begin
+            temp.write(body)
+            temp.close
+            info[:title] = `identify '#{temp.path}'`.sub(/\A#{Regexp.quote(temp.path)}/, '').strip
+          ensure
+            temp.unlink
+          end
           return info
         end
       else
