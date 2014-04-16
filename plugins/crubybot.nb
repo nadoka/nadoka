@@ -1,0 +1,86 @@
+# -*-ruby-*-
+require 'ffi/clang'
+require 'tempfile'
+
+# dependency:
+#   * ffi-clang.gem
+#   * libclang
+#     * lang/clang34 in FreeBSD ports
+#     * llvm of homebrew
+#
+# example setting:
+#   {
+#     :name => :CRubyBot,
+#     :channels => [ "#ruby-ja" ],
+#     :ruby_srcdir => '/path/of/ruby/src',
+#   }
+#
+class CRubyBot < Nadoka::NDK_Bot
+  def bot_initialize
+    if @bot_config.key?(:channels)
+      channels = '\A(?:' + @bot_config[:channels].collect{|ch|
+        Regexp.quote(ch)
+      }.join('|') + ')\z'
+      @available_channel = Regexp.compile(channels)
+    else
+      @available_channel = @bot_config.fetch(:ch, //)
+    end
+    unless @ruby_srcdir = @bot_config[:ruby_srcdir]
+      raise "ruby_srcdir is not specified"
+    end
+    unless Dir.exist?(@ruby_srcdir)
+      raise "ruby_srcdir(#{@ruby_srcdir}) does not exist"
+    end
+    @ruby_srcdir << '/' if @ruby_srcdir[-1] != '/'
+    @ruby_c = nil
+  end
+
+  def bot_state
+    "<#{self.class.to_s}>"
+  end
+
+  def make_rubysource
+    f = Tempfile.open(["crubybot-ruby", ".c"])
+    Dir[File.join @ruby_srcdir, "*.c"].each do |fn|
+      f.puts %[#include "#{fn}"]
+    end
+    f.flush
+    f
+  end
+
+  def find_def(name, kind)
+    index = FFI::Clang::Index.new
+    @ruby_c ||= make_rubysource
+    translation_unit = index.parse_translation_unit(@ruby_c.path)
+    translation_unit.cursor.visit_children do |cursor, parent|
+      if cursor.kind == kind && cursor.definition? && cursor.spelling == name
+        loc = cursor.location
+        path = loc.file
+        if path.start_with?(@ruby_srcdir)
+          return [path[@ruby_srcdir.size..-1], loc.line]
+        end
+      end
+      next :recurse
+    end
+    return nil
+  end
+
+  def on_privmsg(client, ch, message)
+    return unless @available_channel === ch
+    case message
+    when /\A\S*(struct|fun\w*)\s+(\w+)/
+      kind1 = $1
+      name = $2
+      kind = case kind1
+             when "struct"
+               :cursor_struct
+             when /\Afun/
+               :cursor_function
+             end
+      path, line = find_def(name, kind)
+      return unless path
+      send_notice(ch, "crubybot: #{kind1} #{name} at " \
+                  "https://github.com/ruby/ruby/blob/trunk/#{path}#L#{line}")
+    end
+  end
+end
