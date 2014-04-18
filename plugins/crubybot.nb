@@ -41,7 +41,9 @@ class CRubyBot < Nadoka::NDK_Bot
 
   def make_rubysource
     f = Tempfile.open(["crubybot-ruby", ".c"])
-    Dir[File.join @ruby_srcdir, "*.c"].each do |fn|
+    ary = Dir[File.join @ruby_srcdir, "*.c"]
+    ary << File.join(@ruby_srcdir, "win32/win32.c")
+    ary.each do |fn|
       f.puts %[#include "#{fn}"]
     end
     f.flush
