@@ -243,7 +243,7 @@ module URL2Title
   end
 
   def cleanup(title)
-    title.gsub(/&nbsp;|&#xA0;|&#160;|\u{A0}/i, ' ')
+    title.gsub(/(\s|&nbsp;|&#xA0;|&#160;|\u{A0})+/i, ' ')
   end
 
   def url2title(url, headers)
