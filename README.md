@@ -2,10 +2,9 @@
 
 Written by SASADA Koichi <ko1 at atdot.net>
 
-[![Gem Version](https://badge.fury.io/rb/nadoka.png)](http://badge.fury.io/rb/nadoka)
-[![Build Status](https://travis-ci.org/nadoka/nadoka.png?branch=master)](https://travis-ci.org/nadoka/nadoka)
-[![Code Climate](https://codeclimate.com/github/nadoka/nadoka.png)](https://codeclimate.com/github/nadoka/nadoka)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/nadoka/nadoka/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Gem Version](https://badge.fury.io/rb/nadoka.svg)](http://badge.fury.io/rb/nadoka)
+[![Build Status](https://img.shields.io/travis/nadoka/nadoka.svg)](https://travis-ci.org/nadoka/nadoka)
+[![Code Climate](https://img.shields.io/codeclimate/github/nadoka/nadoka.svg)](https://codeclimate.com/github/nadoka/nadoka)
 
 ## What's this?
 
