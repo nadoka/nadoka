@@ -149,6 +149,8 @@ module URL2Title
               title = tweet unless tweet.empty?
             end
           end
+        when /\A(?:github\.com)\z/
+          # ignore og:title
         else
           if defined?(::Nokogiri)
             doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
