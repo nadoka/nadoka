@@ -216,6 +216,10 @@ class GoogleBot < Nadoka::NDK_Bot
       result = "#{$1} #{$2}"
       #@logger.slog("google_calc>#{result.dump}")
       return result
+    elsif /<g-card>(.*)<\/g-card>/ =~ html
+      result = $1
+      result.sub!(/<a.*/u, '')
+      result.gsub!(/<.+?>/u, '')
     else
       "response error"
     end
