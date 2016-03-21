@@ -29,7 +29,6 @@ BotConfig = [
 =end
 
 require 'lib/rss_check'
-require 'iconv'
 require 'kconv'
 
 class RSS_CheckBot < Nadoka::NDK_Bot
@@ -40,7 +39,6 @@ class RSS_CheckBot < Nadoka::NDK_Bot
     @tm    = @bot_config.fetch(:tm,30)              # min
     @over  = @bot_config.fetch(:over_message, nil)
     @rssc  = RSS_Check.new(@paths, @cache, true)
-    @ic    = Iconv.open("EUC-JP", "UTF-8")
     @prevtm= Time.now
   end
 
@@ -99,7 +97,7 @@ class RSS_CheckBot < Nadoka::NDK_Bot
             begin
               # convert from U+FF5E FULLWIDTH TILDE to U+301C WAVE DASH
               title = e[:title].gsub(/\357\275\236/u, "\343\200\234")
-              title = @ic.iconv(title)
+              title = title.toeuc
             rescue Exception
               # maybe, char code translation error
               next

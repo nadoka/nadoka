@@ -204,13 +204,11 @@ if $0 == __FILE__
     ARGV.shift || './rss_cache',
     false # false
   )
-  require 'iconv'
   require 'kconv'
-  ic = Iconv.open("EUC-JP", "UTF-8")
   
   rssc.check.each{|e|
     puts e[:about]
-    title = (e[:ccode] == 'UTF-8') ? ic.iconv(e[:title]) : e[:title]
+    title = (e[:ccode] == 'UTF-8') ? e[:title].toeuc : e[:title]
     puts title
   }
   rssc.dump
