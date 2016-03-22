@@ -21,6 +21,8 @@ matrix:
     - rvm: ruby-head
     - rvm: jruby-head
     - rvm: ree
+before_install:
+  - gem update bundler
 script: ruby check-syntax.rb
 notifications:
   irc: "irc.freenode.org#nadoka_jp"
