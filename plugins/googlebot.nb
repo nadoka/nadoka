@@ -173,6 +173,11 @@ class GoogleBot < Nadoka::NDK_Bot
   def api_search word, cnt, lang, searcher
     result = do_search word, cnt, lang, searcher
 
+    if result["responseData"].nil?
+      # {"responseData": null, "responseDetails": "qps rate exceeded", "responseStatus": 503}
+      return "error #{result['responseStatus']}: #{result['responseDetails']}"
+    end
+
     count = result.estimatedTotalResultsCount.to_i
 
     if count > 0
