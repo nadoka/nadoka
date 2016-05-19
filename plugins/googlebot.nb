@@ -41,9 +41,10 @@ BotConfig = [
     #"User-Agent" => "Ruby/#{RUBY_VERSION}",
     'Referer' => 'https://github.com/nadoka/nadoka',
   },
-  # Register URL at http://code.google.com/intl/ja/apis/ajaxsearch/signup.html
-  # and set your URL to :referer and your API key to :api_key if you want.
-  :api_key             => nil,
+  # API key
+  :api_key             => 'INSERT_YOUR_API_KEY',
+  # Custom search engine ID
+  :cx                  => '017576662512468239146:omuauf_lfve',
   :googlec_maxwords    => 5,
   :search_default_lang => 'ja',
   :count_default_lang  => '',
@@ -94,6 +95,7 @@ class GoogleBot < Nadoka::NDK_Bot
     @count_default_lang  = (@bot_config[:count_default_lang] || '').sub(/^lang_/, '')
     @headers = @bot_config.fetch(:headers, {})
     @api_key = @bot_config[:api_key]
+    @cx = @bot_config[:cx]
     @uri_slog = @bot_config.fetch(:uri_slog, false)
     @ch_kcode = @bot_config.fetch(:ch_kcode, :tojis)
   end
@@ -121,6 +123,8 @@ class GoogleBot < Nadoka::NDK_Bot
   def dispatch_command msg
     begin
       case msg
+      when /^g>\s*(.+)/
+        custom_search $1
       when /^goo(o*)gle( #{SEARCHER_RE})?(:.*?)?>\s*(.+)/o, /^gu(u*)guru(#{SEARCHER_RE})?(:.+)?>\s*(.+)/o
         "goo#{$1}gle#{$2} bot#{$3}: #{search($1.length, $3, $4, $2)}"
       when /^googlec( #{SEARCHER_RE})?(:.*?)?>\s*(.+)/o
@@ -133,6 +137,26 @@ class GoogleBot < Nadoka::NDK_Bot
       @manager.ndk_error e
       "google bot: #{e.class} (#{e.message} @ #{e.backtrace[0]})"
     end
+  end
+
+  def custom_search word
+    uri = "https://www.googleapis.com/customsearch/v1"
+    uri << "?key=#{@api_key}&cx=#{@cx}&q="
+    uri << CGI.escape(word)
+    @logger.slog "GoogleBot: #{uri}" if @uri_slog
+    result = open(uri, @headers) do |f|
+      JSON.parse(f.read)
+    end
+    @logger.slog "GoogleBot: #{result}" if @uri_slog
+    item = result["items"][0]
+    "#{item["title"]} - #{item["link"]} - #{item["snippet"]}".delete("\r\n")
+  rescue OpenURI::HTTPError => e
+    @logger.slog "GoogleBot: #{e.inspect}" if @uri_slog
+    result = JSON.parse(e.io.read)
+    if @uri_slog
+      @logger.slog "GoogleBot: #{result.inspect}"
+    end
+    result["error"]["errors"][0]["reason"].delete("\r\n")
   end
 
   def do_search word, cnt, lang, searcher='web'
