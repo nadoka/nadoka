@@ -148,8 +148,15 @@ class GoogleBot < Nadoka::NDK_Bot
       JSON.parse(f.read)
     end
     @logger.slog "GoogleBot: #{result}" if @uri_slog
-    item = result["items"][0]
-    "#{item["title"]} - #{item["link"]} - #{item["snippet"]}".delete("\r\n")
+    count = result["searchInformation"]["totalResults"].to_i
+    if count == 0
+      return "no match"
+    end
+    count = count.to_s.gsub(/(\d)(?=\d{3}+$)/, '\\1,')
+    item, = result["items"]
+    title = item["title"]
+    url = item["link"]
+    "#{title} - #{url} (and #{count} hit#{(count.to_i > 1) ? 's' : ''})".delete("\r\n")
   rescue OpenURI::HTTPError => e
     @logger.slog "GoogleBot: #{e.inspect}" if @uri_slog
     result = JSON.parse(e.io.read)
