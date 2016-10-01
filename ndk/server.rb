@@ -180,6 +180,10 @@ module Nadoka
           @server_thread.raise NDK_ReconnectToServer
         when '020'
           # ignore
+        when 'PRIVMSG'
+          # ignore
+        when '004'
+          # ignore
         else
           msg = "Server login fail!(#{q})"
           @logger.slog msg
