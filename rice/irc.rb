@@ -217,6 +217,7 @@ module RICE
           context.set_params(ssl_params)
           conn = OpenSSL::SSL::SSLSocket.new(conn, context)
           conn.sync_close = true
+          conn.hostname = @server if conn.respond_to? :hostname=
           conn.connect
           if context.verify_mode != OpenSSL::SSL::VERIFY_NONE
             conn.post_connection_check(@server)
