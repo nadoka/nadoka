@@ -387,7 +387,7 @@ module Nadoka
       @config = {}
       klass = ConfigClass.last
 
-      klass.ancestors[0..-3].reverse_each{|kl|
+      klass.ancestors[0..klass.ancestors.index(NDK_ConfigBase)].reverse_each{|kl|
         kl.constants.each{|e|
           @config[e.downcase.intern] = klass.const_get(e)
         }
