@@ -138,6 +138,17 @@ module URL2Title
         end
 
         case f.base_uri.host
+        when /\A(?:mobile\.twitter\.com)\z/
+          if defined?(::Nokogiri)
+            doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
+            tweet, = doc.css('.tweet-text')
+            if tweet
+              tweet = tweet.inner_html
+              tweet.gsub!(/<.*?>/, '')
+              tweet.strip!
+              title = tweet unless tweet.empty?
+            end
+          end
         when /\A(?:twitter\.com)\z/
           if defined?(::Nokogiri)
             doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
