@@ -104,7 +104,7 @@ module URL2Title
           charset = $1
         end
         case charset
-        when /shift_jis/i
+        when /shift[_-]jis/i
           charset = "cp932"
         when /euc-jp/i # euc-jp, x-euc-jp
           charset = "eucjp-ms"
