@@ -336,7 +336,7 @@ class GoogleBot < Nadoka::NDK_Bot
     else
       api_search word, cnt, lang, searcher
     end
- end
+  end
 
   def googlec lang, word, searcher=nil
     lang = lang_check(lang, @count_default_lang)
