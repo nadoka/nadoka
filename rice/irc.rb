@@ -58,8 +58,8 @@ module RICE
 
       @read_q  = Queue.new
 
-      @read_th  = Thread.new(@read_q, @eol) do |read_q, eol|
-        read_thread(read_q, eol)
+      @read_th  = Thread.new(@read_q, @eol) do |read_q, eol_|
+        read_thread(read_q, eol_)
       end
 
       @threads = {}
@@ -247,8 +247,8 @@ module RICE
     USER_THREAD = Struct.new('User_Thread', :q, :raise_on_close)
     def regist(raise_on_close = false, *args)
       read_q = Queue.new
-      th = Thread.new(read_q, self, *args) do |read_q, conn, *args|
-        yield(read_q, conn, *args)
+      th = Thread.new(read_q, self, *args) do |read_q_, conn, *args_|
+        yield(read_q_, conn, *args_)
       end
       @threads.synchronize do
         @threads[th] = USER_THREAD.new(read_q, raise_on_close)
