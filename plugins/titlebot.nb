@@ -67,6 +67,10 @@ module URL2Title
     when /localhost/, /\A127\./, /\A192\.168\./, /\A10\./
       info[:title] = "(ignored)"
       return info
+    when /\A(?:www\.nicovideo\.jp)\z/
+      if /\A\/watch\/(sm\d+)\z/ =~ uri.path
+        uri = URI("http://d.hatena.ne.jp/video/niconico/#{$1}")
+      end
     end
     headers = {
       :content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576},
