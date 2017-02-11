@@ -71,6 +71,8 @@ module URL2Title
       if /\A\/watch\/(sm\d+)\z/ =~ uri.path
         uri = URI("http://d.hatena.ne.jp/video/niconico/#{$1}")
       end
+    when /\A(?:mobile\.twitter\.com)\z/
+      uri = URI(url.sub(/mobile\.twitter\.com/, 'twitter.com'))
     end
     headers = {
       :content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576},
@@ -142,17 +144,6 @@ module URL2Title
         end
 
         case f.base_uri.host
-        when /\A(?:mobile\.twitter\.com)\z/
-          if defined?(::Nokogiri)
-            doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
-            tweet, = doc.css('.main-tweet .tweet-text')
-            if tweet
-              tweet = tweet.inner_html
-              tweet.gsub!(/<.*?>/, '')
-              tweet.strip!
-              title = tweet unless tweet.empty?
-            end
-          end
         when /\A(?:twitter\.com)\z/
           if defined?(::Nokogiri)
             doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
