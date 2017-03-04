@@ -64,6 +64,7 @@ module URL2Title
     /\A127\./,
     /\A192\.168\./,
     /\A10\./,
+    /\A169\.254\./,
   ]
 
   def get_title(url, headers)
