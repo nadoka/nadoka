@@ -86,7 +86,7 @@ module RICE
       @delay = 0.3
       @prev_send_time = Time.now
     end
-    attr :delay, true
+    attr_accessor :delay
     attr_reader :server, :port, :ssl_params
     
 =begin
