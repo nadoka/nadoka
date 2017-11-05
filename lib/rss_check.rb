@@ -79,7 +79,7 @@ class RSS_Check
 
     def read_content
       case @uri.scheme
-      when 'http'
+      when 'http', 'https'
         open(@uri){|f|
           if f.content_encoding.any?{|e| /gzip/ =~ e}
             Zlib::GzipReader.new(StringIO.new(f.read)).read || ''
@@ -96,7 +96,7 @@ class RSS_Check
 
     def mtime
       case @uri.scheme
-      when 'http'
+      when 'http', 'https'
         open(@uri){|f|
           f.last_modified || Time.now
         }
