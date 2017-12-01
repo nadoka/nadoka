@@ -165,6 +165,10 @@ module URL2Title
           end
         when /\A(?:github\.com)\z/
           # ignore og:title
+        when /\A(?:www\.youtube\.com)\z/
+          if %r'"title":"(.+?)"' =~ body
+            title = $1
+          end
         else
           if defined?(::Nokogiri)
             doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
@@ -269,7 +273,7 @@ end
 if __FILE__ == $0
   require File.expand_path('../../ndk/version', __FILE__)
   def u2t(url)
-    firefox = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:25.0) Gecko/20100101 Firefox/25.0"
+    firefox = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0"
     ua = "NadokaTitleBot/#{Nadoka::VERSION}"
     headers = {
       "User-Agent" => "#{firefox} Ruby/#{RUBY_VERSION} #{ua}",
