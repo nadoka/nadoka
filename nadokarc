@@ -80,7 +80,7 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
     #   :port => 6667,
     # },
     # {
-    #   :host => 'irc6.livedoor.ne.jp',
+    #   :host => 'dh6.ircnet.ne.jp',
     #   :port => (6660 .. 6669),
     # },
   ]
