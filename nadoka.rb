@@ -29,6 +29,16 @@ require 'ndk/bot'
 $stdout.sync=true
 $NDK_Debug  = false
 
+if ENV.key?('NOTIFY_SOCKET')
+  require 'lib/notify_socket'
+  $NDK_NOTIFY_SOCKET = NotifySocket.new
+else
+  $NDK_NOTIFY_SOCKET = Object.new
+  def $NDK_NOTIFY_SOCKET.method_missing(*)
+    # ignore
+  end
+end
+
 unless defined? Process.daemon
   def Process.daemon(nochdir = nil, noclose = nil)
     exit!(0) if fork
@@ -107,12 +117,14 @@ begin
   GC.start
   Nadoka::NDK_Server.new(rcfile).start
 rescue Nadoka::NDK_QuitProgram
-  #
+  $NDK_NOTIFY_SOCKET.stopping!
 rescue Nadoka::NDK_RestartProgram
+  $NDK_NOTIFY_SOCKET.reloading!
   GC.start
   ObjectSpace.each_object(Socket) {|sock| sock.close}
   retry
 rescue Exception => e
+  $NDK_NOTIFY_SOCKET.stopping!
   open('nadoka_fatal_error', 'w'){|f|
     f.puts e
     f.puts e.backtrace.join("\n")

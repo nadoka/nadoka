@@ -219,6 +219,7 @@ module Nadoka
       end
 
       invoke_event :invoke_bot, :server_connected
+      $NDK_NOTIFY_SOCKET.ready!
 
       # loop
       while q = recv_from_server
@@ -413,6 +414,7 @@ module Nadoka
             if @connected
               if @pong_recieved
                 @pong_fail_count = 0
+                $NDK_NOTIFY_SOCKET.watchdog!
               else
                 # fail
                 @pong_fail_count += 1

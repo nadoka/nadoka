@@ -214,7 +214,7 @@ module Nadoka
         :nostamp => nostamp,
         :ch      => ch,
       }
-
+      $NDK_NOTIFY_SOCKET.status = msgobj.inspect.tr("\n", ' ')
       msgobj
     end
 
