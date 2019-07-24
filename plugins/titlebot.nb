@@ -68,6 +68,7 @@ module URL2Title
   ]
 
   def get_title(url, headers)
+    retry_count ||= 0
     uri = URI(url)
     info = { :uri => uri }
     info[:errors] = []
@@ -234,6 +235,15 @@ module URL2Title
   rescue Errno::EFBIG
     info[:title] = "(too big)"
     return info
+  rescue RuntimeError
+    if %r{\AHTTP redirection loop: https://twitter\.com/} =~ $!.message
+      retry_count += 1
+      if retry_count <= 3
+        sleep rand(1.5..3.0)
+        retry
+      end
+    end
+    raise
   end
 
   def truncate s
