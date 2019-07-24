@@ -330,7 +330,7 @@ class TitleBot < Nadoka::NDK_Bot
 
     msg = NKF.nkf('-w', msg) unless @skip_nkf_msg
     case msg
-    when /^\S+>/
+    when /^[^<>]+>/
       # ignore messages to other bots
     when /https?:/
       return if @state.channel_users(ccn(ch)).find{|x| @same_bot =~ x }
