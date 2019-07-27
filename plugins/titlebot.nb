@@ -67,8 +67,13 @@ module URL2Title
     /\A169\.254\./,
   ]
 
+  if defined?(::Nadoka::VERSION)
+    DEFAULT_USER_AGENT = "Ruby/#{RUBY_VERSION} NadokaTitleBot/#{Nadoka::VERSION}"
+  else
+    DEFAULT_USER_AGENT = "Ruby/#{RUBY_VERSION}"
+  end
+
   def get_title(url, headers)
-    retry_count ||= 0
     uri = URI(url)
     info = { :uri => uri }
     info[:errors] = []
@@ -80,9 +85,12 @@ module URL2Title
       if /\A\/watch\/(sm\d+)\z/ =~ uri.path
         uri = URI("http://d.hatena.ne.jp/video/niconico/#{$1}")
       end
-    when /\A(?:mobile\.twitter\.com)\z/
-      uri = URI(url.sub(/mobile\.twitter\.com/, 'twitter.com'))
+    when /\A(?:twitter\.com)\z/
+      uri = URI(url.sub(/twitter\.com/, 'mobile.twitter.com'))
+      # Twitter response depends on User-Agent
+      headers = headers.merge!('User-Agent' => DEFAULT_USER_AGENT)
     end
+    headers['User-Agent'] ||= DEFAULT_USER_AGENT
     headers = {
       :content_length_proc => proc{|x| raise Errno::EFBIG if x && x > 1048576},
     }.merge!(headers)
@@ -153,10 +161,10 @@ module URL2Title
         end
 
         case f.base_uri.host
-        when /\A(?:twitter\.com)\z/
+        when /\A(?:mobile\.twitter\.com)\z/
           if defined?(::Nokogiri)
             doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
-            tweet, = doc.css('.permalink-tweet > .tweet-text')
+            tweet, = doc.css('.main-tweet .tweet-text')
             if tweet
               tweet = tweet.inner_html
               tweet.gsub!(/<.*?>/, '')
@@ -235,15 +243,6 @@ module URL2Title
   rescue Errno::EFBIG
     info[:title] = "(too big)"
     return info
-  rescue RuntimeError
-    if %r{\AHTTP redirection loop: https://twitter\.com/} =~ $!.message
-      retry_count += 1
-      if retry_count <= 3
-        sleep rand(1.5..3.0)
-        retry
-      end
-    end
-    raise
   end
 
   def truncate s
