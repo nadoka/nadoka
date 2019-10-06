@@ -81,10 +81,6 @@ module URL2Title
     when *BLACKLIST_HOST
       info[:title] = "(ignored)"
       return info
-    when /\A(?:www\.nicovideo\.jp)\z/
-      if /\A\/watch\/(sm\d+)\z/ =~ uri.path
-        uri = URI("http://d.hatena.ne.jp/video/niconico/#{$1}")
-      end
     when /\A(?:twitter\.com)\z/
       uri = URI(url.sub(/twitter\.com/, 'mobile.twitter.com'))
       # Twitter response depends on User-Agent
