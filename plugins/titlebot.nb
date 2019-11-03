@@ -82,7 +82,6 @@ module URL2Title
       info[:title] = "(ignored)"
       return info
     when /\A(?:twitter\.com)\z/
-      uri = URI(url.sub(/twitter\.com/, 'mobile.twitter.com'))
       # Twitter response depends on User-Agent
       headers = headers.merge!('User-Agent' => DEFAULT_USER_AGENT)
     end
@@ -157,6 +156,11 @@ module URL2Title
         end
 
         case f.base_uri.host
+        when /\A(?:twitter\.com)\z/
+          if defined?(::Nokogiri)
+            doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
+            title = doc.xpath("//meta[@property='og:description'][1]/@content").text
+          end
         when /\A(?:mobile\.twitter\.com)\z/
           if defined?(::Nokogiri)
             doc = Nokogiri::HTML(body, uri.to_s, 'utf-8')
