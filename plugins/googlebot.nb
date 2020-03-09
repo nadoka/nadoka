@@ -78,7 +78,7 @@ if __FILE__ == $0
       def initialize
         @bot_config = Hash.new
         @bot_config[:headers] = {
-          "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:27.0) Gecko/20100101 Firefox/27.0",
+          "User-Agent" => "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) snap Chromium/80.0.3987.132 Chrome/80.0.3987.132 Safari/537.36",
         }
         bot_initialize
       end
@@ -256,7 +256,16 @@ class GoogleBot < Nadoka::NDK_Bot
       result = $1
       result.sub!(/<a.*/u, '')
       result.gsub!(/<.+?>/u, '')
+      result = $1
+      result.sub!(/<a.*/u, '')
+      result.gsub!(/<.+?>/u, '')
+      return result
+    elsif /<div class="RJn8N xXEKkb ellip">= ([^<>]+)</ =~ html
+      result = $1
+      #@logger.slog("google_calc>#{result.dump}")
+      return result
     else
+      #IO.write('g.html', html) if STDOUT.tty?
       "response error"
     end
   rescue Exception
