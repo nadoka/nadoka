@@ -256,9 +256,6 @@ class GoogleBot < Nadoka::NDK_Bot
       result = $1
       result.sub!(/<a.*/u, '')
       result.gsub!(/<.+?>/u, '')
-      result = $1
-      result.sub!(/<a.*/u, '')
-      result.gsub!(/<.+?>/u, '')
       return result
     elsif /<div class="RJn8N xXEKkb ellip">= ([^<>]+)</ =~ html
       result = $1
