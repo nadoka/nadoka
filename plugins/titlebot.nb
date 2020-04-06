@@ -289,6 +289,7 @@ if __FILE__ == $0
     }
     URL2Title.url2title(url, headers)
   rescue
+    puts $!.backtrace
     $!.inspect
   end
   URL2Title::BLACKLIST_HOST << /\.test\z/
