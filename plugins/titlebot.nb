@@ -259,8 +259,8 @@ module URL2Title
 
   def shorten_url(url)
     case url
-    when %r!\Ahttp://www\.amazon\.co\.jp/.*(/dp/.+)\z!
-      URI("http://amazon.jp#{$1}")
+    when %r!\Ahttps?://www\.amazon\.co\.jp/.*(/dp/[^/]+)!
+      URI("https://amazon.jp#{$1}")
     else
       # default: do nothing
       URI(url)
