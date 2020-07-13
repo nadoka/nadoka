@@ -349,25 +349,27 @@ class TitleBot < Nadoka::NDK_Bot
     when /https?:/
       return if @state.channel_users(ccn(ch)).find{|x| @same_bot =~ x }
 
-      url, = URI.extract(msg, ["http", "https"])
-      info = Timeout.timeout(@timeout) do
-        url2title(url, @headers)
-      end
-      return unless info[:title]
-      if url != info[:uri].to_s
-        send_notice(ch, "title bot: #{info[:title]} - #{info[:uri]}")
-      else
-        send_notice(ch, "title bot: #{info[:title]}")
-      end
-      if info[:fragment_text]
-        # ignore when fragment_text is too long or too short
-        if @fragment_size_range === info[:fragment_text].size
-          send_notice(ch, "title bot:: #{info[:fragment_text]}")
+      msg.scan(%r<(?<l>\()?(?<url>https?://(?(<l>)(?<ascii_without_paren>[!-~&&[^()]]+|\(\g<ascii_without_paren>\))+|[!-~]+))>) do
+        url = $~[:url]
+        info = Timeout.timeout(@timeout) do
+          url2title(url, @headers)
         end
-      end
-      info[:errors].each do |e|
-        @manager.ndk_error e
-        send_notice(ch, "title bot error: #{e}")
+        return unless info[:title]
+        if url != info[:uri].to_s
+          send_notice(ch, "title bot: #{info[:title]} - #{info[:uri]}")
+        else
+          send_notice(ch, "title bot: #{info[:title]}")
+        end
+        if info[:fragment_text]
+          # ignore when fragment_text is too long or too short
+          if @fragment_size_range === info[:fragment_text].size
+            send_notice(ch, "title bot:: #{info[:fragment_text]}")
+          end
+        end
+        info[:errors].each do |e|
+          @manager.ndk_error e
+          send_notice(ch, "title bot error: #{e}")
+        end
       end
     end
   rescue Exception => e
