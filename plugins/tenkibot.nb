@@ -1,6 +1,7 @@
-# -*-ruby; coding: utf-8 -*- vim:set ft=ruby:
+# -*- coding: utf-8 -*-
+# -*-ruby-*-
 #
-# Copyright (c) 2004-2006 SASADA Koichi <ko1 at atdot.net>
+# Copyright (c) 2020 Kazuhiro NISHIYAMA
 #
 # This program is free software with ABSOLUTELY NO WARRANTY.
 # You can re-distribute and/or modify this program under
@@ -11,93 +12,152 @@
 
 == Abstract
 
-Answer weather information using "Livedoor Weather Web Service / LWWS".
-
-LWWS: http://weather.livedoor.com/weather_hacks/webservice
-
+Answer weather information using "https://www.jma.go.jp/"
 
 == Usage
 
-  tenki> [CITY] 
+  tenki> [AREA]
 
-  [CITY] should be city name in Kanji listed on following table.
-  http://weather.livedoor.com/forecast/rss/primary_area.xml
-
+  [AREA] should be an area name in Kanji listed on following table.
+  https://www.jma.go.jp/jp/yoho/
 
 == Configuration
 
-BotConfig = [
-{
-  :name => :TenkiBot,
-  :ch   => /nadoka/,  # default: //
-}
-]
+  BotConfig << {
+    :name => :TenkiBot,
+    :ch => //,
+    :timeout => 10,
+  }
 
 
 =end
 
+require 'nokogiri'
 require 'open-uri'
-require 'pp'
-require 'kconv'
-require 'date'
-begin
-  require 'json'
-rescue LoadError
-  require 'rubygems'
-  require 'json'
-end
+require 'tmpdir'
 
 module Tenki
-  CityIDs = {}
+  AREA = {}
+
+  TMPDIR = Dir.mktmpdir('tenkibot')
+  EN_CACHE_HTML = File.join(TMPDIR, 'en.html~')
+  EN_URI = URI('https://www.jma.go.jp/en/yoho/')
+  JP_CACHE_HTML = File.join(TMPDIR, 'jp.html~')
+  JP_URI = URI('https://www.jma.go.jp/jp/yoho/')
+
+  def get(uri, cache=nil)
+    raise Errno::ENOENT unless cache
+    File.read(cache)
+  rescue Errno::ENOENT
+    html = uri.read
+    File.write(cache, html) if cache
+    html
+  end
 
   def init_tenki
-    open('http://weather.livedoor.com/forecast/rss/primary_area.xml') do |f|
-      f.each_line do |line|
-        if /city title="(.+?)" id="(\d+)"/ =~ line
-          CityIDs[$1.toutf8] = $2
-        end
-      end
+    jp = get(JP_URI, JP_CACHE_HTML)
+    doc = Nokogiri::HTML(jp)
+    doc.xpath('//noscript//a').each do |e|
+      AREA[e.text] = JP_URI + e[:href]
+    end
+
+    en = get(EN_URI, EN_CACHE_HTML)
+    doc = Nokogiri::HTML(en)
+    doc.xpath('//select[@name="elfukenlist"]/option').each do |e|
+      AREA[e.text] = JP_URI + "/jp/yoho/#{e[:value]}.html" if e[:value]
     end
   end
 
-  def tenki(city)
-    unless city_id = CityIDs[city]
-      return "Unknown city.  Check city title on http://weather.livedoor.com/forecast/rss/primary_area.xml"
-    end
-    json = open("http://weather.livedoor.com/forecast/webservice/json/v1?city=#{city_id}") do |f|
-      JSON.parse f.read
-    end
-
-    tenki = "#{json['title']}: "
-    tenki << json['forecasts'].map do |forecast|
-      max = forecast['temperature']['max']
-      min = forecast['temperature']['min']
-      celsius = []
-      celsius << "min:#{min['celsius']}" if min
-      celsius << "max:#{max['celsius']}" if max
-      unless celsius.empty?
-        temperature = "(#{celsius.join(',')})"
+  def tenki(area)
+    begin
+      uri = AREA.fetch(area)
+    rescue KeyError => e
+      if e.respond_to?(:corrections) && !e.corrections.empty?
+        raise "もしかして：#{e.corrections.join(' or ')}"
+      else
+        raise "例: #{AREA.keys.sample(10).join(', ')}"
       end
-      "#{forecast['dateLabel']}:#{forecast['telop']}#{temperature}"
-    end.join(', ')
-    desc = json['description']
-    text, = desc['text'].split(/\n\n/, 2)
-    text.gsub!(/\n/, '')
-    tenki << " - #{text}(#{desc['publicTime']})"
-    tenki << " - #{json['link']}"
+    end
 
-    tenki
+    html = get(uri)
+    doc = Nokogiri::HTML(html)
+
+    forecast = doc.css('table.forecast')
+    tenki = {}
+    area = nil
+    forecast.xpath('./tr').each do |forecast_tr|
+      th_area = forecast_tr.css('.th-area')
+      unless th_area.empty?
+        # 見出し行
+        area = th_area.text
+        tenki[area] = []
+        next
+      end
+      weather = {}
+      th_weather = forecast_tr.css('th.weather')
+      weather[:when] = th_weather.text.strip
+      weather[:title] = th_weather.xpath('img/@title').to_s.strip
+      forecast_tr.css('table.rain').each do |rain_table|
+        weather[:rain] = []
+        rain_table.css('tr').map do |tr|
+          time_range = tr.css('td[align=left]').text.strip
+          percent = tr.css('td[align=right]').text.strip
+          if /\d/ =~ percent
+            weather[:rain].push [time_range, percent]
+          end
+        end
+      end
+      forecast_tr.css('table.temp').each do |temp_table|
+        weather[:temp] = []
+        temp_table.css('tr').map do |tr|
+          city = tr.css('td.city').text.strip
+          min = tr.css('td.min').text.strip
+          max = tr.css('td.max').text.strip
+          if /./ =~ city
+            weather[:temp].push(city: city, min: min, max: max)
+          end
+        end
+      end
+      tenki[area].push weather
+    end
+
+    textframe = doc.css('pre.textframe')
+    tenki_time = textframe.children[0]&.text&.lines&.[](1)&.strip
+    tenki_text = textframe.children[2]&.text&.strip&.[](/.+/)&.gsub(/\s+/, ' ')
+
+    if $DEBUG
+      p tenki, tenki_time, tenki_text
+    end
+
+    texts = []
+    tenki.each do |area, weathers|
+      text = "#{area}: "
+      text += weathers.map do |weather|
+        if weather[:rain]&.any?
+          rain_text = weather[:rain]&.map{|time_range,percent|"#{time_range}:#{percent}"}.join(';')
+          rain_text = "(#{rain_text})"
+        end
+        [
+          "#{weather[:when]}:#{weather[:title]}",
+          weather[:temp]&.map{|temp|"(#{temp[:city]}:#{temp[:min]}-#{temp[:max]})"}&.join(''),
+          rain_text,
+        ].compact.join('')
+      end.join(', ')
+      texts << text
+    end
+    texts << "#{tenki_text} (#{tenki_time})"
+    return texts
   end
 end
 
 if __FILE__ == $0
   include Tenki
   if ARGV.empty?
-    puts "#$0 city"
+    puts "#$0 area"
   else
     init_tenki
-    ARGV.each do |city|
-      puts tenki(city)
+    ARGV.each do |area|
+      puts tenki(area)
     end
   end
   exit
@@ -109,21 +169,25 @@ class TenkiBot < Nadoka::NDK_Bot
   def bot_initialize
     bot_init_utils
     init_tenki
-    @nkf = @bot_config[:nkf] || "-Wj"
+    @nkf = @bot_config.fetch(:nkf, "-Wj")
   end
 
   def on_privmsg prefix, ch, msg
     return unless @available_channel === ch
     return if same_bot?(ch)
-    msg = NKF.nkf('-w', msg)
+    msg = NKF.nkf('-w', msg) if @nkf
     if /\Atenki>/ =~ msg
-      city = $'.strip.toutf8
+      area = $'.strip.toutf8
       begin
-        result = tenki(city)
+        results = tenki(area)
       rescue => e
-        result = "#{e}"
+        results = ["#{e}"]
       end
-      send_notice ch, NKF.nkf(@nkf, "tenki bot: #{result}".gsub(/\s+/, ' '))
+      results.each do |result|
+        msg = "tenki bot: #{result}".gsub(/\s+/, ' ')
+        msg = NKF.nkf(@nkf, msg) if @nkf
+        send_notice ch, msg
+      end
     end
   end
 end
