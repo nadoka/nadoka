@@ -68,12 +68,12 @@ class NADOKA_Config < Nadoka::NDK_ConfigBase
       :port => 6667,                       # default: 6667
       :pass => nil,                        # default: nil
     },
-    { :host => 'irc.media.kyoto-u.ac.jp',
-      :port => (6660 .. 6669),
-    },
-    { :host => 'irc.huie.hokudai.ac.jp',
+    # { :host => 'irc.media.kyoto-u.ac.jp',
+    #   :port => (6660 .. 6669),
+    # },
+    # { :host => 'irc.huie.hokudai.ac.jp',
       # without :port, use 6667 as default port
-    },
+    # },
     # IPv6 Sample
     # {
     #   :host => 'irc6.ircnet.ne.jp',
