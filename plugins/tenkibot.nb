@@ -140,7 +140,11 @@ module Tenki
         end
         [
           "#{weather[:when]}:#{weather[:title]}",
-          weather[:temp]&.map{|temp|"(#{temp[:city]}:#{temp[:min]}-#{temp[:max]})"}&.join(''),
+          weather[:temp]&.map{|temp|
+            min = "朝の最低:#{temp[:min]}" if /./ =~ temp[:min]
+            max = "日中の最高:#{temp[:max]}" if /./ =~ temp[:max]
+            "(#{temp[:city]}: #{[min,max].compact.join(',')})"
+          }&.join(''),
           rain_text,
         ].compact.join('')
       end.join(', ')
