@@ -124,6 +124,7 @@ module Tenki
     textframe = doc.css('pre.textframe')
     tenki_time = textframe.children[0]&.text&.lines&.[](1)&.strip
     tenki_text = textframe.children[2]&.text&.strip&.[](/.+/)&.gsub(/\s+/, ' ')
+    tenki_text ||= textframe.children[0]&.text&.lines&.[](3)&.strip&.gsub(/\s+/, ' ')
 
     if $DEBUG
       p tenki, tenki_time, tenki_text
