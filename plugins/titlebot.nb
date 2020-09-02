@@ -174,10 +174,6 @@ module URL2Title
           end
         when /\A(?:github\.com)\z/
           # ignore og:title
-        when /\A(?:www\.youtube\.com)\z/
-          if %r'"title":"(.+?)"' =~ body
-            title = $1
-          end
         else
           if defined?(::Nokogiri)
             doc ||= Nokogiri::HTML(body, uri.to_s, 'utf-8')
