@@ -24,6 +24,7 @@ BotConfig = [
   :ch        => '#nadoka_check',
   :tm        => 30     # check interval time(minute)
   :over_message => nil #
+  :ch_kcode  => :toutf8, # if server is utf-8
 }
 
 =end
@@ -40,6 +41,7 @@ class RSS_CheckBot < Nadoka::NDK_Bot
     @over  = @bot_config.fetch(:over_message, nil)
     @rssc  = RSS_Check.new(@paths, @cache, true)
     @prevtm= Time.now
+    @ch_kcode = @bot_config.fetch(:ch_kcode, :tojis)
   end
 
   def bot_state
@@ -54,13 +56,14 @@ class RSS_CheckBot < Nadoka::NDK_Bot
   end
   
   def send_notice(ch, msg)
+    msg = msg.send(@ch_kcode)
     if ch.respond_to? :each
       ch.each{|c|
-        super(c, msg.tojis)
+        super(c, msg)
         sleep 5 # Flood Protection
       }
     else
-      super(ch, msg.tojis)
+      super(ch, msg)
       sleep 5 # Flood Protection
     end
   end
