@@ -7,6 +7,9 @@ rvm:
   - 2.3
   - ruby-head
   - jruby-head
+arch:
+  - amd64
+  - ppc64le
 matrix:
   allow_failures:
     - rvm: jruby-18mode
